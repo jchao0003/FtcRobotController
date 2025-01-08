@@ -47,7 +47,7 @@ public class DriveConstants {
      */
     public static double WHEEL_RADIUS =  1.8898; // in
     // output (wheel) speed / input (motor) speed
-    public static double GEAR_RATIO = 1.1; // manually tuned
+    public static double GEAR_RATIO = 1; // manually tuned
     // measured = 67, finalX = 59.69, ratio 1.122, too short
 
     public static double TRACK_WIDTH = 20.75; // manually tuned, 20.75 via Trackwidth tuner

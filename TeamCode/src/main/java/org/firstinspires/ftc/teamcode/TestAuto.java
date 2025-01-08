@@ -1,5 +1,3 @@
-
-
 package org.firstinspires.ftc.teamcode;
 
 import androidx.annotation.NonNull;
@@ -29,8 +27,9 @@ public class TestAuto extends LinearOpMode {
         SampleMecanumDrive drive = new SampleMecanumDrive(hardwareMap);
 
         double START_POSITION_X = -1 - (ROBOT_WIDTH_INCHES / 2);
+        double START_POSITION_Y = -72 + (ROBOT_LENGTH_INCHES/2);
         // start position of red side, left of center
-        Pose2d startPose = new Pose2d(START_POSITION_X, -6*12 + ROBOT_LENGTH_INCHES / 2, Math.toRadians(90));
+        Pose2d startPose = new Pose2d(START_POSITION_X, START_POSITION_Y, Math.toRadians(90));
 
         drive.setPoseEstimate(startPose);
 
@@ -54,7 +53,7 @@ public class TestAuto extends LinearOpMode {
         drive(0.2, 12, 12, "straight");
          */
         Pose2d latestPose = startPose;
-        latestPose = hangSpecimen(46 - ROBOT_LENGTH_INCHES / 2, 8, drive, latestPose);
+        latestPose = hangSpecimen(40 - ROBOT_LENGTH_INCHES / 2, 8, drive, latestPose);
         latestPose = pickUpSample(48 - (-START_POSITION_X) + ROBOT_WIDTH_INCHES / 2, 4, drive, latestPose); // fwdDist should be -1?
         latestPose = placeSample(18, 8, drive, latestPose);
         gotoAscentZone( 20, 39, 12, drive, latestPose);
@@ -112,8 +111,8 @@ public class TestAuto extends LinearOpMode {
          */
 
         TrajectorySequence forwardTraj = drive.trajectorySequenceBuilder(startPose)
-                // .forward(fwdDist)
-                .lineTo(new Vector2d(startPose.getX(), startPose.getY() + fwdDist))
+                 .forward(fwdDist)
+                //.lineTo(new Vector2d(startPose.getX(), startPose.getY() + fwdDist))
                 .build();
         TrajectorySequence backTraj = drive.trajectorySequenceBuilder(forwardTraj.end())
                 .back(backDist)
@@ -138,9 +137,9 @@ public class TestAuto extends LinearOpMode {
         TrajectorySequenceBuilder builder = drive.trajectorySequenceBuilder(startPose);
         // builder.setAccelConstraint(SampleMecanumDrive.getAccelerationConstraint(6));
         TrajectorySequence leftTraj = builder
-                .strafeLeft(leftDist)
-                .forward(6) // fudge factor
-                // .lineToConstantHeading(new Vector2d(-48-2, -42))
+                // .strafeLeft(leftDist)
+                .lineToConstantHeading(new Vector2d(-48-1, -42))
+                //.forward(6) // fudge factor
                 .build();
 
         TrajectorySequence fwdTraj = drive.trajectorySequenceBuilder(leftTraj.end())
@@ -184,7 +183,7 @@ public class TestAuto extends LinearOpMode {
          */
         TrajectorySequence toBasketTraj = drive.trajectorySequenceBuilder(startPose)
                 // .back(backDist)
-                .lineToConstantHeading(new Vector2d(startPose.getX(), -48))
+                .lineToConstantHeading(new Vector2d(-48, -48))
                 .turn(Math.toRadians(180+45 + 3) - startPose.getHeading() )
                 .build();
         drive.followTrajectorySequence(toBasketTraj);
@@ -196,7 +195,7 @@ public class TestAuto extends LinearOpMode {
       drive(0.0, 0, 0, "straight");*/
         TrajectorySequence fwdTraj = drive.trajectorySequenceBuilder(toBasketTraj.end())
                 // .forward(fwdDist)
-                .lineToConstantHeading(new Vector2d(-60, -60))
+                .lineToConstantHeading(new Vector2d(-58, -58))
                 .build();
         drive.followTrajectorySequence(fwdTraj);
         /*

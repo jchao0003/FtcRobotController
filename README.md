@@ -1,3 +1,34 @@
+## SETUP FOR UPDATING CONTROL HUB SOFTWARE VIA ANDROID STUDIO
+
+1.  open a terminal & run these commands - need to be administrator
+    /bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/HEAD/install.sh)"
+
+    brew install android-platform-tools
+
+    brew install --cask android-platform-tools
+2.  check that adb is installed
+
+    adb devices
+
+3.  To connect to Control Hub, connect to its wifi network, then run
+
+    adb connect 192.168.43.1:5555
+
+    Under Device Manager, REV Robotics Control Hub should appear as a Physical device
+
+    Select this device and click on Run TeamCode. You might get a "Already installed with different signature." Click Okk
+
+    Once done working with Control Hub, run
+
+    adb disconnect
+
+    If fail to connect try:
+    adb kill-server
+
+    If still doesn't work, restart robot
+
+
+
 ## NOTICE
 
 This repository contains the public FTC SDK for the INTO THE DEEP (2024-2025) competition season.
