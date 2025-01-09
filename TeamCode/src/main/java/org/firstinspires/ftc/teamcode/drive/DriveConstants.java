@@ -50,7 +50,7 @@ public class DriveConstants {
     public static double GEAR_RATIO = 1; // manually tuned
     // measured = 67, finalX = 59.69, ratio 1.122, too short
 
-    public static double TRACK_WIDTH = 20.75; // manually tuned, 20.75 via Trackwidth tuner
+    public static double TRACK_WIDTH = 23; // manually tuned, 20.75 via Trackwidth tuner
     // 14; theoretical // in
 
 
@@ -61,7 +61,7 @@ public class DriveConstants {
      * empirically tuned.
      */
     // acceleration
-    public static double kA = 0.006;
+    public static double kA = 0.0074;
     // 0.009 from strafeTest max v 30 a 30
     // 0.006 from straightTest max v 30 a 30
     // 0.0081 from manual feedfoward max v 12 a 12
@@ -86,7 +86,7 @@ public class DriveConstants {
      * inches.
      */
     public static double MAX_VEL = 30; // 24 good accuracy 12 during tuning
-    public static double MAX_ACCEL = 24; // 12 during tuning
+    public static double MAX_ACCEL = 30; // 12 during tuning
     public static double MAX_ANG_VEL = 8; //   Math.toRadians(400); // max recommended via autoTune // Math.toRadians(90);
     public static double MAX_ANG_ACCEL = Math.toRadians(90); // smaller the less turn error // Math.toRadians(60);
 
