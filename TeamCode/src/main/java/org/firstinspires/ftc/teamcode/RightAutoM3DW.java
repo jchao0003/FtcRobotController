@@ -71,125 +71,10 @@ public class RightAutoM3DW extends LinearOpMode {
         waitForStart();
 
         if (isStopRequested()) return;
-
-        //auto code goes here
-
-        //set arm, wrist, and claw
-        /*reAdjust
-        closeClaw();
-        sleep(1000);
-        wristMid();
-        sleep(500);
-        armDown();
-        sleep(1000);
-
-         */
-
-        //hang preset specimen on high rung
-        /* hangSpecimen
-        moveArm(0.1, 10, "raiseArm");
-        wristMid();
-        sleep(2150);
-        drive(0.1, 25, 25, "straight");
-        drive(0.0, 0, 0, "straight");
-        moveArm(0.4, 5, "lowerArm");
-        sleep(1000);
-        drive(0.2, -5, -5, "straight");
-        openClaw();
-        sleep(1000);
-
-
-         */
         Pose2d latestPose = startPose;
         latestPose = hangSpecimen(36 - ROBOT_LENGTH_INCHES/2, 4, drive, latestPose);
         //latestPose = push2Samples(drive, latestPose);
         latestPose = push1Sample(drive, latestPose);
-
-
-
-        //set slides, arm, wrist, and claw
-        //wristUp();
-        sleep(500);
-        //armDown();
-        sleep(1000);
-
-
-     /*
-        wristMid();
-        sleep(500);
-        closeClaw();
-        sleep(500);*/
-
-
-        //pick up new specimen
-        /*drive(0.2, 17, 17, "turnRight");
-        drive(0.0, 0, 0, "straight");
-        drive(0.2, 10, 10, "right");
-        drive(0.0, 0, 0, "straight");
-        drive(0.2, 10, 10, "straight");
-        drive(0.0, 0, 0, "straight");
-        closeClaw();
-        sleep(500);
-
-        hang new specimen
-        drive(0.3, -48, -48, "straight");
-        drive(0.2, 17, 16, "turnLeft");
-        wristMid();
-        sleep(500);
-        moveArm(0.2, 10, "raiseArm");
-        sleep(2200);
-        drive(0.2, 16, 16, "straight");
-        drive(0.0, 0, 0, "straight");
-        moveArm(0.4, 3, "lowerArm");
-        openClaw();
-        sleep(1000);
-        drive(0.3, -12, -12, "straight");
-
-        //reset slides, arm, wrist, and claw
-        moveArm(0.3, 10, "lowerArm");
-        sleep(2300);
-        closeClaw();
-        sleep(1000);
-        wristUp();
-        sleep(500);
-        armDown();
-        sleep(1000);
-
-        //push sample to observation zone
-        drive(0.3, 24, 24, "right");
-        drive(0.3, 24, 24, "straight");
-        drive(0.2, 5, 5, "right");
-        drive(0.3, -48, -48, "straight");
-        drive(0.3, 10, 10, "straight");
-
-        //pick up new specimen
-        drive(0.2, 16, 16, "turnRight");
-        drive(0.2, 10, 10, "right");
-        drive(0.2, 10, 10, "straight");
-        closeClaw();
-        sleep(500);
-
-        //hang new specimen
-        drive(0.3, -48, -48, "straight");
-        drive(0.2, 16, 16, "turnLeft");
-        wristMid();
-        sleep(500);
-        moveArm(0.2, 10, "raiseArm");
-        sleep(2200);
-        drive(0.2, 16, 16, "straight");
-        drive(0.0, 0, 0, "straight");
-        moveArm(0.4, 3, "lowerArm");
-        openClaw();
-        sleep(1000);
-        drive(0.3, -24, -24, "straight");
-
-        drive(0.3, 56, 56, "right");*/
-
-
-
-
-
-
     }
     public Pose2d push1Sample(SampleMecanumDrive drive, Pose2d startPose) {
 
@@ -220,8 +105,11 @@ public class RightAutoM3DW extends LinearOpMode {
         drive.followTrajectorySequence(pushTraj);
         sleep(3000);
         drive.followTrajectorySequence(specimenGrab);
+
         closeClaw();
+        //raise arm
         drive.followTrajectorySequence(specimenHang);
+
 
         return specimenHang.end();
     }
@@ -261,20 +149,6 @@ public class RightAutoM3DW extends LinearOpMode {
         return pushTraj.end();
     }
     public Pose2d hangSpecimen(double fwdDist, double backDist, SampleMecanumDrive drive, Pose2d startPose){
-        /*
-        moveArm(0.1, 8, "raiseArm");
-        wristMid();
-        sleep(2150);
-        drive(0.3, distance, distance, "straight");
-        drive(0.1, 1, 1, "straight");
-        drive(0.0, 0, 0, "straight");
-        moveArm(0.4, 4, "lowerArm");
-        sleep(1500);
-        drive(0.3, -4, -4, "straight");
-        drive(0.0, 0, 0, "straight");
-
-         */
-
         TrajectorySequence forwardTraj = drive.trajectorySequenceBuilder(startPose)
                 .forward(fwdDist)
                 //.lineTo(new Vector2d(startPose.getX(), startPose.getY() + fwdDist))
@@ -286,8 +160,10 @@ public class RightAutoM3DW extends LinearOpMode {
 
         moveArm(0.1, 8, "raiseArm");
         wristMid();
+        closeClaw();
+        armDown();
 
-        sleep(2150);
+        sleep(1500);
         drive.followTrajectorySequence(forwardTraj);
 
         moveArm(0.4, 4, "lowerArm");
@@ -328,10 +204,11 @@ public class RightAutoM3DW extends LinearOpMode {
 
     //claw commands
 
-    public void closeClaw(){      //close
-        leftClawS.setPosition(.57);
-        rightClawS.setPosition(.37);
+    public void closeClaw() {      //close
+        leftClawS.setPosition(.67);
+        rightClawS.setPosition(.33);
     }
+
     public void openClaw(){       //open
         leftClawS.setPosition(.82);
         rightClawS.setPosition(.18);

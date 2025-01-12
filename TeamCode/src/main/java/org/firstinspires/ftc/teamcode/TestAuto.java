@@ -58,28 +58,78 @@ public class TestAuto extends LinearOpMode {
         waitForStart();
 
         if (isStopRequested()) return;
-
-            /*
-        //auto code goes here
-        reAdjust();
-        hangSpecimen(19);
-        pickUpSample(42);
-        placeSample();
-
-        drive(0.2, -10, -10, "straight");
-        drive(0.0, 0, 0, "straight");
-        moveArm(0.2, 5, "lowerArm");
-        sleep(500);
-        drive(0.2, 55, 55, "turnRight");
-        drive(0.2, 39, 39, "left");
-        drive(0.2, 12, 12, "straight");
-         */
         Pose2d latestPose = startPose;
-        latestPose = hangSpecimen(40 - ROBOT_LENGTH_INCHES / 2, 8, drive, latestPose);
-        latestPose = pickUpSample(48 - (-START_POSITION_X) + ROBOT_WIDTH_INCHES / 2, 4, drive, latestPose); // fwdDist should be -1?
+        latestPose = hangSpecimen(36 - ROBOT_LENGTH_INCHES / 2, 13, drive, latestPose);
+        latestPose = pickUpSample(drive, latestPose);
         latestPose = placeSample(18, 8, drive, latestPose);
-        gotoAscentZone(20, 39, 12, drive, latestPose);
+        latestPose = pickUpSample2(drive, latestPose);
+        latestPose = placeSample(18, 8, drive, latestPose);
+        latestPose = pickUpSample3(drive, latestPose);
+        latestPose = placeSample(18, 8, drive, latestPose);
+        //gotoAscentZone(20, 39, 12, drive, latestPose);
     }
+
+    public Pose2d pickUpSample3(SampleMecanumDrive drive, Pose2d startPose) {
+        TrajectorySequence backTraj = drive.trajectorySequenceBuilder(startPose)
+                .back(18)
+                .build();
+        TrajectorySequence toSample = drive.trajectorySequenceBuilder(backTraj.end())
+                .turn(Math.toRadians(180) - backTraj.end().getHeading())
+                .lineToConstantHeading(new Vector2d(-50, -26))
+                .build();
+        TrajectorySequence pushSample = drive.trajectorySequenceBuilder(toSample.end())
+                .forward(10)
+                .back(7)
+                .build();
+        TrajectorySequence grabSample = drive.trajectorySequenceBuilder(pushSample.end())
+                .forward(9)
+                .build();
+        drive.followTrajectorySequence(backTraj);
+
+        //arm down
+        armDown();
+        wristUp();
+
+        drive.followTrajectorySequence(toSample);
+
+        closeClaw();
+        wristS.setPosition(.65);
+
+        drive.followTrajectorySequence(pushSample);
+
+        openClaw();
+
+
+        drive.followTrajectorySequence(grabSample);
+
+        closeClaw();
+
+        return grabSample.end();
+    }
+
+    public Pose2d pickUpSample2(SampleMecanumDrive drive, Pose2d startPose){
+            TrajectorySequence backTraj = drive.trajectorySequenceBuilder(startPose)
+                .back(18)
+                .build();
+            TrajectorySequence goToSample = drive.trajectorySequenceBuilder(backTraj.end())
+                    .turn(Math.toRadians(90)-backTraj.end().getHeading())
+                    .lineToConstantHeading(new Vector2d (-61, -42))
+                    .build();
+            drive.followTrajectorySequence(backTraj);
+
+            //arm down
+            armDown();
+            wristUp();
+
+            drive.followTrajectorySequence(goToSample);
+
+            wristS.setPosition(.6);
+            sleep(250);
+            closeClaw();
+
+            return goToSample.end();
+
+    };
 
     public Pose2d gotoAscentZone(double backDist, double leftDist, double fwdDist, SampleMecanumDrive drive, Pose2d startPose) {
         TrajectorySequence backTraj = drive.trajectorySequenceBuilder(startPose)
@@ -96,42 +146,15 @@ public class TestAuto extends LinearOpMode {
                 .forward(fwdDist)
                  */
                 .build();
-
-        /*
-            drive(0.2, -10, -10, "straight");
-            drive(0.0, 0, 0, "straight");
-            */
         drive.followTrajectorySequence(backTraj);
-
-
-        moveArm(0.2, 5, "lowerArm");
-
+       // moveArm(0.2, 5, "lowerArm");
         sleep(500);
-        /*
-        drive(0.2, 55, 55, "turnRight");
-        drive(0.2, 39, 39, "left");
-        drive(0.2, 12, 12, "straight");
-         */
         drive.followTrajectorySequence(leftTraj);
         return leftTraj.end();
 
     }
 
     public Pose2d hangSpecimen(double fwdDist, double backDist, SampleMecanumDrive drive, Pose2d startPose) {
-        /*
-        moveArm(0.1, 8, "raiseArm");
-        wristMid();
-        sleep(2150);
-        drive(0.3, distance, distance, "straight");
-        drive(0.1, 1, 1, "straight");
-        drive(0.0, 0, 0, "straight");
-        moveArm(0.4, 4, "lowerArm");
-        sleep(1500);
-        drive(0.3, -4, -4, "straight");
-        drive(0.0, 0, 0, "straight");
-
-         */
-
         TrajectorySequence forwardTraj = drive.trajectorySequenceBuilder(startPose)
                 .forward(fwdDist)
                 //.lineTo(new Vector2d(startPose.getX(), startPose.getY() + fwdDist))
@@ -139,94 +162,71 @@ public class TestAuto extends LinearOpMode {
         TrajectorySequence backTraj = drive.trajectorySequenceBuilder(forwardTraj.end())
                 .back(backDist)
                 .build();
-
-
-        moveArm(0.1, 8, "raiseArm");
-        wristMid();
+       // moveArm(0.1, 8, "raiseArm");
+        wrist90();
         closeClaw();
-
+        armDown();
         sleep(2150);
+
         drive.followTrajectorySequence(forwardTraj);
 
-        moveArm(0.4, 4, "lowerArm");
+        //moveArm(0.4, 4, "lowerArm");
+        sleep(2000);
 
-        sleep(1500);
         drive.followTrajectorySequence(backTraj);
+
+        openClaw();
+        wristUp();
+
         return backTraj.end();
 
     }
 
-    public Pose2d pickUpSample(double leftDist, double fwdDist, SampleMecanumDrive drive, Pose2d startPose) {
+    public Pose2d pickUpSample(SampleMecanumDrive drive, Pose2d startPose) {
         TrajectorySequenceBuilder builder = drive.trajectorySequenceBuilder(startPose);
         // builder.setAccelConstraint(SampleMecanumDrive.getAccelerationConstraint(6));
         TrajectorySequence leftTraj = builder
-                // .strafeLeft(leftDist)
-                .lineToConstantHeading(new Vector2d(-48 - 1, -42))
+                .lineToConstantHeading(new Vector2d(-51 - 1, -43))
                 //.forward(6) // fudge factor
                 .build();
-
         TrajectorySequence fwdTraj = drive.trajectorySequenceBuilder(leftTraj.end())
                 .lineToConstantHeading(new Vector2d(-48 - 2, -24))
-                // .forward(fwdDist)
                 .build();
-
-        openClaw();
-        wristUp();
-        moveArm(0.3, 9, "lowerArm");
-
+        //moveArm(0.3, 9, "lowerArm");
         sleep(1000);
-        /*
-        drive(0.3, left, left, "left");
-        drive(0.1, -1, -1, "straight");
-        drive(0.0, 0, 0, "straight");
-        */
+
         drive.followTrajectorySequence(leftTraj);
-        drive.followTrajectorySequence(fwdTraj);
+        //drive.followTrajectorySequence(fwdTraj);
 
-        wristDown();
-
+        wristS.setPosition(.6);
         sleep(500);
-
         closeClaw();
 
-        sleep(1000);
-        return fwdTraj.end();
+        // return fwdTraj.end();
+        return leftTraj.end();
     }
 
     public Pose2d placeSample(double backDist, double fwdDist, SampleMecanumDrive drive, Pose2d startPose) {
-
-        armDown();
-        wristUp();
-
-        sleep(500);
-        /*
-        drive(0.3, -7, -7, "straight");
-        drive(0.0, 0, 0, "straight");
-        drive(0.3, 30, 30, "turnLeft");
-         */
         TrajectorySequence toBasketTraj = drive.trajectorySequenceBuilder(startPose)
                 // .back(backDist)
                 .lineToConstantHeading(new Vector2d(-48, -48))
                 .turn(Math.toRadians(180 + 45 + 3) - startPose.getHeading())
                 .build();
-        drive.followTrajectorySequence(toBasketTraj);
-
-        moveArm(0.4, 10, "raiseArm");
-
-        sleep(2500);
-      /*drive(0.3, 5, 5, "straight");
-      drive(0.0, 0, 0, "straight");*/
         TrajectorySequence fwdTraj = drive.trajectorySequenceBuilder(toBasketTraj.end())
                 // .forward(fwdDist)
-                .lineToConstantHeading(new Vector2d(-58, -58))
+                .lineToConstantHeading(new Vector2d(-53, -53))
                 .build();
+        drive.followTrajectorySequence(toBasketTraj);
+
+        //moveArm(0.4, 10, "raiseArm");
+        armMid();
+        wrist180();
+        sleep(2500);
+
         drive.followTrajectorySequence(fwdTraj);
 
-        armMid();
-        wristDown();
         openClaw();
 
-        sleep(1000);
         return fwdTraj.end();
     }
 /*
@@ -266,8 +266,8 @@ public class TestAuto extends LinearOpMode {
     //claw commands
 
     public void closeClaw() {      //close
-        leftClawS.setPosition(.57);
-        rightClawS.setPosition(.37);
+        leftClawS.setPosition(.67);
+        rightClawS.setPosition(.33);
     }
 
     public void openClaw() {       //open
@@ -285,8 +285,12 @@ public class TestAuto extends LinearOpMode {
         wristS.setPosition(1);
     }
 
-    public void wristMid() {       //halfway
-        wristS.setPosition(0.7);
+    public void wrist180() {       //halfway
+        wristS.setPosition(0.45);
+    }
+
+    public void wrist90() {
+        wristS.setPosition(.75);
     }
 
     //arm commands
@@ -300,10 +304,12 @@ public class TestAuto extends LinearOpMode {
     }
 
     public void armMid() {         //halfway
-        armS.setPosition(0.4);
+        armS.setPosition(0.1);
     }
-
+/*
     public void armLow() {         //-45 degrees
         armS.setPosition(0.6);
     }
+
+ */
 }

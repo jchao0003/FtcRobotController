@@ -50,7 +50,7 @@ public class DriveConstants {
     public static double GEAR_RATIO = 1; // manually tuned
     // measured = 67, finalX = 59.69, ratio 1.122, too short
 
-    public static double TRACK_WIDTH = 23; // manually tuned, 20.75 via Trackwidth tuner
+    public static double TRACK_WIDTH = 11; // manually tuned, 20.75 via Trackwidth tuner
     // 14; theoretical // in
 
 
@@ -87,8 +87,8 @@ public class DriveConstants {
      */
     public static double MAX_VEL = 30; // 24 good accuracy 12 during tuning
     public static double MAX_ACCEL = 30; // 12 during tuning
-    public static double MAX_ANG_VEL = 8; //   Math.toRadians(400); // max recommended via autoTune // Math.toRadians(90);
-    public static double MAX_ANG_ACCEL = Math.toRadians(90); // smaller the less turn error // Math.toRadians(60);
+    public static double MAX_ANG_VEL = 3.14; //   Math.toRadians(400); // max recommended via autoTune // Math.toRadians(90);
+    public static double MAX_ANG_ACCEL = 3.14; // smaller the less turn error // Math.toRadians(60);
 
     /*
      * Adjust the orientations here to match your robot. See the FTC SDK documentation for details.
