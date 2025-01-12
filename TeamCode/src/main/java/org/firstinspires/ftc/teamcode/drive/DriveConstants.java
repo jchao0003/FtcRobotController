@@ -85,8 +85,8 @@ public class DriveConstants {
      * small and gradually increase them later after everything is working. All distance units are
      * inches.
      */
-    public static double MAX_VEL = 30; // 24 good accuracy 12 during tuning
-    public static double MAX_ACCEL = 30; // 12 during tuning
+    public static double MAX_VEL = 35; // 24 good accuracy 12 during tuning
+    public static double MAX_ACCEL = 35; // 12 during tuning
     public static double MAX_ANG_VEL = 3.14; //   Math.toRadians(400); // max recommended via autoTune // Math.toRadians(90);
     public static double MAX_ANG_ACCEL = 3.14; // smaller the less turn error // Math.toRadians(60);
 

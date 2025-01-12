@@ -20,8 +20,8 @@ import org.firstinspires.ftc.teamcode.trajectorysequence.TrajectorySequence;
 import org.firstinspires.ftc.teamcode.trajectorysequence.TrajectorySequenceBuilder;
 
 
-@Autonomous(name="TestAuto", group="Linear Opmode")
-public class TestAuto extends LinearOpMode {
+@Autonomous(name="LeftAutoM3DW", group="Linear Opmode")
+public class LeftAutoM3DW extends LinearOpMode {
     private ElapsedTime runtime = new ElapsedTime();
     private DcMotor armM;
     private Servo leftClawS;
@@ -109,9 +109,9 @@ public class TestAuto extends LinearOpMode {
         TrajectorySequenceBuilder builder = drive.trajectorySequenceBuilder(startPose);
         //builder.setTurnConstraint(Math.toRadians(360), Math.toRadians(45));
         TrajectorySequence goToSample = builder
-                    .turn(Math.toRadians(90)-startPose.getHeading())
-                    .lineToConstantHeading(new Vector2d (-61, -42))
-                    .build();
+                .turn(Math.toRadians(90)-startPose.getHeading())
+                .lineToConstantHeading(new Vector2d (-61, -42))
+                .build();
 
         drive.followTrajectorySequenceAsync(goToSample);
         //slides down
@@ -143,7 +143,7 @@ public class TestAuto extends LinearOpMode {
                  */
                 .build();
         drive.followTrajectorySequence(backTraj);
-       // moveArm(0.2, 5, "lowerArm");
+        // moveArm(0.2, 5, "lowerArm");
         sleep(500);
         drive.followTrajectorySequence(leftTraj);
         return leftTraj.end();
