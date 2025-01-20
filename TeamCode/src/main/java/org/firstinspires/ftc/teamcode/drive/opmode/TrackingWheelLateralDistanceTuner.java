@@ -112,6 +112,9 @@ public class TrackingWheelLateralDistanceTuner extends LinearOpMode {
             telemetry.addLine("Raw Heading (deg): " + Math.toDegrees(heading));
             telemetry.addLine();
             telemetry.addLine("Press Y/△ to conclude routine");
+            telemetry.addLine("Localizer's total heading: " + Math.toDegrees(headingAccumulator) + "°");
+            telemetry.addLine("Effective LATERAL_DISTANCE: " +
+                    (headingAccumulator / (NUM_TURNS * Math.PI * 2)) * StandardTrackingWheelLocalizer.LATERAL_DISTANCE);
             telemetry.update();
 
             if (gamepad1.y)

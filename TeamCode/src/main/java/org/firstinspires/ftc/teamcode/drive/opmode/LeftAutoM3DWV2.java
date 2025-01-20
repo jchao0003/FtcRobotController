@@ -20,8 +20,8 @@ import org.firstinspires.ftc.teamcode.trajectorysequence.TrajectorySequence;
 import org.firstinspires.ftc.teamcode.trajectorysequence.TrajectorySequenceBuilder;
 
 
-@Autonomous(name="LeftAutoM3DW", group="Linear Opmode")
-public class LeftAutoM3DW extends LinearOpMode {
+@Autonomous(name="LeftAutoM3DWV2", group="Linear Opmode")
+public class LeftAutoM3DWV2 extends LinearOpMode {
     private ElapsedTime runtime = new ElapsedTime();
     private DcMotor armM;
     private Servo leftClawS;
@@ -33,8 +33,8 @@ public class LeftAutoM3DW extends LinearOpMode {
     public static double ROBOT_WIDTH_INCHES = 16.2;
     public static double ROBOT_LENGTH_INCHES = 12;
 
-    private static int ARM_LENGTH_INCHES = 10;
-    private static int ROBOT_HEIGHT_INCHES = 15;
+    private static int ARM_LENGTH_INCHES = 11;
+    private static int ROBOT_HEIGHT_INCHES = 16;
 
     public static int CLAW_WAIT_TIME = 250;
 
@@ -77,58 +77,46 @@ public class LeftAutoM3DW extends LinearOpMode {
 
     public Pose2d pickUpSample3(SampleMecanumDrive drive, Pose2d startPose) {
         TrajectorySequence toSample = drive.trajectorySequenceBuilder(startPose)
-                .turn(Math.toRadians(180) - startPose.getHeading())
-                .lineToConstantHeading(new Vector2d(-50, -26))
-                .build();
-        TrajectorySequence pushSample = drive.trajectorySequenceBuilder(toSample.end())
-                .forward(9)
-                .back(7)
-                .build();
-        TrajectorySequence grabSample = drive.trajectorySequenceBuilder(pushSample.end())
-                .forward(8)
+                .turn(Math.toRadians(90+30) - startPose.getHeading())
+                .lineToConstantHeading(new Vector2d(-60, -37))
                 .build();
 
         drive.followTrajectorySequenceAsync(toSample);
-        moveArm(0.5, 42 + ROBOT_HEIGHT_INCHES, "lowerArm");
-        armDown();
+        moveArm(0.7, 42 + ROBOT_HEIGHT_INCHES, "lowerArm");
+        arm0();
         wristUp();
-        closeClaw();
-        drive.waitForIdle();
-
-        wristS.setPosition(.65);
-
-        drive.followTrajectorySequence(pushSample);
-
         openClaw();
-
-        drive.followTrajectorySequence(grabSample);
-
+        drive.waitForIdle();
+        sleep(250);
+        wristS.setPosition(.65);
+        sleep(500);
         closeClaw();
-
-        return grabSample.end();
+        return toSample.end();
     }
 
-    public Pose2d pickUpSample2(SampleMecanumDrive drive, Pose2d startPose){
+    public Pose2d pickUpSample2(SampleMecanumDrive drive, Pose2d startPose) {
         TrajectorySequenceBuilder builder = drive.trajectorySequenceBuilder(startPose);
         //builder.setTurnConstraint(Math.toRadians(360), Math.toRadians(45));
         TrajectorySequence goToSample = builder
-                .turn(Math.toRadians(90)-startPose.getHeading())
-                .lineToConstantHeading(new Vector2d (-61, -42))
+                .turn(Math.toRadians(85) - startPose.getHeading())
+                .lineToConstantHeading(new Vector2d(-60, -43))
                 .build();
 
         drive.followTrajectorySequenceAsync(goToSample);
-        moveArm(0.5, 42 + ROBOT_HEIGHT_INCHES, "lowerArm");
+        moveArm(0.7, 42 + ROBOT_HEIGHT_INCHES, "lowerArm");
         wristUp();
-        armDown();
+        arm0();
         drive.waitForIdle();
-
+        sleep(250);
         wristS.setPosition(.65);
         sleep(CLAW_WAIT_TIME);
         closeClaw();
 
         return goToSample.end();
 
-    };
+    }
+
+    ;
 
     public Pose2d gotoAscentZone(double backDist, double leftDist, double fwdDist, SampleMecanumDrive drive, Pose2d startPose) {
         TrajectorySequence backTraj = drive.trajectorySequenceBuilder(startPose)
@@ -163,7 +151,7 @@ public class LeftAutoM3DW extends LinearOpMode {
                 .build();
         moveArm(0.5, 28 - ROBOT_HEIGHT_INCHES + ARM_LENGTH_INCHES, "raiseArm");
         closeClaw();
-        armDown();
+        arm0();
         wristUp();
         sleep(1000);
         drive.followTrajectorySequenceAsync(forwardTraj);
@@ -187,7 +175,7 @@ public class LeftAutoM3DW extends LinearOpMode {
         TrajectorySequenceBuilder builder = drive.trajectorySequenceBuilder(startPose);
         // builder.setAccelConstraint(SampleMecanumDrive.getAccelerationConstraint(6));
         TrajectorySequence leftTraj = builder
-                .lineToConstantHeading(new Vector2d(-50 - 1, -43))
+                .lineToConstantHeading(new Vector2d(-49, -43))
                 .build();
         moveArm(0.5, 26, "lowerArm");
         drive.followTrajectorySequenceAsync(leftTraj);
@@ -203,25 +191,19 @@ public class LeftAutoM3DW extends LinearOpMode {
 
     public Pose2d placeSample(SampleMecanumDrive drive, Pose2d startPose) {
         TrajectorySequence toBasketTraj = drive.trajectorySequenceBuilder(startPose)
-                .lineToConstantHeading(new Vector2d(-50, -50))
-                .turn(Math.toRadians(180 + 45 + 5) - startPose.getHeading())
+                .lineToConstantHeading(new Vector2d(-60, -60))
+                .turn(Math.toRadians(40) - startPose.getHeading())
                 .build();
-        TrajectorySequence fwdTraj = drive.trajectorySequenceBuilder(toBasketTraj.end())
-                .lineToConstantHeading(new Vector2d(-53, -53))
-                .build();
-        drive.followTrajectorySequence(toBasketTraj);
-
-        moveArm(0.5, 42 - ROBOT_HEIGHT_INCHES, "raiseArm");
-        armMid();
+        drive.followTrajectorySequenceAsync(toBasketTraj);
+        moveArm(0.7, 42 - ROBOT_HEIGHT_INCHES, "raiseArm");
+        arm270();
         wrist180();
-        sleep(2500);
-
-        drive.followTrajectorySequence(fwdTraj);
-
+        drive.waitForIdle();
+        //sleep(500);
         openClaw();
         sleep(50);
 
-        return fwdTraj.end();
+        return toBasketTraj.end();
     }
 /*
     private void drive(double speed, int leftTarget, int rightTarget, String direction) {
@@ -289,21 +271,20 @@ public class LeftAutoM3DW extends LinearOpMode {
 
     //arm commands
 
-    public void armUp() {          //up
-        armS.setPosition(0.115);
+    public void arm270() {          //parallel to floor backwards
+        armS.setPosition(0.30);
     }
 
-    public void armDown() {        //down
+    public void arm0() {        //all the way down
         armS.setPosition(0);
     }
 
-    public void armMid() {         //halfway
+    public void arm90() {         //parallel to floor front
         armS.setPosition(0.1);
     }
-/*
-    public void armLow() {         //-45 degrees
-        armS.setPosition(0.6);
-    }
 
- */
+    public void arm180() {         //perpendicular to floor
+        armS.setPosition(0.2);
+
+    }
 }
