@@ -77,8 +77,8 @@ public class LeftAutoM3DWV2 extends LinearOpMode {
 
     public Pose2d pickUpSample3(SampleMecanumDrive drive, Pose2d startPose) {
         TrajectorySequence toSample = drive.trajectorySequenceBuilder(startPose)
-                .turn(Math.toRadians(90+30) - startPose.getHeading())
-                .lineToConstantHeading(new Vector2d(-60, -37))
+                .turn(Math.toRadians(90+25) - startPose.getHeading())
+                .lineToConstantHeading(new Vector2d(-59, -38))
                 .build();
 
         drive.followTrajectorySequenceAsync(toSample);
@@ -86,9 +86,10 @@ public class LeftAutoM3DWV2 extends LinearOpMode {
         arm0();
         wristUp();
         openClaw();
-        drive.waitForIdle();
-        sleep(250);
+        rightClawS.setPosition(.17);
+        sleep(1000);
         wristS.setPosition(.65);
+        drive.waitForIdle();
         sleep(500);
         closeClaw();
         return toSample.end();
@@ -99,7 +100,7 @@ public class LeftAutoM3DWV2 extends LinearOpMode {
         //builder.setTurnConstraint(Math.toRadians(360), Math.toRadians(45));
         TrajectorySequence goToSample = builder
                 .turn(Math.toRadians(85) - startPose.getHeading())
-                .lineToConstantHeading(new Vector2d(-60, -43))
+                .lineToConstantHeading(new Vector2d(-59, -43))
                 .build();
 
         drive.followTrajectorySequenceAsync(goToSample);
@@ -149,10 +150,10 @@ public class LeftAutoM3DWV2 extends LinearOpMode {
         TrajectorySequence backTraj = drive.trajectorySequenceBuilder(forwardTraj.end())
                 .back(backDist)
                 .build();
-        moveArm(0.5, 28 - ROBOT_HEIGHT_INCHES + ARM_LENGTH_INCHES, "raiseArm");
         closeClaw();
         arm0();
         wristUp();
+        moveArm(0.5, 28 - ROBOT_HEIGHT_INCHES + ARM_LENGTH_INCHES, "raiseArm");
         sleep(1000);
         drive.followTrajectorySequenceAsync(forwardTraj);
         drive.waitForIdle();
@@ -160,7 +161,7 @@ public class LeftAutoM3DWV2 extends LinearOpMode {
         wrist90();
 
         moveArm(0.5, 2, "lowerArm");
-        sleep(1000);
+        sleep(500);
 
         drive.followTrajectorySequence(backTraj);
 
@@ -175,7 +176,7 @@ public class LeftAutoM3DWV2 extends LinearOpMode {
         TrajectorySequenceBuilder builder = drive.trajectorySequenceBuilder(startPose);
         // builder.setAccelConstraint(SampleMecanumDrive.getAccelerationConstraint(6));
         TrajectorySequence leftTraj = builder
-                .lineToConstantHeading(new Vector2d(-49, -43))
+                .lineToConstantHeading(new Vector2d(-48, -43))
                 .build();
         moveArm(0.5, 26, "lowerArm");
         drive.followTrajectorySequenceAsync(leftTraj);
