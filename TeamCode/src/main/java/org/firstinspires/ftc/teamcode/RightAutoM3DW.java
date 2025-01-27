@@ -62,7 +62,7 @@ public class RightAutoM3DW extends LinearOpMode {
 
         SampleMecanumDrive drive = new SampleMecanumDrive(hardwareMap);
 
-        double START_POSITION_X = 2 + (ROBOT_WIDTH_INCHES / 2);
+        double START_POSITION_X =  (ROBOT_WIDTH_INCHES / 2);
         double START_POSITION_Y = -72 + (ROBOT_LENGTH_INCHES / 2);
         // start position of red side, right of center
         Pose2d startPose = new Pose2d(START_POSITION_X, START_POSITION_Y, Math.toRadians(90));
@@ -72,7 +72,7 @@ public class RightAutoM3DW extends LinearOpMode {
 
         if (isStopRequested()) return;
         Pose2d latestPose = startPose;
-        latestPose = hangSpecimen(36 - ROBOT_LENGTH_INCHES / 2, 12, drive, latestPose);
+        latestPose = hangSpecimen(28 - ROBOT_LENGTH_INCHES / 2, 9, drive, latestPose);
         latestPose = push2Samples(drive, latestPose);
         latestPose = hangGrabSpecimen(drive, latestPose);
         //latestPose = push1Sample(drive, latestPose);
@@ -91,7 +91,7 @@ public class RightAutoM3DW extends LinearOpMode {
                 //.lineToConstantHeading(new Vector2d(24 - ROBOT_WIDTH_INCHES, -36))
                 .build();
         TrajectorySequence backTraj = drive.trajectorySequenceBuilder(specimenHang.end())
-                .back(12)
+                .back(10)
                 .build();
 
         drive.followTrajectorySequence(specimenGrab);
@@ -100,14 +100,23 @@ public class RightAutoM3DW extends LinearOpMode {
         //raise arm
         sleep(500);
 
-        drive.followTrajectorySequence(specimenHang);
-
-        //slides down
+        drive.followTrajectorySequenceAsync(specimenHang);
+        arm0();
+        wristUp();
+        moveArm(0.7, 25, "raiseArm");
+        sleep(750);
         wrist90();
+
+        drive.waitForIdle();
+
+        moveArm(0.5, 5, "lowerArm");
+        sleep(400);
 
         drive.followTrajectorySequence(backTraj);
 
         openClaw();
+
+
 
         return specimenHang.end();
     }
@@ -119,7 +128,7 @@ public class RightAutoM3DW extends LinearOpMode {
         builder.setTurnConstraint(Math.toRadians(360), Math.toRadians(45));
         TrajectorySequence pushTraj = builder
                 //.back(8)
-                .turn(Math.toRadians(270) - startPose.getHeading())
+                .turn(Math.toRadians(270+10) - startPose.getHeading())
                 .lineToConstantHeading(new Vector2d(33, -48))//left
                 .lineToConstantHeading(new Vector2d(33, -16))//back
                 .lineToConstantHeading(new Vector2d(45, -20))//left
@@ -127,7 +136,7 @@ public class RightAutoM3DW extends LinearOpMode {
                 .lineToConstantHeading(new Vector2d(38, -48))//back
                 .build();
         TrajectorySequence specimenGrab = drive.trajectorySequenceBuilder(pushTraj.end())
-                .lineTo(new Vector2d(38,-70 + ROBOT_LENGTH_INCHES/2))
+                .lineTo(new Vector2d(48,-70 + ROBOT_LENGTH_INCHES/2))
                 .build();
         TrajectorySequence specimenHang = drive.trajectorySequenceBuilder(specimenGrab.end())
                 .back(6)
@@ -144,11 +153,13 @@ public class RightAutoM3DW extends LinearOpMode {
         drive.followTrajectorySequence(specimenGrab);
 
         closeClaw();
-        //raise arm
-        drive.followTrajectorySequence(specimenHang);
-
-        //slides down
+        drive.followTrajectorySequenceAsync(specimenHang);
+        sleep(500);
+        moveArm(0.7, 26, "raiseArm");
+        drive.waitForIdle();
         wrist90();
+        moveArm(0.5, 5, "low");
+
 
         drive.followTrajectorySequence(backTraj);
 
@@ -180,7 +191,9 @@ public class RightAutoM3DW extends LinearOpMode {
                 //.turn(Math.toRadians(270) - startPose.getHeading())
                 .build();
 
-        drive.followTrajectorySequence(pushTraj);
+        drive.followTrajectorySequenceAsync(pushTraj);
+        moveArm(0.7, 30, "lowerArm");
+        drive.waitForIdle();
         return pushTraj.end();
     }
     public Pose2d hangSpecimen(double fwdDist, double backDist, SampleMecanumDrive drive, Pose2d startPose) {
@@ -191,27 +204,25 @@ public class RightAutoM3DW extends LinearOpMode {
         TrajectorySequence backTraj = drive.trajectorySequenceBuilder(forwardTraj.end())
                 .lineToConstantHeading(new Vector2d(22, -48))
                 .build();
-        // moveArm(0.1, 8, "raiseArm");
-        sleep(1000);
-        drive.followTrajectorySequenceAsync(forwardTraj);
         closeClaw();
+        arm0();
         wristUp();
-        armDown();
+        moveArm(0.7, 26, "raiseArm");
+        sleep(750);
+        wrist90();
+        drive.followTrajectorySequenceAsync(forwardTraj);
         drive.waitForIdle();
 
-        wrist90();
-
-        //moveArm(0.4, 4, "lowerArm");
-        sleep(1000);
+        moveArm(0.5, 5, "lowerArm");
+        sleep(400);
 
         drive.followTrajectorySequence(backTraj);
 
-        //sleep(1500);
         openClaw();
         wristUp();
-        //drive.waitForIdle();
 
         return backTraj.end();
+
 
     }
 
@@ -300,5 +311,7 @@ public class RightAutoM3DW extends LinearOpMode {
         backRightM.setPower(0);
         armM.setPower(power);
     }*/
-
+    public void arm0() {        //all the way down
+        armS.setPosition(0);
+    }
 }
