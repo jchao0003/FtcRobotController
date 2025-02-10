@@ -7,26 +7,18 @@ import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import org.firstinspires.ftc.teamcode.drive.SampleMecanumDrive;
 import org.firstinspires.ftc.teamcode.trajectorysequence.TrajectorySequence;
 import org.firstinspires.ftc.teamcode.trajectorysequence.TrajectorySequenceBuilder;
-import org.firstinspires.ftc.vision.VisionPortal;
-import org.firstinspires.ftc.robotcore.external.hardware.camera.WebcamName;
-import com.qualcomm.robotcore.hardware.ColorSensor;
+
 import com.qualcomm.robotcore.hardware.Servo;
-import com.qualcomm.robotcore.hardware.HardwareMap;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
-import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
-import com.qualcomm.robotcore.eventloop.opmode.Disabled;
 import com.qualcomm.robotcore.util.ElapsedTime;
-import com.qualcomm.robotcore.util.Range;
 
 //import com.qualcomm.robotcore.util.Hardware;
 
-import com.qualcomm.robotcore.robot.Robot;
-import org.firstinspires.ftc.robotcore.external.JavaUtil;
 
-@Autonomous(name="RightAutoM3DWV2", group="Linear Opmode")
+@Autonomous(name="RightAutoILT2Specimen", group="Linear Opmode")
 
-public class RightAutoM3DWV2 extends LinearOpMode {
+public class RightAutoILT2Specimen extends LinearOpMode {
 
     private ElapsedTime runtime = new ElapsedTime();
     private DcMotor armM;
