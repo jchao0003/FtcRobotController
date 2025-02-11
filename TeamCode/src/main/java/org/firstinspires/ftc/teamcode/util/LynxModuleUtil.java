@@ -118,7 +118,7 @@ public class LynxModuleUtil {
                         "\t%s: %s\n", entry.getKey(),
                         entry.getValue() == null ? "Unknown" : entry.getValue().toString()));
             }
-            throw new LynxFirmwareVersionException(msgBuilder.toString());
+            //throw new LynxFirmwareVersionException(msgBuilder.toString());
         }
     }
 }

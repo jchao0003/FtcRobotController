@@ -2,8 +2,14 @@ package org.firstinspires.ftc.teamcode;
 
 import com.acmerobotics.roadrunner.geometry.Pose2d;
 import com.acmerobotics.roadrunner.geometry.Vector2d;
+import com.acmerobotics.roadrunner.profile.AccelerationConstraint;
+import com.acmerobotics.roadrunner.profile.VelocityConstraint;
+import com.acmerobotics.roadrunner.trajectory.constraints.ProfileAccelerationConstraint;
+import com.acmerobotics.roadrunner.trajectory.constraints.TrajectoryAccelerationConstraint;
+import com.acmerobotics.roadrunner.trajectory.constraints.TrajectoryVelocityConstraint;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 
+import org.firstinspires.ftc.teamcode.drive.DriveConstants;
 import org.firstinspires.ftc.teamcode.drive.SampleMecanumDrive;
 import org.firstinspires.ftc.teamcode.trajectorysequence.TrajectorySequence;
 import org.firstinspires.ftc.teamcode.trajectorysequence.TrajectorySequenceBuilder;
@@ -68,6 +74,7 @@ public class RightAutoILT3Specimen extends LinearOpMode {
         if (isStopRequested()) return;
         Pose2d latestPose = startPose;
         latestPose = newHangSpecimen(drive, latestPose);
+        //latestPose = push1Sample(drive, latestPose);
         latestPose = grabSample1(drive, latestPose);
         latestPose = dropSample(drive, latestPose);
         latestPose = newSpecimen1(drive, latestPose);
@@ -363,18 +370,32 @@ public class RightAutoILT3Specimen extends LinearOpMode {
 
 
     public Pose2d push1Sample(SampleMecanumDrive drive, Pose2d startPose) {
-
-        TrajectorySequenceBuilder builder = drive.trajectorySequenceBuilder(startPose);
-        builder.setTurnConstraint(Math.toRadians(360), Math.toRadians(45));
-        TrajectorySequence pushTraj = builder
-                //.back(8)
-                .turn(Math.toRadians(270) - startPose.getHeading())
-                .lineToConstantHeading(new Vector2d(33, -48))//left
-                .lineToConstantHeading(new Vector2d(33, -16))//back
-                .lineToConstantHeading(new Vector2d(45, -20))//left
-                .lineToConstantHeading(new Vector2d(45, -60))//forward
-                .lineToConstantHeading(new Vector2d(38, -48))//back
+        TrajectorySequence backTraj = drive.trajectorySequenceBuilder(startPose)
+                .back(12)
                 .build();
+        TrajectorySequenceBuilder builder = drive.trajectorySequenceBuilder(backTraj.end());
+        // builder.setTurnConstraint(Math.toRadians(360), Math.toRadians(45));
+        TrajectorySequence pushTraj = builder
+                .splineToConstantHeading(new Vector2d(33, -48), startPose.getHeading())//right
+                .splineToConstantHeading(new Vector2d(33, -16), startPose.getHeading(),
+                        SampleMecanumDrive.getVelocityConstraint(30, DriveConstants.MAX_ANG_VEL, DriveConstants.TRACK_WIDTH),
+                        SampleMecanumDrive.getAccelerationConstraint(DriveConstants.MAX_ACCEL)) // forward
+                .splineToConstantHeading(new Vector2d(48, -20), startPose.getHeading())//right
+                .build();
+        /*
+        TrajectorySequence pushTraj = builder
+                .back(12)
+                //.turn(Math.toRadians(270) - startPose.getHeading())
+                .lineToConstantHeading(new Vector2d(33, -48))//
+                .lineToConstantHeading(new Vector2d(33, -16))//back
+                .lineToConstantHeading(new Vector2d(48, -20))//
+                //.lineToConstantHeading(new Vector2d(38, -72+11+(ROBOT_LENGTH_INCHES/2))) //go directly to pickup spot
+                //.lineToConstantHeading(new Vector2d(48, -60))//forward
+                //.lineToConstantHeading(new Vector2d(38, -48))//back
+                .build();
+
+         */
+        /*
         TrajectorySequence specimenGrab = drive.trajectorySequenceBuilder(pushTraj.end())
                 .lineTo(new Vector2d(38,-70 + ROBOT_LENGTH_INCHES/2))
                 .build();
@@ -387,25 +408,32 @@ public class RightAutoILT3Specimen extends LinearOpMode {
         TrajectorySequence backTraj = drive.trajectorySequenceBuilder(specimenHang.end())
                 .back(12)
                 .build();
-
-        drive.followTrajectorySequence(pushTraj);
-        sleep(3000);
-        drive.followTrajectorySequence(specimenGrab);
-
-        closeClaw();
-        //raise arm
-        drive.followTrajectorySequence(specimenHang);
-
-        //slides down
-        wrist90();
-
+         */
         drive.followTrajectorySequence(backTraj);
 
-        openClaw();
+        drive.followTrajectorySequenceAsync(pushTraj);
+        arm270();
+        sleep(1500);
+        wrist180();
+        moveArm(0.7, 10, "lowerArm");
+        drive.waitForIdle();
+        //sleep(3000);
+        //drive.followTrajectorySequence(specimenGrab);
+
+        //closeClaw();
+        //raise arm
+        //drive.followTrajectorySequence(specimenHang);
+
+        //slides down
+        //wrist90();
+
+        //drive.followTrajectorySequence(backTraj);
+
+        //openClaw();
 
 
 
-        return specimenHang.end();
+        return pushTraj.end();
     }
     public Pose2d push2Samples(SampleMecanumDrive drive, Pose2d startPose) {
         TrajectorySequenceBuilder builder = drive.trajectorySequenceBuilder(startPose);
