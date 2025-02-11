@@ -38,11 +38,11 @@ public class StandardTrackingWheelLocalizer extends ThreeTrackingWheelLocalizer 
     public static double X_MULTIPLIER = 0.99410449278308599308;
     // target 81.5 / ((82.04+82.09+81.82)/3)
 
-    public static double Y_MULTIPLIER = 1.019367991845056;
-    // target 76 / ((73+72.96+72.6)/3)
+    public static double Y_MULTIPLIER = 1.0216492338;
+    // target 70 / ((68.5+68.46+68.59)/3)
 
 
-    public static double LATERAL_DISTANCE = 14; // in; distance between the left and right wheels
+    public static double LATERAL_DISTANCE = 14; // in; distance between the left and right wheels, not used
 
     // 2 turns quick test
     // @14, 785, 65 heading
@@ -57,9 +57,11 @@ public class StandardTrackingWheelLocalizer extends ThreeTrackingWheelLocalizer 
 
     public StandardTrackingWheelLocalizer(HardwareMap hardwareMap, List<Integer> lastTrackingEncPositions, List<Integer> lastTrackingEncVels) {
         super(Arrays.asList(
-                new Pose2d(-.5, 7.48, 0), // left, tuned via TrackingWheelLateralDistanceTuner, decrease y if heading under measures (e.g., 3550 instead of 3600), increase if over measures (>3600)
+                // for meet 3: new Pose2d(-.5, 7.48, 0), // left, tuned via TrackingWheelLateralDistanceTuner, decrease y if heading under measures (e.g., 3550 instead of 3600), increase if over measures (>3600)
+                new Pose2d(-.5, 7.43, 0), // left, tuned via TrackingWheelLateralDistanceTuner, decrease y if heading under measures (e.g., 3550 instead of 3600), increase if over measures (>3600)
                 new Pose2d(-.5, -7, 0), // right
-                new Pose2d(0, -1, Math.toRadians(90)) // front
+                // for meet 3: new Pose2d(0, -1, Math.toRadians(90)) // front
+                new Pose2d(-.5, -1, Math.toRadians(90)) // front
         ));
 
         lastEncPositions = lastTrackingEncPositions;
