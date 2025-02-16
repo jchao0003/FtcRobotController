@@ -48,7 +48,7 @@ public class LeftAutoM34Samples extends LinearOpMode {
 
         SampleMecanumDrive drive = new SampleMecanumDrive(hardwareMap);
 
-        double START_POSITION_X = -24 + (ROBOT_WIDTH_INCHES / 2);
+        double START_POSITION_X = -24 - (ROBOT_WIDTH_INCHES / 2);
         double START_POSITION_Y = -72 + (ROBOT_LENGTH_INCHES / 2);
         // start position of red side, left of center
         Pose2d startPose = new Pose2d(START_POSITION_X, START_POSITION_Y, Math.toRadians(90));
@@ -90,13 +90,14 @@ public class LeftAutoM34Samples extends LinearOpMode {
     public Pose2d pickUpSample3(SampleMecanumDrive drive, Pose2d startPose) {
         TrajectorySequence toSample = drive.trajectorySequenceBuilder(startPose)
                 .turn(Math.toRadians(90+15) - startPose.getHeading())
-                .lineToConstantHeading(new Vector2d(-57, -36))
+                .lineToConstantHeading(new Vector2d(-59, -34))
                 .build();
 
         drive.followTrajectorySequenceAsync(toSample);
         arm0();
         sleep(250);
         moveArm(0.7, 45 + ROBOT_HEIGHT_INCHES, "lowerArm");
+        sleep(100);
         wristUp();
         openClaw();
         rightClawS.setPosition(.17);
@@ -112,23 +113,23 @@ public class LeftAutoM34Samples extends LinearOpMode {
         TrajectorySequenceBuilder builder = drive.trajectorySequenceBuilder(startPose);
         //builder.setTurnConstraint(Math.toRadians(360), Math.toRadians(45));
         TrajectorySequence goToSample = builder
-                .turn(Math.toRadians(85) - startPose.getHeading())
-                .lineToConstantHeading(new Vector2d(-57, -42))
+                .turn(Math.toRadians(90) - startPose.getHeading())
+                .lineToConstantHeading(new Vector2d(-56, -40.5))
                 .build();
 
         drive.followTrajectorySequenceAsync(goToSample);
         arm0();
         sleep(250);
-        moveArm(0.7, 42 + ROBOT_HEIGHT_INCHES, "lowerArm");
+        moveArm(0.7, 45 + ROBOT_HEIGHT_INCHES, "lowerArm");
+        sleep(100);
         wristUp();
         drive.waitForIdle();
         sleep(250);
-        wristS.setPosition(.65);
+        wristS.setPosition(.63);
         sleep(400);
         closeClaw();
 
         return goToSample.end();
-
     }
 
     ;
@@ -161,18 +162,17 @@ public class LeftAutoM34Samples extends LinearOpMode {
         TrajectorySequenceBuilder builder = drive.trajectorySequenceBuilder(startPose);
         // builder.setAccelConstraint(SampleMecanumDrive.getAccelerationConstraint(6));
         TrajectorySequence leftTraj = builder
-                .turn(Math.toRadians(85) - startPose.getHeading())
-                .lineToConstantHeading(new Vector2d(-48, -42))
+                .turn(Math.toRadians(90) - startPose.getHeading())
+                .lineToConstantHeading(new Vector2d(-47, -41.5))
                 .build();
-
         drive.followTrajectorySequenceAsync(leftTraj);
         arm0();
         sleep(250);
-        moveArm(0.7, 42 + ROBOT_HEIGHT_INCHES, "lowerArm");
         wristUp();
+        moveArm(0.7, 45, "lowerArm");
         drive.waitForIdle();
-        sleep(250);
-        wristS.setPosition(.65);
+
+        wristS.setPosition(.63);
         sleep(400);
         closeClaw();
 
@@ -181,15 +181,15 @@ public class LeftAutoM34Samples extends LinearOpMode {
 
     public Pose2d placeSample(double fudgeFactor, SampleMecanumDrive drive, Pose2d startPose) {
         TrajectorySequence toBasketTraj = drive.trajectorySequenceBuilder(startPose)
-                .lineToConstantHeading(new Vector2d(-58 - fudgeFactor, -54))
-                .turn(Math.toRadians(40) - startPose.getHeading())
+                .lineToConstantHeading(new Vector2d(-57.5, -53.5))
+                .turn(Math.toRadians(35) - startPose.getHeading())
                 .build();
         drive.followTrajectorySequenceAsync(toBasketTraj);
-        moveArm(0.7, 50 - ROBOT_HEIGHT_INCHES, "raiseArm");
+        moveArm(0.7, 52 - ROBOT_HEIGHT_INCHES, "raiseArm");
         arm270();
         wrist180();
         drive.waitForIdle();
-        sleep(700);
+        sleep(725);
         openClaw();
         //sleep(50);
 

@@ -74,9 +74,11 @@ public class RightAutoILT3Specimen extends LinearOpMode {
         if (isStopRequested()) return;
         Pose2d latestPose = startPose;
         latestPose = newHangSpecimen(drive, latestPose);
-        //latestPose = push1Sample(drive, latestPose);
+        latestPose = push1Sample(drive, latestPose);
+        /*
         latestPose = grabSample1(drive, latestPose);
         latestPose = dropSample(drive, latestPose);
+         */
         latestPose = newSpecimen1(drive, latestPose);
         latestPose = newSpecimen2(drive, latestPose);
         /*
@@ -96,13 +98,13 @@ public class RightAutoILT3Specimen extends LinearOpMode {
 
     public Pose2d newSpecimen2(SampleMecanumDrive drive, Pose2d startPose){
         TrajectorySequence backTraj = drive.trajectorySequenceBuilder(startPose)
-                .back(3)
-                .lineTo(new Vector2d(40, -70+9.5+(ROBOT_LENGTH_INCHES/2)))
-                .lineTo(new Vector2d(40, -72+9.5+(ROBOT_LENGTH_INCHES/2)))
+                .lineToConstantHeading(new Vector2d(startPose.getX(), startPose.getY()-3))
+                .lineToConstantHeading(new Vector2d(40, -70+9.5+(ROBOT_LENGTH_INCHES/2)))
+                .lineToConstantHeading(new Vector2d(40, -72+8+(ROBOT_LENGTH_INCHES/2)))
                 .build();
         TrajectorySequence hangSpecimen = drive.trajectorySequenceBuilder(backTraj.end())
-                .lineToConstantHeading(new Vector2d(11, -40 - ROBOT_LENGTH_INCHES/2))
-                .lineTo(new Vector2d(11, -36 - ROBOT_LENGTH_INCHES/2))
+                .lineToConstantHeading(new Vector2d(10, -40 - ROBOT_LENGTH_INCHES/2))
+                .lineTo(new Vector2d(10, -32 - ROBOT_LENGTH_INCHES/2))
                 .build();
 
         drive.followTrajectorySequenceAsync(backTraj);
@@ -186,7 +188,7 @@ public class RightAutoILT3Specimen extends LinearOpMode {
     */
     public Pose2d newHangSpecimen(SampleMecanumDrive drive, Pose2d startPose) {
         TrajectorySequence forwardTraj = drive.trajectorySequenceBuilder(startPose)
-                .lineTo(new Vector2d(startPose.getX(), -32-ROBOT_LENGTH_INCHES/2))
+                .lineTo(new Vector2d(startPose.getX(), -30.25-ROBOT_LENGTH_INCHES/2))
                 //.lineTo(new Vector2d(startPose.getX(), startPose.getY() + fwdDist))
                 .build();
         TrajectorySequence backTraj = drive.trajectorySequenceBuilder(forwardTraj.end())
@@ -195,18 +197,19 @@ public class RightAutoILT3Specimen extends LinearOpMode {
         closeClaw();
         arm0();
         wristUp();
-
         drive.followTrajectorySequenceAsync(forwardTraj);
         moveArm(0.7, 18, "raiseArm");
+        //sleep(750);
+        //wristS.setPosition(0.95);
         drive.waitForIdle();
 
         moveArm(0.7, 15, "lowerArm");
-        sleep(475);
+        sleep(500);
         openClaw();
 
-        drive.followTrajectorySequenceAsync(backTraj);
+        drive.followTrajectorySequence(backTraj);
+
         wristUp();
-        drive.waitForIdle();
 
         return backTraj.end();
 
@@ -233,12 +236,12 @@ public class RightAutoILT3Specimen extends LinearOpMode {
 
     public Pose2d newSpecimen1(SampleMecanumDrive drive, Pose2d startPose){
         TrajectorySequence backTraj = drive.trajectorySequenceBuilder(startPose)
-                .lineTo(new Vector2d(38, -72+11+(ROBOT_LENGTH_INCHES/2)))
-                .lineTo(new Vector2d(38, -72+9+(ROBOT_LENGTH_INCHES/2)))
+                .lineToConstantHeading(new Vector2d(38, -72+11+(ROBOT_LENGTH_INCHES/2)))
+                .lineToConstantHeading(new Vector2d(38, -72+8.5+(ROBOT_LENGTH_INCHES/2)))
                 .build();
         TrajectorySequence hangSpecimen = drive.trajectorySequenceBuilder(backTraj.end())
-                .lineToConstantHeading(new Vector2d(8, -50))
-                .lineTo(new Vector2d(8, -36 - ROBOT_LENGTH_INCHES/2))
+                .lineToConstantHeading(new Vector2d(6, -50))
+                .lineToConstantHeading(new Vector2d(6, -34 - ROBOT_LENGTH_INCHES/2))
                 .build();
 
         drive.followTrajectorySequenceAsync(backTraj);
@@ -319,7 +322,7 @@ public class RightAutoILT3Specimen extends LinearOpMode {
 
     public Pose2d grabSample1(SampleMecanumDrive drive, Pose2d startPose){
         TrajectorySequence sampleGrab = drive.trajectorySequenceBuilder(startPose)
-                .lineTo(new Vector2d(49, -40))
+                .lineTo(new Vector2d(51, -41))
                 .build();
 
         drive.followTrajectorySequenceAsync(sampleGrab);
@@ -370,17 +373,14 @@ public class RightAutoILT3Specimen extends LinearOpMode {
 
 
     public Pose2d push1Sample(SampleMecanumDrive drive, Pose2d startPose) {
-        TrajectorySequence backTraj = drive.trajectorySequenceBuilder(startPose)
-                .back(12)
-                .build();
-        TrajectorySequenceBuilder builder = drive.trajectorySequenceBuilder(backTraj.end());
-        // builder.setTurnConstraint(Math.toRadians(360), Math.toRadians(45));
+        TrajectorySequenceBuilder builder = drive.trajectorySequenceBuilder(startPose);
         TrajectorySequence pushTraj = builder
-                .splineToConstantHeading(new Vector2d(33, -48), startPose.getHeading())//right
-                .splineToConstantHeading(new Vector2d(33, -16), startPose.getHeading(),
-                        SampleMecanumDrive.getVelocityConstraint(30, DriveConstants.MAX_ANG_VEL, DriveConstants.TRACK_WIDTH),
-                        SampleMecanumDrive.getAccelerationConstraint(DriveConstants.MAX_ACCEL)) // forward
-                .splineToConstantHeading(new Vector2d(48, -20), startPose.getHeading())//right
+                //.splineToConstantHeading(new Vector2d(startPose.getX(), startPose.getY()), startPose.getHeading())//back
+                .lineTo(new Vector2d(38, startPose.getY()))//, startPose.getHeading())//right
+                .splineToConstantHeading(new Vector2d(38, -18), startPose.getHeading())
+                        //SampleMecanumDrive.getVelocityConstraint(25, DriveConstants.MAX_ANG_VEL, DriveConstants.TRACK_WIDTH),
+                        //SampleMecanumDrive.getAccelerationConstraint(25)) // forward
+                .splineToConstantHeading(new Vector2d(48, -20), startPose.getHeading())//back
                 .build();
         /*
         TrajectorySequence pushTraj = builder
@@ -409,13 +409,14 @@ public class RightAutoILT3Specimen extends LinearOpMode {
                 .back(12)
                 .build();
          */
-        drive.followTrajectorySequence(backTraj);
+        // drive.followTrajectorySequence(backTraj);
 
         drive.followTrajectorySequenceAsync(pushTraj);
-        arm270();
-        sleep(1500);
-        wrist180();
         moveArm(0.7, 10, "lowerArm");
+        //sleep(3000);
+        arm270();
+        sleep(100);
+        wrist180();
         drive.waitForIdle();
         //sleep(3000);
         //drive.followTrajectorySequence(specimenGrab);
@@ -511,7 +512,7 @@ public class RightAutoILT3Specimen extends LinearOpMode {
 
         armM.setPower(speed);
 
-        sleep(300);
+        // sleep(300);
     }
 
     //claw commands
@@ -535,18 +536,18 @@ public class RightAutoILT3Specimen extends LinearOpMode {
         wristS.setPosition(1);
     }
     public void wrist180() {       //halfway
-        wristS.setPosition(0.45);
+        wristS.setPosition(0.38);
     }
 
     public void wrist90() {
-        wristS.setPosition(.75);
+        wristS.setPosition(.71);
     }
 
 
     //arm commands
 
     public void arm270() {          //parallel to floor backwards
-        armS.setPosition(0.31);
+        armS.setPosition(0.32);
     }
 
     public void arm0() {        //all the way down
