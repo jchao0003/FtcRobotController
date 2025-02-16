@@ -188,11 +188,11 @@ public class RightAutoILT3Specimen extends LinearOpMode {
     */
     public Pose2d newHangSpecimen(SampleMecanumDrive drive, Pose2d startPose) {
         TrajectorySequence forwardTraj = drive.trajectorySequenceBuilder(startPose)
-                .lineTo(new Vector2d(startPose.getX(), -30.25-ROBOT_LENGTH_INCHES/2))
+                .lineTo(new Vector2d(startPose.getX(), -30-ROBOT_LENGTH_INCHES/2))
                 //.lineTo(new Vector2d(startPose.getX(), startPose.getY() + fwdDist))
                 .build();
         TrajectorySequence backTraj = drive.trajectorySequenceBuilder(forwardTraj.end())
-                .back(4)
+                .back(10)
                 .build();
         closeClaw();
         arm0();
@@ -376,8 +376,8 @@ public class RightAutoILT3Specimen extends LinearOpMode {
         TrajectorySequenceBuilder builder = drive.trajectorySequenceBuilder(startPose);
         TrajectorySequence pushTraj = builder
                 //.splineToConstantHeading(new Vector2d(startPose.getX(), startPose.getY()), startPose.getHeading())//back
-                .lineTo(new Vector2d(38, startPose.getY()))//, startPose.getHeading())//right
-                .splineToConstantHeading(new Vector2d(38, -18), startPose.getHeading())
+                .lineTo(new Vector2d(36, startPose.getY()))//, startPose.getHeading())//right
+                .splineToConstantHeading(new Vector2d(36, -10), startPose.getHeading())
                         //SampleMecanumDrive.getVelocityConstraint(25, DriveConstants.MAX_ANG_VEL, DriveConstants.TRACK_WIDTH),
                         //SampleMecanumDrive.getAccelerationConstraint(25)) // forward
                 .splineToConstantHeading(new Vector2d(48, -20), startPose.getHeading())//back
@@ -415,8 +415,9 @@ public class RightAutoILT3Specimen extends LinearOpMode {
         moveArm(0.7, 10, "lowerArm");
         //sleep(3000);
         arm270();
-        sleep(100);
+        sleep(1000);
         wrist180();
+
         drive.waitForIdle();
         //sleep(3000);
         //drive.followTrajectorySequence(specimenGrab);
