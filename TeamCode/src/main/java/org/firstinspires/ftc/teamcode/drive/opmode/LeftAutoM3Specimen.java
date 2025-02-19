@@ -145,7 +145,7 @@ public class LeftAutoM3Specimen extends LinearOpMode {
     }
     public Pose2d newHangSpecimen(SampleMecanumDrive drive, Pose2d startPose) {
         TrajectorySequence forwardTraj = drive.trajectorySequenceBuilder(startPose)
-                .lineTo(new Vector2d(startPose.getX(), -30-ROBOT_LENGTH_INCHES/2))
+                .lineTo(new Vector2d(startPose.getX(), -29.25-ROBOT_LENGTH_INCHES/2))
                 //.lineTo(new Vector2d(startPose.getX(), startPose.getY() + fwdDist))
                 .build();
         TrajectorySequence backTraj = drive.trajectorySequenceBuilder(forwardTraj.end())

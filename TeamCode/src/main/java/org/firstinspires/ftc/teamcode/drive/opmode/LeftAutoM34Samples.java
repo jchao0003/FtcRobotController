@@ -114,7 +114,7 @@ public class LeftAutoM34Samples extends LinearOpMode {
         //builder.setTurnConstraint(Math.toRadians(360), Math.toRadians(45));
         TrajectorySequence goToSample = builder
                 .turn(Math.toRadians(90) - startPose.getHeading())
-                .lineToConstantHeading(new Vector2d(-56, -40.5))
+                .lineToConstantHeading(new Vector2d(-56, -41))
                 .build();
 
         drive.followTrajectorySequenceAsync(goToSample);
@@ -163,7 +163,7 @@ public class LeftAutoM34Samples extends LinearOpMode {
         // builder.setAccelConstraint(SampleMecanumDrive.getAccelerationConstraint(6));
         TrajectorySequence leftTraj = builder
                 .turn(Math.toRadians(90) - startPose.getHeading())
-                .lineToConstantHeading(new Vector2d(-47, -41.5))
+                .lineToConstantHeading(new Vector2d(-46, -41.5))
                 .build();
         drive.followTrajectorySequenceAsync(leftTraj);
         arm0();
