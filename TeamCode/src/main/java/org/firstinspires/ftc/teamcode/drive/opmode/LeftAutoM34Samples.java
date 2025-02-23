@@ -179,11 +179,10 @@ public class LeftAutoM34Samples extends LinearOpMode {
         return leftTraj.end();
     }
 
-    public Pose2d placeSample(double fudgeFactor, SampleMecanumDrive drive, Pose2d startPose) {
-        TrajectorySequence toBasketTraj = drive.trajectorySequenceBuilder(startPose)
-                .lineToConstantHeading(new Vector2d(-57.5, -53.5))
-                .turn(Math.toRadians(35) - startPose.getHeading())
-                .build();
+    public Pose2d placeSample(double fudgeFactor, SampleMecanumDrive drive, Pose2d startPose) {    TrajectorySequence toBasketTraj = drive.trajectorySequenceBuilder(startPose)
+            .lineToConstantHeading(new Vector2d(-58.5, -53.5))
+            .turn(Math.toRadians(35) - startPose.getHeading())
+            .build();
         drive.followTrajectorySequenceAsync(toBasketTraj);
         moveArm(0.7, 52 - ROBOT_HEIGHT_INCHES, "raiseArm");
         arm270();
