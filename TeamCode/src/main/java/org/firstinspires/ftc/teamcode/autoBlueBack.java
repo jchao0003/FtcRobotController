@@ -18,7 +18,7 @@ import com.qualcomm.robotcore.util.ElapsedTime;
 import org.firstinspires.ftc.teamcode.pedroPathing.Constants;
 
 @Autonomous
-public class SampleAutoPath extends OpMode {
+public class autoBlueBack extends OpMode {
     private ElapsedTime runtime = new ElapsedTime();
 
     private Follower follower;
@@ -28,9 +28,13 @@ public class SampleAutoPath extends OpMode {
     private DcMotorEx flywheel2;
     private DcMotor intakeM;
 
-    private double velocity = 1000;
+
+    private double velocity = 1500;
+    private double fudgeFactor = Math.toRadians(7);
 
     private Servo gateS;
+    private Servo standS;
+
 
     double resultMaxVelocityTest = 2120.0;
     double F = 32767.0/resultMaxVelocityTest;
@@ -46,6 +50,7 @@ public class SampleAutoPath extends OpMode {
         intakeM = hardwareMap.get(DcMotor.class, "intakeM");
 
         gateS = hardwareMap.get(Servo.class, "gateS");
+        standS = hardwareMap.get(Servo.class, "standS");
 
         flywheel.setMode(DcMotorEx.RunMode.RUN_USING_ENCODER);
         flywheel2.setMode(DcMotorEx.RunMode.RUN_USING_ENCODER);
@@ -74,20 +79,22 @@ public class SampleAutoPath extends OpMode {
 
     public void launch3(){
         gateS.setPosition(1);
+        startIntake();
+        sleep(750);
+        gateS.setPosition(0.8);
         sleep(500);
+        stopIntake();
+        gateS.setPosition(1);
+        sleep(750);
         gateS.setPosition(0.8);
         sleep(500);
         gateS.setPosition(1);
-        sleep(500);
-        gateS.setPosition(0.8);
-        sleep(500);
-        gateS.setPosition(1);
-        sleep(500);
+        sleep(750);
         gateS.setPosition(0.8);
     }
 
     public void startIntake(){
-        intakeM.setPower(0.9);
+        intakeM.setPower(1);
     }
 
     public void stopIntake(){
@@ -97,7 +104,9 @@ public class SampleAutoPath extends OpMode {
         flywheel.setVelocity(velocity);
         flywheel2.setVelocity(velocity);
         gateS.setPosition(0.8);
-        sleep(1000);
+        standS.setPosition(0.075);
+        sleep(3000);
+
     }
 
     public void stopFlywheel(){
@@ -121,53 +130,75 @@ public class SampleAutoPath extends OpMode {
 
         PRESET_TO_SHOOT,
 
+        SHOOT_PRESET,
+
+        DRIVE_TO_PRESET2,
+
+        PICKUP_PRESET2,
+
+        PRESET2_TO_SHOOT,
+
+        SHOOT_PRESET2,
+
+        MOVE_OUT_OF_LAUNCH,
+
         DONE
     }
 
     PathState pathState;
 
-    private final Pose startPose = new Pose(22, 120, Math.toRadians(135));
-    private final Pose nearShootPose = new Pose(53.5, 89, Math.toRadians(135));
-    private final Pose nearPresetStart = new Pose(49, 79, Math.toRadians(0));
-    private final Pose nearPresetEnd = new Pose(24.5, 79, Math.toRadians(0));
+    private final Pose startPose = new Pose(53.3, 10, Math.toRadians(110));
+    private final Pose farShootPose = new Pose(53.3, 10, Math.toRadians(110));
+    private final Pose farPresetStart = new Pose(50, 30.5, Math.toRadians(0));
+    private final Pose farPresetEnd = new Pose(15, 30.5, Math.toRadians(0));
+    private final Pose middlePresetStart = new Pose(50, 53, Math.toRadians(0));
+    private final Pose middlePresetEnd = new Pose(15, 53, Math.toRadians(0));
 
 
-    private PathChain startToShoot, nearShootToNearPresetStart, nearPresetStartToNearPresetEnd, nearPresetEndToShoot;
+    private PathChain startToFarPresetStart, farPresetStartToFarPresetEnd, farPresetEndToShoot, shootToMiddlePresetStart, middlePresetStartToMiddlePresetEnd, middlePresetEndToShoot, shootToOutOfLaunch;
 
     public void buildPaths(){
         // put in coordinates for starting pose then coordinates for ending pose
-        startToShoot = follower.pathBuilder()
-                .addPath(new BezierLine(startPose, nearShootPose))
-                .setLinearHeadingInterpolation(startPose.getHeading(), nearShootPose.getHeading())
+        startToFarPresetStart = follower.pathBuilder()
+                .addPath(new BezierLine(startPose, farPresetStart))
+                .setLinearHeadingInterpolation(startPose.getHeading(), farPresetStart.getHeading())
                 .build();
-        nearShootToNearPresetStart = follower.pathBuilder()
-                .addPath(new BezierLine(nearShootPose, nearPresetStart))
-                .setLinearHeadingInterpolation(nearShootPose.getHeading(), nearPresetStart.getHeading())
+        farPresetStartToFarPresetEnd = follower.pathBuilder()
+                .addPath(new BezierLine(farPresetStart, farPresetEnd))
+                .setLinearHeadingInterpolation(farPresetStart.getHeading(), farPresetEnd.getHeading())
+                .setVelocityConstraint(1)
                 .build();
-        nearPresetStartToNearPresetEnd = follower.pathBuilder()
-                .addPath(new BezierLine(nearPresetStart, nearPresetEnd))
-                .setLinearHeadingInterpolation(nearPresetStart.getHeading(), nearPresetEnd.getHeading())
+        farPresetEndToShoot = follower.pathBuilder()
+                .addPath(new BezierLine(farPresetEnd, farShootPose))
+                .setLinearHeadingInterpolation(farPresetEnd.getHeading(), farShootPose.getHeading()+fudgeFactor)
                 .build();
-        nearPresetEndToShoot = follower.pathBuilder()
-                .addPath(new BezierLine(nearPresetStart, nearShootPose))
-                .setLinearHeadingInterpolation(nearPresetEnd.getHeading(), nearShootPose.getHeading())
+        shootToMiddlePresetStart = follower.pathBuilder()
+                .addPath(new BezierLine(farShootPose, middlePresetStart))
+                .setLinearHeadingInterpolation(farShootPose.getHeading(), middlePresetStart.getHeading()-fudgeFactor)
+                .build();
+        middlePresetStartToMiddlePresetEnd = follower.pathBuilder()
+                .addPath(new BezierLine(middlePresetStart, middlePresetEnd))
+                .setLinearHeadingInterpolation(middlePresetStart.getHeading(), middlePresetEnd.getHeading())
+                .setVelocityConstraint(1)
+                .build();
+        middlePresetEndToShoot = follower.pathBuilder()
+                .addPath(new BezierLine(middlePresetEnd, farShootPose))
+                .setLinearHeadingInterpolation(middlePresetEnd.getHeading(), farShootPose.getHeading()+fudgeFactor)
                 .build();
     }
 
     public void statePathUpdate(){
         switch(pathState){
-            case START_TO_SHOOT:
-                reset();
-                follower.followPath(startToShoot, true);
-                setPathState(PathState.SHOOT_PRELOAD); //reset the timer and make new state
-                break;
             case SHOOT_PRELOAD:
                 //check if follower is done with path
                 //and check that 5 seconds has elapsed
+
+                reset();
+
                 if (!follower.isBusy()){
+                    reset();
                     launch3();
                     telemetry.addLine("Done Path 1");
-                    follower.followPath(nearShootToNearPresetStart);
                     setPathState(PathState.DRIVE_TO_PRESET);
                 }
                 break;
@@ -175,30 +206,78 @@ public class SampleAutoPath extends OpMode {
                 //all done!
                 if (!follower.isBusy()){
                     telemetry.addLine("To preload");
+                    follower.followPath(startToFarPresetStart);
                     startIntake();
-                    follower.followPath(nearPresetStartToNearPresetEnd);
                     setPathState(PathState.PICKUP_PRESET);
                 }
                 break;
             case PICKUP_PRESET:
                 if(!follower.isBusy()){
                     telemetry.addLine("Picking up preload");
-                    stopIntake();
-                    follower.followPath(nearPresetEndToShoot);
+                    follower.followPath(farPresetStartToFarPresetEnd);
                     setPathState(PathState.PRESET_TO_SHOOT);
                 }
                 break;
             case PRESET_TO_SHOOT:
                 if(!follower.isBusy()){
+                    telemetry.addLine("To launch zone");
+                    follower.followPath(farPresetEndToShoot);
+                    stopIntake();
+                    startIntake();
+                    setPathState(PathState.SHOOT_PRESET);
+                }
+                break;
+            case SHOOT_PRESET:
+                if(!follower.isBusy()){
+                    stopIntake();
+                    telemetry.addLine("Launching");
                     launch3();
-                    telemetry.addLine("To launch, done");
+                    setPathState(PathState.DRIVE_TO_PRESET2); //If want to do second preset line change this to DRIVE_TO_PRESET2
+                }
+                break;
+            case DRIVE_TO_PRESET2:
+                if(!follower.isBusy()){
+                    telemetry.addLine("To middle preset");
+                    follower.followPath(shootToMiddlePresetStart);
+                    startIntake();
+                    setPathState(PathState.PICKUP_PRESET2);
+                }
+                break;
+            case PICKUP_PRESET2:
+                if(!follower.isBusy()){
+                    telemetry.addLine("Picking up middle preset");
+                    follower.followPath(middlePresetStartToMiddlePresetEnd);
+                    setPathState(PathState.PRESET2_TO_SHOOT);
+                }
+                break;
+            case PRESET2_TO_SHOOT:
+                if(!follower.isBusy()){
+                    telemetry.addLine("To launch zone");
+                    follower.followPath(middlePresetEndToShoot);
+                    stopIntake();
+                    startIntake();
+                    setPathState(PathState.SHOOT_PRESET2);
+                }
+                break;
+            case SHOOT_PRESET2:
+                if(!follower.isBusy()){
+                    stopIntake();
+                    telemetry.addLine("Launching middle preset");
+                    launch3();
+                    setPathState(PathState.MOVE_OUT_OF_LAUNCH);
+                }
+                break;
+            case MOVE_OUT_OF_LAUNCH:
+                if(!follower.isBusy()){
+                    telemetry.addLine("Moving out of launch");
+                    follower.followPath(startToFarPresetStart);
                     setPathState(PathState.DONE);
                 }
                 break;
             case DONE:
                 if(!follower.isBusy()){
-                    stopFlywheel();
                     telemetry.addLine("Done with complete auto");
+                    stopFlywheel();
                 }
                 break;
             default:
@@ -214,14 +293,14 @@ public class SampleAutoPath extends OpMode {
 
     @Override
     public void init(){
-        pathState = PathState.START_TO_SHOOT;
+        pathState = PathState.SHOOT_PRELOAD;
         pathTimer = new Timer();
         opModeTimer = new Timer();
         follower = Constants.createFollower(hardwareMap);
 
         buildPaths();
 
-        follower.setPose(startPose);
+        follower.setPose(farShootPose);
 
         hardwareInit();
     }
