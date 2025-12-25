@@ -29,7 +29,7 @@ public class autoRedBack extends OpMode {
     private DcMotor intakeM;
 
     private double velocity = 1500;
-    private double fudgeFactor = Math.toRadians(5);
+    private double fudgeFactor = Math.toRadians(10);
 
 
     private Servo gateS;
@@ -168,11 +168,11 @@ public class autoRedBack extends OpMode {
                 .build();
         farPresetEndToShoot = follower.pathBuilder()
                 .addPath(new BezierLine(farPresetEnd, farShootPose))
-                .setLinearHeadingInterpolation(farPresetEnd.getHeading(), farShootPose.getHeading()+fudgeFactor)
+                .setLinearHeadingInterpolation(farPresetEnd.getHeading(), farShootPose.getHeading()-fudgeFactor)
                 .build();
         shootToMiddlePresetStart = follower.pathBuilder()
                 .addPath(new BezierLine(farShootPose, middlePresetStart))
-                .setLinearHeadingInterpolation(farShootPose.getHeading(), middlePresetStart.getHeading()-fudgeFactor)
+                .setLinearHeadingInterpolation(farShootPose.getHeading(), middlePresetStart.getHeading()+fudgeFactor)
                 .build();
         middlePresetStartToMiddlePresetEnd = follower.pathBuilder()
                 .addPath(new BezierLine(middlePresetStart, middlePresetEnd))
@@ -181,7 +181,6 @@ public class autoRedBack extends OpMode {
                 .build();
         middlePresetEndToShoot = follower.pathBuilder()
                 .addPath(new BezierLine(middlePresetEnd, farShootPose))
-                .setLinearHeadingInterpolation(middlePresetEnd.getHeading(), farShootPose.getHeading()+fudgeFactor)
                 .build();
     }
 
@@ -221,6 +220,7 @@ public class autoRedBack extends OpMode {
                     telemetry.addLine("To launch zone");
                     follower.followPath(farPresetEndToShoot);
                     stopIntake();
+                    sleep(500);
                     startIntake();
                     setPathState(PathState.SHOOT_PRESET);
                 }
@@ -253,6 +253,7 @@ public class autoRedBack extends OpMode {
                     telemetry.addLine("To launch zone");
                     follower.followPath(middlePresetEndToShoot);
                     stopIntake();
+                    sleep(500);
                     startIntake();
                     setPathState(PathState.SHOOT_PRESET2);
                 }

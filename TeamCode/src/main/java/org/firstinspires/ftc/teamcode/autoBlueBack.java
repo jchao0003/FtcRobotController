@@ -29,7 +29,7 @@ public class autoBlueBack extends OpMode {
     private DcMotor intakeM;
 
 
-    private double velocity = 1500;
+    private double velocity = 1600;
     private double fudgeFactor = Math.toRadians(7);
 
     private Servo gateS;
@@ -37,10 +37,10 @@ public class autoBlueBack extends OpMode {
 
 
     double resultMaxVelocityTest = 2120.0;
-    double F = 32767.0/resultMaxVelocityTest;
-    double kP = F * 0.1;
-    double kI = kP * 0.1;
-    double kD = kI * 0.1;
+    double F = 445.0;
+    double kP = 18.046;
+    double kI = 0;
+    double kD = 0;
     double position = 5.0;
 
 
@@ -223,6 +223,7 @@ public class autoBlueBack extends OpMode {
                     telemetry.addLine("To launch zone");
                     follower.followPath(farPresetEndToShoot);
                     stopIntake();
+                    sleep(500);
                     startIntake();
                     setPathState(PathState.SHOOT_PRESET);
                 }
@@ -255,6 +256,7 @@ public class autoBlueBack extends OpMode {
                     telemetry.addLine("To launch zone");
                     follower.followPath(middlePresetEndToShoot);
                     stopIntake();
+                    sleep(500);
                     startIntake();
                     setPathState(PathState.SHOOT_PRESET2);
                 }
