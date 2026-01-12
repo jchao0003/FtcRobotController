@@ -77,6 +77,10 @@ public class Meet3TeleOp extends OpMode{
             robotHardware.stopIntake();
         }
 
+        if (gamepad2.dpad_left){
+            robotHardware.intakeRampUp();
+        }
+
         if (Math.abs(robotHardware.getFlywheelVelocityError()) <=50){
             robotHardware.setColorGreen();
         } else {

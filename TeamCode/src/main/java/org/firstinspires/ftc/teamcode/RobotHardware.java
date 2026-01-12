@@ -60,6 +60,10 @@ public class RobotHardware {
         flywheelTargetVelocity = backVelocity;
     }
 
+    public void intakeRampUp(){
+        intakeRamp.setPosition(0.51);
+    }
+
     public void setFlywheelSpeedFrontPosition(){
         flywheel.setVelocity(frontVelocity);
         flywheelTargetVelocity = frontVelocity;
