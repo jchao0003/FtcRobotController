@@ -24,86 +24,86 @@ public class SampleAutoPath extends OpMode {
     private Follower follower;
     private Timer pathTimer, opModeTimer;
 
-    private DcMotorEx flywheel;
-    private DcMotorEx flywheel2;
-    private DcMotor intakeM;
+//    private DcMotorEx flywheel;
+//    private DcMotorEx flywheel2;
+//    private DcMotor intakeM;
+//
+//    private double velocity = 1000;
+//
+//    private Servo gateS;
 
-    private double velocity = 1000;
-
-    private Servo gateS;
-
-    double resultMaxVelocityTest = 2120.0;
-    double F = 32767.0/resultMaxVelocityTest;
-    double kP = F * 0.1;
-    double kI = kP * 0.1;
-    double kD = kI * 0.1;
-    double position = 5.0;
+//    double resultMaxVelocityTest = 2120.0;
+//    double F = 32767.0/resultMaxVelocityTest;
+//    double kP = F * 0.1;
+//    double kI = kP * 0.1;
+//    double kD = kI * 0.1;
+//    double position = 5.0;
 
 
     public void hardwareInit(){
-        flywheel = hardwareMap.get(DcMotorEx.class, "flywheel");
-        flywheel2 = hardwareMap.get(DcMotorEx.class, "flywheel2");
-        intakeM = hardwareMap.get(DcMotor.class, "intakeM");
-
-        gateS = hardwareMap.get(Servo.class, "gateS");
-
-        flywheel.setMode(DcMotorEx.RunMode.RUN_USING_ENCODER);
-        flywheel2.setMode(DcMotorEx.RunMode.RUN_USING_ENCODER);
-        intakeM.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
-
-        flywheel.setDirection(DcMotorEx.Direction.REVERSE);
-        flywheel2.setDirection(DcMotorEx.Direction.FORWARD);
-        intakeM.setDirection(DcMotor.Direction.REVERSE);
-
-        flywheel.setZeroPowerBehavior(DcMotorEx.ZeroPowerBehavior.BRAKE);
-        flywheel2.setZeroPowerBehavior(DcMotorEx.ZeroPowerBehavior.BRAKE);
-        intakeM.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
-
-        flywheel.setMode(DcMotorEx.RunMode.STOP_AND_RESET_ENCODER);
-        flywheel2.setMode(DcMotorEx.RunMode.STOP_AND_RESET_ENCODER);
-
-        flywheel.setVelocityPIDFCoefficients(kP,kI,kD,F);
-        flywheel2.setVelocityPIDFCoefficients(kP,kI,kD,F);
-
-        flywheel.setPositionPIDFCoefficients(position);
-        flywheel2.setPositionPIDFCoefficients(position);
+//        flywheel = hardwareMap.get(DcMotorEx.class, "flywheel");
+//        flywheel2 = hardwareMap.get(DcMotorEx.class, "flywheel2");
+//        intakeM = hardwareMap.get(DcMotor.class, "intakeM");
+//
+//        gateS = hardwareMap.get(Servo.class, "gateS");
+//
+//        flywheel.setMode(DcMotorEx.RunMode.RUN_USING_ENCODER);
+//        flywheel2.setMode(DcMotorEx.RunMode.RUN_USING_ENCODER);
+//        intakeM.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+//
+//        flywheel.setDirection(DcMotorEx.Direction.REVERSE);
+//        flywheel2.setDirection(DcMotorEx.Direction.FORWARD);
+//        intakeM.setDirection(DcMotor.Direction.REVERSE);
+//
+//        flywheel.setZeroPowerBehavior(DcMotorEx.ZeroPowerBehavior.BRAKE);
+//        flywheel2.setZeroPowerBehavior(DcMotorEx.ZeroPowerBehavior.BRAKE);
+//        intakeM.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
+//
+//        flywheel.setMode(DcMotorEx.RunMode.STOP_AND_RESET_ENCODER);
+//        flywheel2.setMode(DcMotorEx.RunMode.STOP_AND_RESET_ENCODER);
+//
+//        flywheel.setVelocityPIDFCoefficients(kP,kI,kD,F);
+//        flywheel2.setVelocityPIDFCoefficients(kP,kI,kD,F);
+//
+//        flywheel.setPositionPIDFCoefficients(position);
+//        flywheel2.setPositionPIDFCoefficients(position);
 
     }
 
 
-
-    public void launch3(){
-        gateS.setPosition(1);
-        sleep(500);
-        gateS.setPosition(0.8);
-        sleep(500);
-        gateS.setPosition(1);
-        sleep(500);
-        gateS.setPosition(0.8);
-        sleep(500);
-        gateS.setPosition(1);
-        sleep(500);
-        gateS.setPosition(0.8);
-    }
-
-    public void startIntake(){
-        intakeM.setPower(0.9);
-    }
-
-    public void stopIntake(){
-        intakeM.setPower(0);
-    }
-    public void reset(){
-        flywheel.setVelocity(velocity);
-        flywheel2.setVelocity(velocity);
-        gateS.setPosition(0.8);
-        sleep(1000);
-    }
-
-    public void stopFlywheel(){
-        flywheel.setPower(0);
-        flywheel2.setPower(0);
-    }
+//
+//    public void launch3(){
+//        gateS.setPosition(1);
+//        sleep(500);
+//        gateS.setPosition(0.8);
+//        sleep(500);
+//        gateS.setPosition(1);
+//        sleep(500);
+//        gateS.setPosition(0.8);
+//        sleep(500);
+//        gateS.setPosition(1);
+//        sleep(500);
+//        gateS.setPosition(0.8);
+//    }
+//
+//    public void startIntake(){
+//        intakeM.setPower(0.9);
+//    }
+//
+//    public void stopIntake(){
+//        intakeM.setPower(0);
+//    }
+//    public void reset(){
+//        flywheel.setVelocity(velocity);
+//        flywheel2.setVelocity(velocity);
+//        gateS.setPosition(0.8);
+//        sleep(1000);
+//    }
+//
+//    public void stopFlywheel(){
+//        flywheel.setPower(0);
+//        flywheel2.setPower(0);
+//    }
 
 
     public enum PathState{
@@ -157,7 +157,7 @@ public class SampleAutoPath extends OpMode {
     public void statePathUpdate(){
         switch(pathState){
             case START_TO_SHOOT:
-                reset();
+                //reset();
                 follower.followPath(startToShoot, true);
                 setPathState(PathState.SHOOT_PRELOAD); //reset the timer and make new state
                 break;
@@ -165,7 +165,7 @@ public class SampleAutoPath extends OpMode {
                 //check if follower is done with path
                 //and check that 5 seconds has elapsed
                 if (!follower.isBusy()){
-                    launch3();
+                    //launch3();
                     telemetry.addLine("Done Path 1");
                     follower.followPath(nearShootToNearPresetStart);
                     setPathState(PathState.DRIVE_TO_PRESET);
@@ -175,7 +175,7 @@ public class SampleAutoPath extends OpMode {
                 //all done!
                 if (!follower.isBusy()){
                     telemetry.addLine("To preload");
-                    startIntake();
+                    //startIntake();
                     follower.followPath(nearPresetStartToNearPresetEnd);
                     setPathState(PathState.PICKUP_PRESET);
                 }
@@ -183,21 +183,21 @@ public class SampleAutoPath extends OpMode {
             case PICKUP_PRESET:
                 if(!follower.isBusy()){
                     telemetry.addLine("Picking up preload");
-                    stopIntake();
+                    //stopIntake();
                     follower.followPath(nearPresetEndToShoot);
                     setPathState(PathState.PRESET_TO_SHOOT);
                 }
                 break;
             case PRESET_TO_SHOOT:
                 if(!follower.isBusy()){
-                    launch3();
+                    //launch3();
                     telemetry.addLine("To launch, done");
                     setPathState(PathState.DONE);
                 }
                 break;
             case DONE:
                 if(!follower.isBusy()){
-                    stopFlywheel();
+                    //stopFlywheel();
                     telemetry.addLine("Done with complete auto");
                 }
                 break;

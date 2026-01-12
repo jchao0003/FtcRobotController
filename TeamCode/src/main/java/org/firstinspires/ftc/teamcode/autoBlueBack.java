@@ -104,8 +104,7 @@ public class autoBlueBack extends OpMode {
         flywheel2.setVelocity(velocity);
         gateS.setPosition(0.8);
         standS.setPosition(0.075);
-        sleep(3000);
-
+        sleep(1000);
     }
 
     public void stopFlywheel(){
@@ -122,22 +121,26 @@ public class autoBlueBack extends OpMode {
         START_TO_SHOOT,
 
         SHOOT_PRELOAD,
+        DRIVE_TO_PRESET_CORNER,
+        PICKUP_PRESET_CORNER,
+        PRESET_CORNER_TO_SHOOT,
+        SHOOT_PRESET_CORNER,
 
-        DRIVE_TO_PRESET,
+        DRIVE_TO_PRESET_FAR,
 
-        PICKUP_PRESET,
+        PICKUP_PRESET_FAR,
 
-        PRESET_TO_SHOOT,
+        PRESET_FAR_TO_SHOOT,
 
-        SHOOT_PRESET,
+        SHOOT_PRESET_FAR,
 
-        DRIVE_TO_PRESET2,
+        DRIVE_TO_PRESET_MID,
 
-        PICKUP_PRESET2,
+        PICKUP_PRESET_MID,
 
-        PRESET2_TO_SHOOT,
+        PRESET_MID_TO_SHOOT,
 
-        SHOOT_PRESET2,
+        SHOOT_PRESET_MID,
 
         MOVE_OUT_OF_LAUNCH,
 
@@ -148,19 +151,33 @@ public class autoBlueBack extends OpMode {
 
     private final Pose startPose = new Pose(53.3, 10, Math.toRadians(110));
     private final Pose farShootPose = new Pose(53.3, 10, Math.toRadians(110));
+    private final Pose cornerPresetStart = new Pose(18, 33, Math.toRadians(90));
+    private final Pose cornerPresetEnd = new Pose(12, 10, Math.toRadians(90));
     private final Pose farPresetStart = new Pose(50, 30.5, Math.toRadians(0));
     private final Pose farPresetEnd = new Pose(15, 30.5, Math.toRadians(0));
     private final Pose middlePresetStart = new Pose(50, 53, Math.toRadians(0));
     private final Pose middlePresetEnd = new Pose(15, 53, Math.toRadians(0));
 
 
-    private PathChain startToFarPresetStart, farPresetStartToFarPresetEnd, farPresetEndToShoot, shootToMiddlePresetStart, middlePresetStartToMiddlePresetEnd, middlePresetEndToShoot, shootToOutOfLaunch;
+    private PathChain startToCornerPresetStart, cornerPresetStartToCornerPresetEnd,cornerPresetEndToFarLaunch, farLaunchToFarPresetStart, farPresetStartToFarPresetEnd, farPresetEndToShoot, shootToMiddlePresetStart, middlePresetStartToMiddlePresetEnd, middlePresetEndToShoot, shootToOutOfLaunch;
 
     public void buildPaths(){
         // put in coordinates for starting pose then coordinates for ending pose
-        startToFarPresetStart = follower.pathBuilder()
-                .addPath(new BezierLine(startPose, farPresetStart))
-                .setLinearHeadingInterpolation(startPose.getHeading(), farPresetStart.getHeading())
+        startToCornerPresetStart = follower.pathBuilder()
+                .addPath(new BezierLine(startPose, cornerPresetStart))
+                .setLinearHeadingInterpolation(startPose.getHeading(), cornerPresetStart.getHeading())
+                .build();
+        cornerPresetStartToCornerPresetEnd = follower.pathBuilder()
+                .addPath(new BezierLine(cornerPresetStart,cornerPresetEnd))
+                .setLinearHeadingInterpolation(cornerPresetStart.getHeading(),farPresetStart.getHeading())
+                .build();
+        cornerPresetEndToFarLaunch = follower.pathBuilder()
+                .addPath(new BezierLine(cornerPresetEnd, farShootPose))
+                .setLinearHeadingInterpolation(cornerPresetEnd.getHeading(), farShootPose.getHeading()+fudgeFactor)
+                .build();
+        farLaunchToFarPresetStart = follower.pathBuilder()
+                .addPath(new BezierLine(farShootPose, farPresetStart))
+                .setLinearHeadingInterpolation(farShootPose.getHeading()+fudgeFactor, farPresetStart.getHeading())
                 .build();
         farPresetStartToFarPresetEnd = follower.pathBuilder()
                 .addPath(new BezierLine(farPresetStart, farPresetEnd))
@@ -198,69 +215,102 @@ public class autoBlueBack extends OpMode {
                     reset();
                     launch3();
                     telemetry.addLine("Done Path 1");
-                    setPathState(PathState.DRIVE_TO_PRESET);
+                    setPathState(PathState.DRIVE_TO_PRESET_FAR);
                 }
                 break;
-            case DRIVE_TO_PRESET:
+            case DRIVE_TO_PRESET_FAR:
                 //all done!
                 if (!follower.isBusy()){
                     telemetry.addLine("To preload");
-                    follower.followPath(startToFarPresetStart);
+                    follower.followPath(farLaunchToFarPresetStart);
                     startIntake();
-                    setPathState(PathState.PICKUP_PRESET);
+                    setPathState(PathState.PICKUP_PRESET_FAR);
                 }
                 break;
-            case PICKUP_PRESET:
+            case PICKUP_PRESET_FAR:
                 if(!follower.isBusy()){
-                    telemetry.addLine("Picking up preload");
+                    telemetry.addLine("Picking up preset far");
                     follower.followPath(farPresetStartToFarPresetEnd);
-                    setPathState(PathState.PRESET_TO_SHOOT);
+                    setPathState(PathState.PRESET_FAR_TO_SHOOT);
                 }
                 break;
-            case PRESET_TO_SHOOT:
+            case PRESET_FAR_TO_SHOOT:
                 if(!follower.isBusy()){
                     telemetry.addLine("To launch zone");
                     follower.followPath(farPresetEndToShoot);
                     stopIntake();
                     sleep(500);
                     startIntake();
-                    setPathState(PathState.SHOOT_PRESET);
+                    setPathState(PathState.SHOOT_PRESET_FAR);
                 }
                 break;
-            case SHOOT_PRESET:
+            case SHOOT_PRESET_FAR:
                 if(!follower.isBusy()){
                     stopIntake();
                     telemetry.addLine("Launching");
                     launch3();
-                    setPathState(PathState.DRIVE_TO_PRESET2); //If want to do second preset line change this to DRIVE_TO_PRESET2
+                    setPathState(PathState.DRIVE_TO_PRESET_CORNER); //If want to do second preset line change this to DRIVE_TO_PRESET2
                 }
                 break;
-            case DRIVE_TO_PRESET2:
+            case DRIVE_TO_PRESET_CORNER:
+                if(!follower.isBusy()){
+                    telemetry.addLine("To preset corner");
+                    follower.followPath(startToCornerPresetStart);
+                    startIntake();
+                    setPathState(PathState.PICKUP_PRESET_CORNER);
+                }
+                break;
+            case PICKUP_PRESET_CORNER:
+                if(!follower.isBusy()){
+                    telemetry.addLine("Picking up preset corner");
+                    follower.followPath(cornerPresetStartToCornerPresetEnd);
+                    setPathState(PathState.PRESET_CORNER_TO_SHOOT);
+                }
+                break;
+            case PRESET_CORNER_TO_SHOOT:
+                if(!follower.isBusy()){
+                    telemetry.addLine("Preset corner to launch");
+                    follower.followPath(cornerPresetEndToFarLaunch);
+                    stopIntake();
+                    sleep(500);
+                    startIntake();
+                    setPathState(PathState.SHOOT_PRESET_CORNER);
+                }
+                break;
+            case SHOOT_PRESET_CORNER:
+                if(!follower.isBusy()){
+                    stopIntake();
+                    telemetry.addLine("Launching preset corner");
+                    launch3();
+                    setPathState(PathState.DRIVE_TO_PRESET_MID);
+                }
+                break;
+            case DRIVE_TO_PRESET_MID:
                 if(!follower.isBusy()){
                     telemetry.addLine("To middle preset");
                     follower.followPath(shootToMiddlePresetStart);
                     startIntake();
-                    setPathState(PathState.PICKUP_PRESET2);
+                    setPathState(PathState.PICKUP_PRESET_MID);
                 }
                 break;
-            case PICKUP_PRESET2:
+            case PICKUP_PRESET_MID:
                 if(!follower.isBusy()){
                     telemetry.addLine("Picking up middle preset");
                     follower.followPath(middlePresetStartToMiddlePresetEnd);
-                    setPathState(PathState.PRESET2_TO_SHOOT);
+                    setPathState(PathState.PRESET_MID_TO_SHOOT);
                 }
                 break;
-            case PRESET2_TO_SHOOT:
+            case PRESET_MID_TO_SHOOT:
                 if(!follower.isBusy()){
                     telemetry.addLine("To launch zone");
                     follower.followPath(middlePresetEndToShoot);
                     stopIntake();
                     sleep(500);
                     startIntake();
-                    setPathState(PathState.SHOOT_PRESET2);
+                    setPathState(PathState.SHOOT_PRESET_MID);
                 }
                 break;
-            case SHOOT_PRESET2:
+            case SHOOT_PRESET_MID:
                 if(!follower.isBusy()){
                     stopIntake();
                     telemetry.addLine("Launching middle preset");
@@ -271,7 +321,7 @@ public class autoBlueBack extends OpMode {
             case MOVE_OUT_OF_LAUNCH:
                 if(!follower.isBusy()){
                     telemetry.addLine("Moving out of launch");
-                    follower.followPath(startToFarPresetStart);
+                    follower.followPath(farLaunchToFarPresetStart);
                     setPathState(PathState.DONE);
                 }
                 break;
