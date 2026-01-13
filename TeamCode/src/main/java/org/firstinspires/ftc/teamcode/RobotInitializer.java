@@ -11,8 +11,8 @@ import org.firstinspires.ftc.teamcode.RobotHardware;
 
 public class RobotInitializer {
     public static void initializeRobot(HardwareMap hardwareMap, RobotHardware robotHardware){
-        double flywheelF = 19.45;
-        double flywheelP = 250;
+        double flywheelF = 21.2;
+        double flywheelP = 530.0;
 
         // RobotHardware robotHardware = new RobotHardware();
 

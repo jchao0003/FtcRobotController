@@ -11,17 +11,17 @@ import com.qualcomm.robotcore.hardware.Servo;
 @TeleOp
 public class FlywheelTuner extends OpMode {
     public DcMotorEx flywheel1;
-    public DcMotorEx flywheel2;
+    //public DcMotorEx flywheel2;
 
-    public double highVelocity = 1500; //middle distance (1620 V2)
-    public double lowVelocity = 800; //1300
+    public double highVelocity = 1620; //middle distance (1620 V2) 410
+    public double lowVelocity = 1100; //1300
 
     double curTargetVelocity = highVelocity;
 
-    double F = 0.0; //18.046(V1) 19.45(V2)
-    double P = 0.0; //445(V1) 250(V2)
+    double F = 0.0; //18.046(V1) 19.45(V2) 21.2
+    double P = 0.0; //445(V1) 250(V2) 530
 
-    double[] stepSizes = {10.0, 1.0, 0.1, 0.001, 0.0001};
+    double[] stepSizes = {10.0, 1.0, 0.1, 0.01, 0.001};
 
     int stepIndex = 0;
 
@@ -34,18 +34,18 @@ public class FlywheelTuner extends OpMode {
     @Override
     public void init(){
         flywheel1 = hardwareMap.get(DcMotorEx.class, "flywheel");
-        flywheel2 = hardwareMap.get(DcMotorEx.class, "flywheel2");
+        //flywheel2 = hardwareMap.get(DcMotorEx.class, "flywheel2");
 
         flywheel1.setMode(DcMotorEx.RunMode.RUN_USING_ENCODER);
-        flywheel2.setMode(DcMotorEx.RunMode.RUN_USING_ENCODER);
+        //flywheel2.setMode(DcMotorEx.RunMode.RUN_USING_ENCODER);
 
         flywheel1.setDirection(DcMotorEx.Direction.REVERSE);
-        flywheel2.setDirection(DcMotorEx.Direction.FORWARD);
+        //flywheel2.setDirection(DcMotorEx.Direction.FORWARD);
 
         PIDFCoefficients pidfCoefficients = new PIDFCoefficients(P, 0, 0, F);
 
         flywheel1.setPIDFCoefficients(DcMotor.RunMode.RUN_USING_ENCODER, pidfCoefficients);
-        flywheel2.setPIDFCoefficients(DcMotor.RunMode.RUN_USING_ENCODER, pidfCoefficients);
+        //flywheel2.setPIDFCoefficients(DcMotor.RunMode.RUN_USING_ENCODER, pidfCoefficients);
 
         telemetry.addLine("Init complete");
     }
@@ -91,13 +91,13 @@ public class FlywheelTuner extends OpMode {
         PIDFCoefficients pidfCoefficients = new PIDFCoefficients(P, 0, 0, F);
 
         flywheel1.setPIDFCoefficients(DcMotor.RunMode.RUN_USING_ENCODER, pidfCoefficients);
-        flywheel2.setPIDFCoefficients(DcMotor.RunMode.RUN_USING_ENCODER, pidfCoefficients);
+        //flywheel2.setPIDFCoefficients(DcMotor.RunMode.RUN_USING_ENCODER, pidfCoefficients);
 
         flywheel1.setVelocity(curTargetVelocity);
-        flywheel2.setVelocity(curTargetVelocity);
+        //flywheel2.setVelocity(curTargetVelocity);
 
-        double curVelocity = (flywheel1.getVelocity() + flywheel2.getVelocity())/2;
-        //double curVelocity = flywheel1.getVelocity();
+        //double curVelocity = (flywheel1.getVelocity() + flywheel2.getVelocity())/2;
+        double curVelocity = flywheel1.getVelocity();
         double error = curTargetVelocity - curVelocity;
 
         if (curVelocity == curTargetVelocity){

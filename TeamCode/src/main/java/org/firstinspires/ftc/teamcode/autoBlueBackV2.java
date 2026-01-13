@@ -17,99 +17,44 @@ import com.qualcomm.robotcore.util.ElapsedTime;
 import org.firstinspires.ftc.teamcode.pedroPathing.Constants;
 
 @Autonomous
-public class autoBlueBack extends OpMode {
+public class autoBlueBackV2 extends OpMode {
     private ElapsedTime runtime = new ElapsedTime();
 
     private Follower follower;
     private Timer pathTimer, opModeTimer;
 
     private DcMotorEx flywheel;
-    private DcMotorEx flywheel2;
-    private DcMotor intakeM;
+    private DcMotor intake;
+
+    RobotHardware robotHardware;
 
 
-    private double velocity = 1620;
-    private double fudgeFactor = Math.toRadians(0);
-
-    private Servo gateS;
-    private Servo standS;
 
 
-    double resultMaxVelocityTest = 2120.0;
-    double F = 445.0;
-    double kP = 18.046;
-    double kI = 0;
-    double kD = 0;
-    double position = 5.0;
+    private double fudgeFactor = Math.toRadians(8);
+
+    private Servo feeder;
+
+    public void launch3(){
+        robotHardware.launch();
+        sleep(1000);
+        robotHardware.launch();
+        sleep(1000);
+        robotHardware.launch();
+        sleep(1000);
+        robotHardware.launch();
+    }
+
 
 
     public void hardwareInit(){
-        flywheel = hardwareMap.get(DcMotorEx.class, "flywheel");
-        flywheel2 = hardwareMap.get(DcMotorEx.class, "flywheel2");
-        intakeM = hardwareMap.get(DcMotor.class, "intakeM");
+        robotHardware = new RobotHardware();
+        RobotInitializer.initializeRobot(hardwareMap, robotHardware);
 
-        gateS = hardwareMap.get(Servo.class, "gateS");
-        standS = hardwareMap.get(Servo.class, "standS");
+        intake = robotHardware.intake;
+        flywheel = robotHardware.flywheel;
 
-        flywheel.setMode(DcMotorEx.RunMode.RUN_USING_ENCODER);
-        flywheel2.setMode(DcMotorEx.RunMode.RUN_USING_ENCODER);
-        intakeM.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
-
-        flywheel.setDirection(DcMotorEx.Direction.REVERSE);
-        flywheel2.setDirection(DcMotorEx.Direction.FORWARD);
-        intakeM.setDirection(DcMotor.Direction.REVERSE);
-
-        flywheel.setZeroPowerBehavior(DcMotorEx.ZeroPowerBehavior.BRAKE);
-        flywheel2.setZeroPowerBehavior(DcMotorEx.ZeroPowerBehavior.BRAKE);
-        intakeM.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
-
-        flywheel.setMode(DcMotorEx.RunMode.STOP_AND_RESET_ENCODER);
-        flywheel2.setMode(DcMotorEx.RunMode.STOP_AND_RESET_ENCODER);
-
-        flywheel.setVelocityPIDFCoefficients(kP,kI,kD,F);
-        flywheel2.setVelocityPIDFCoefficients(kP,kI,kD,F);
-
-        flywheel.setPositionPIDFCoefficients(position);
-        flywheel2.setPositionPIDFCoefficients(position);
-
-    }
-
-
-
-    public void launch3(){
-        gateS.setPosition(1);
-        startIntake();
-        sleep(750);
-        gateS.setPosition(0.8);
-        sleep(500);
-        stopIntake();
-        gateS.setPosition(1);
-        sleep(750);
-        gateS.setPosition(0.8);
-        sleep(500);
-        gateS.setPosition(1);
-        sleep(750);
-        gateS.setPosition(0.8);
-    }
-
-    public void startIntake(){
-        intakeM.setPower(1);
-    }
-
-    public void stopIntake(){
-        intakeM.setPower(0);
-    }
-    public void reset(){
-        flywheel.setVelocity(velocity);
-        flywheel2.setVelocity(velocity);
-        gateS.setPosition(0.8);
-        standS.setPosition(0.075);
-        sleep(1000);
-    }
-
-    public void stopFlywheel(){
-        flywheel.setPower(0);
-        flywheel2.setPower(0);
+        robotHardware.resetMechanisms();
     }
 
 
@@ -149,14 +94,14 @@ public class autoBlueBack extends OpMode {
 
     PathState pathState;
 
-    private final Pose startPose = new Pose(53.3, 10, Math.toRadians(110));
-    private final Pose farShootPose = new Pose(53.3, 10, Math.toRadians(110));
-    private final Pose cornerPresetStart = new Pose(18, 33, Math.toRadians(90));
-    private final Pose cornerPresetEnd = new Pose(12, 10, Math.toRadians(90));
-    private final Pose farPresetStart = new Pose(50, 30.5, Math.toRadians(0));
-    private final Pose farPresetEnd = new Pose(15, 30.5, Math.toRadians(0));
-    private final Pose middlePresetStart = new Pose(50, 53, Math.toRadians(0));
-    private final Pose middlePresetEnd = new Pose(15, 53, Math.toRadians(0));
+    private final Pose startPose = new Pose(57.3, 9.2, Math.toRadians(90));
+    private final Pose farShootPose = new Pose(57.3, 9.2, Math.toRadians(90));
+    private final Pose cornerPresetStart = new Pose(12, 32.5, Math.toRadians(90));
+    private final Pose cornerPresetEnd = new Pose(12, 13, Math.toRadians(90));
+    private final Pose farPresetStart = new Pose(45, 33.2, Math.toRadians(0));
+    private final Pose farPresetEnd = new Pose(15, 33.2, Math.toRadians(0));
+    private final Pose middlePresetStart = new Pose(45, 57.2, Math.toRadians(0));
+    private final Pose middlePresetEnd = new Pose(15, 57.2, Math.toRadians(0));
 
 
     private PathChain startToCornerPresetStart, cornerPresetStartToCornerPresetEnd,cornerPresetEndToFarLaunch, farLaunchToFarPresetStart, farPresetStartToFarPresetEnd, farPresetEndToShoot, shootToMiddlePresetStart, middlePresetStartToMiddlePresetEnd, middlePresetEndToShoot, shootToOutOfLaunch;
@@ -169,7 +114,8 @@ public class autoBlueBack extends OpMode {
                 .build();
         cornerPresetStartToCornerPresetEnd = follower.pathBuilder()
                 .addPath(new BezierLine(cornerPresetStart,cornerPresetEnd))
-                .setLinearHeadingInterpolation(cornerPresetStart.getHeading(),farPresetStart.getHeading())
+                .setLinearHeadingInterpolation(cornerPresetStart.getHeading(),cornerPresetEnd.getHeading())
+                .setVelocityConstraint(1)
                 .build();
         cornerPresetEndToFarLaunch = follower.pathBuilder()
                 .addPath(new BezierLine(cornerPresetEnd, farShootPose))
@@ -209,10 +155,12 @@ public class autoBlueBack extends OpMode {
                 //check if follower is done with path
                 //and check that 5 seconds has elapsed
 
-                reset();
+                robotHardware.resetMechanisms();
+                robotHardware.setFlywheelSpeedBackPosition();
+                robotHardware.setBlueAngle();
+                sleep(4000);
 
                 if (!follower.isBusy()){
-                    reset();
                     launch3();
                     telemetry.addLine("Done Path 1");
                     setPathState(PathState.DRIVE_TO_PRESET_FAR);
@@ -223,7 +171,7 @@ public class autoBlueBack extends OpMode {
                 if (!follower.isBusy()){
                     telemetry.addLine("To preload");
                     follower.followPath(farLaunchToFarPresetStart);
-                    startIntake();
+                    robotHardware.startIntake();
                     setPathState(PathState.PICKUP_PRESET_FAR);
                 }
                 break;
@@ -238,15 +186,15 @@ public class autoBlueBack extends OpMode {
                 if(!follower.isBusy()){
                     telemetry.addLine("To launch zone");
                     follower.followPath(farPresetEndToShoot);
-                    stopIntake();
+                    robotHardware.stopIntake();
                     sleep(500);
-                    startIntake();
+                    robotHardware.startIntake();
                     setPathState(PathState.SHOOT_PRESET_FAR);
                 }
                 break;
             case SHOOT_PRESET_FAR:
                 if(!follower.isBusy()){
-                    stopIntake();
+                    robotHardware.stopIntake();
                     telemetry.addLine("Launching");
                     launch3();
                     setPathState(PathState.DRIVE_TO_PRESET_CORNER); //If want to do second preset line change this to DRIVE_TO_PRESET2
@@ -256,7 +204,7 @@ public class autoBlueBack extends OpMode {
                 if(!follower.isBusy()){
                     telemetry.addLine("To preset corner");
                     follower.followPath(startToCornerPresetStart);
-                    startIntake();
+                    robotHardware.startIntake();
                     setPathState(PathState.PICKUP_PRESET_CORNER);
                 }
                 break;
@@ -271,15 +219,15 @@ public class autoBlueBack extends OpMode {
                 if(!follower.isBusy()){
                     telemetry.addLine("Preset corner to launch");
                     follower.followPath(cornerPresetEndToFarLaunch);
-                    stopIntake();
+                    robotHardware.stopIntake();
                     sleep(500);
-                    startIntake();
+                    robotHardware.startIntake();
                     setPathState(PathState.SHOOT_PRESET_CORNER);
                 }
                 break;
             case SHOOT_PRESET_CORNER:
                 if(!follower.isBusy()){
-                    stopIntake();
+                    robotHardware.stopIntake();
                     telemetry.addLine("Launching preset corner");
                     launch3();
                     setPathState(PathState.DRIVE_TO_PRESET_MID);
@@ -289,7 +237,7 @@ public class autoBlueBack extends OpMode {
                 if(!follower.isBusy()){
                     telemetry.addLine("To middle preset");
                     follower.followPath(shootToMiddlePresetStart);
-                    startIntake();
+                    robotHardware.startIntake();
                     setPathState(PathState.PICKUP_PRESET_MID);
                 }
                 break;
@@ -304,15 +252,15 @@ public class autoBlueBack extends OpMode {
                 if(!follower.isBusy()){
                     telemetry.addLine("To launch zone");
                     follower.followPath(middlePresetEndToShoot);
-                    stopIntake();
+                    robotHardware.stopIntake();
                     sleep(500);
-                    startIntake();
+                    robotHardware.startIntake();
                     setPathState(PathState.SHOOT_PRESET_MID);
                 }
                 break;
             case SHOOT_PRESET_MID:
                 if(!follower.isBusy()){
-                    stopIntake();
+                    robotHardware.stopIntake();
                     telemetry.addLine("Launching middle preset");
                     launch3();
                     setPathState(PathState.MOVE_OUT_OF_LAUNCH);
@@ -328,7 +276,7 @@ public class autoBlueBack extends OpMode {
             case DONE:
                 if(!follower.isBusy()){
                     telemetry.addLine("Done with complete auto");
-                    stopFlywheel();
+                    robotHardware.stopFlywheel();
                 }
                 break;
             default:

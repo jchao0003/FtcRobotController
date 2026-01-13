@@ -28,9 +28,8 @@ public class RobotHardware {
 
     public void launch(){
         feeder.setPosition(.77);
-        sleep(250);
+        sleep(200);
         feeder.setPosition(0.47);
-        sleep(100);
     }
 
     public void startIntake(){
@@ -42,7 +41,7 @@ public class RobotHardware {
     }
     public void resetMechanisms(){
         feeder.setPosition(0.47);
-        intakeRamp.setPosition(0.465);
+        intakeRamp.setPosition(0.462);
         rotateLauncher.setPosition(0.2);
         sleep(100);
     }
@@ -52,7 +51,7 @@ public class RobotHardware {
     }
 
     public void stopFlywheel(){
-        flywheel.setPower(0);
+        flywheel.setVelocity(0.0);
     }
 
     public void setFlywheelSpeedBackPosition(){
