@@ -18,7 +18,8 @@ public class RobotHardware {
     public Servo feeder;
     public Servo intakeRamp;
     public Servo rotateLauncher;
-    public Servo indicatorLight;
+    public Servo indicatorLightMotor;
+    public Servo indicatorLightLocation;
 
     public double backVelocity = 1620;
     public double frontVelocity = 1100;
@@ -30,6 +31,8 @@ public class RobotHardware {
         feeder.setPosition(.77);
         sleep(200);
         feeder.setPosition(0.47);
+        sleep(1000);
+        feeder.setPosition(0.62);
     }
 
     public void startIntake(){
@@ -77,15 +80,27 @@ public class RobotHardware {
         return flywheelTargetVelocity - flywheel.getVelocity();
     }
 
-    public void lightOff(){
-        indicatorLight.setPosition(0.0);
+    public void motorLightOff(){
+        indicatorLightMotor.setPosition(0.0);
     }
-    public void setColorGreen(){
-        indicatorLight.setPosition(0.5);
+    public void setColorGreenMotor(){
+        indicatorLightMotor.setPosition(0.5);
     }
 
-    public void setColorRed(){
-        indicatorLight.setPosition(0.28);
+    public void setColorRedMotor(){
+        indicatorLightMotor.setPosition(0.277);
+    }
+
+    public void locationLightOff(){
+        indicatorLightLocation.setPosition(0.0);
+    }
+
+    public void setColorBlueLocation(){
+        indicatorLightLocation.setPosition(0.611);
+    }
+
+    public void setColorOrangeLocation(){
+        indicatorLightLocation.setPosition(0.388);
     }
 
     public void setBlueAngle(){

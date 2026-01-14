@@ -28,7 +28,8 @@ public class RobotInitializer {
         robotHardware.intakeRamp = hardwareMap.get(Servo.class, "intakeRamp");
         robotHardware.rotateLauncher = hardwareMap.get(Servo.class, "launcher");
 
-        robotHardware.indicatorLight = hardwareMap.get(Servo.class, "light");
+        robotHardware.indicatorLightMotor = hardwareMap.get(Servo.class, "motorLight");
+        robotHardware.indicatorLightLocation = hardwareMap.get(Servo.class, "locationLight");
 
         robotHardware.backLeft.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
         robotHardware.backRight.setMode(DcMotor.RunMode.RUN_USING_ENCODER);

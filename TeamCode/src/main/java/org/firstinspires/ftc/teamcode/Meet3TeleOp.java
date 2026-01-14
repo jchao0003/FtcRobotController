@@ -2,12 +2,15 @@ package org.firstinspires.ftc.teamcode;
 
 import static org.firstinspires.ftc.robotcore.external.BlocksOpModeCompanion.hardwareMap;
 
+import com.qualcomm.hardware.limelightvision.LLResult;
+import com.qualcomm.hardware.limelightvision.Limelight3A;
 import com.qualcomm.robotcore.eventloop.opmode.OpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.DcMotorEx;
 
 import org.firstinspires.ftc.robotcore.external.JavaUtil;
+import org.firstinspires.ftc.robotcore.external.navigation.Pose3D;
 import org.firstinspires.ftc.teamcode.RobotInitializer;
 
 @TeleOp
@@ -28,6 +31,7 @@ public class Meet3TeleOp extends OpMode{
     double backLeftPower;
     double backRightPower;
     double maximumMotorPower;
+    private Limelight3A limelight;
 
     RobotHardware robotHardware;
 
@@ -45,10 +49,34 @@ public class Meet3TeleOp extends OpMode{
         intake = robotHardware.intake;
         flywheel = robotHardware.flywheel;
 
+        limelight = hardwareMap.get(Limelight3A.class, "Limelight3A");
+        limelight.pipelineSwitch(0);
+
         robotHardware.resetMechanisms();
     }
 
+    public void start(){
+        limelight.start();
+    }
+
     public void loop(){
+        LLResult llResult = limelight.getLatestResult();
+
+        if (Math.abs(llResult.getBotpose().getOrientation().getYaw()-(-131.5)) <= 7){
+            robotHardware.setColorBlueLocation();
+        } else {
+            robotHardware.setColorOrangeLocation();
+        }
+
+
+        if (llResult != null && llResult.isValid()) {
+            Pose3D botPose = llResult.getBotpose();
+            telemetry.addData("Tx", llResult.getTx());
+            telemetry.addData("Ty", llResult.getTy());
+            telemetry.addData("Ta", llResult.getTa());
+            telemetry.addData("Bot Pose", botPose.toString());
+            telemetry.addData("Yaw", llResult.getBotpose().getOrientation().getYaw());
+        }
 
         if (gamepad2.dpad_down){
             robotHardware.launch();
@@ -58,7 +86,7 @@ public class Meet3TeleOp extends OpMode{
             robotHardware.setFlywheelSpeedBackPosition();
         } else if (gamepad2.dpad_left){
             robotHardware.stopFlywheel();
-            robotHardware.lightOff();
+            robotHardware.motorLightOff();
         } else if (gamepad2.left_bumper) {
             robotHardware.setFlywheelSpeedMiddlePosition();
         } else {
@@ -82,9 +110,9 @@ public class Meet3TeleOp extends OpMode{
         }
 
         if (Math.abs(robotHardware.getFlywheelVelocityError()) <=50){
-            robotHardware.setColorGreen();
+            robotHardware.setColorGreenMotor();
         } else {
-            robotHardware.setColorRed();
+            robotHardware.setColorRedMotor();
         }
 
 

@@ -37,11 +37,11 @@ public class autoBlueBackV2 extends OpMode {
 
     public void launch3(){
         robotHardware.launch();
-        sleep(1000);
+        sleep(500);
         robotHardware.launch();
-        sleep(1000);
+        sleep(750);
         robotHardware.launch();
-        sleep(1000);
+        sleep(750);
         robotHardware.launch();
     }
 
@@ -97,7 +97,7 @@ public class autoBlueBackV2 extends OpMode {
     private final Pose startPose = new Pose(57.3, 9.2, Math.toRadians(90));
     private final Pose farShootPose = new Pose(57.3, 9.2, Math.toRadians(90));
     private final Pose cornerPresetStart = new Pose(12, 32.5, Math.toRadians(90));
-    private final Pose cornerPresetEnd = new Pose(12, 13, Math.toRadians(90));
+    private final Pose cornerPresetEnd = new Pose(12, 12, Math.toRadians(90));
     private final Pose farPresetStart = new Pose(45, 33.2, Math.toRadians(0));
     private final Pose farPresetEnd = new Pose(15, 33.2, Math.toRadians(0));
     private final Pose middlePresetStart = new Pose(45, 57.2, Math.toRadians(0));
@@ -115,7 +115,7 @@ public class autoBlueBackV2 extends OpMode {
         cornerPresetStartToCornerPresetEnd = follower.pathBuilder()
                 .addPath(new BezierLine(cornerPresetStart,cornerPresetEnd))
                 .setLinearHeadingInterpolation(cornerPresetStart.getHeading(),cornerPresetEnd.getHeading())
-                .setVelocityConstraint(1)
+                .setVelocityConstraint(0.5)
                 .build();
         cornerPresetEndToFarLaunch = follower.pathBuilder()
                 .addPath(new BezierLine(cornerPresetEnd, farShootPose))
@@ -154,10 +154,10 @@ public class autoBlueBackV2 extends OpMode {
             case SHOOT_PRELOAD:
                 //check if follower is done with path
                 //and check that 5 seconds has elapsed
-
                 robotHardware.resetMechanisms();
                 robotHardware.setFlywheelSpeedBackPosition();
                 robotHardware.setBlueAngle();
+                robotHardware.feeder.setPosition(0.62);
                 sleep(4000);
 
                 if (!follower.isBusy()){
