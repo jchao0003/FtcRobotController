@@ -79,7 +79,11 @@ public class Meet3TeleOp extends OpMode{
         }
 
         if (gamepad2.dpad_down){
-            robotHardware.launch(true);
+            robotHardware.manualLaunch();
+        }
+
+        if (gamepad2.aWasPressed()){
+            robotHardware.manualReset();
         }
 
         if (gamepad2.dpad_up){

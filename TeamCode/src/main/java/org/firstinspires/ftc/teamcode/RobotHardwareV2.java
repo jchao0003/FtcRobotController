@@ -23,13 +23,13 @@ public class RobotHardwareV2 {
     public Servo gate3;
     public CRServo spin;
 
-    public double backVelocity = 500; //1550;
+    public double backVelocity = 1600;
     public double frontVelocity = 1100;
     public double middleVelocity = 1200;
 
     private double flywheelTargetVelocity = 0;
     final double TIME_BETWEEN_SHOTS = 1.0;
-    final double FEED_TIME = 0.3;
+    final double FEED_TIME = 0.5;
 
     private ElapsedTime feederTimer = new ElapsedTime();
     private ElapsedTime shotTimer = new ElapsedTime();
@@ -67,8 +67,9 @@ public class RobotHardwareV2 {
             case START_LAUNCH:
                 if (flywheel.getVelocity() > flywheelTargetVelocity - 60){
                     launchState = LaunchState.WAIT_LAUNCH_COMPLETE;
-                    feeder.setPosition(0.25);
                     stopSpin();
+                    feeder.setPosition(0.22);
+
 
                     feederTimer.reset();
                 }
@@ -85,6 +86,14 @@ public class RobotHardwareV2 {
                 }
         }
         return false;
+    }
+
+    public void manualLaunch(){
+        feeder.setPosition(0.22);
+    }
+
+    public void manualReset(){
+        feeder.setPosition(0.55);
     }
 
     public void startSpin(){

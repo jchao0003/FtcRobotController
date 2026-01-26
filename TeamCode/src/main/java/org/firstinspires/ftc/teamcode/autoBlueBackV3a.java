@@ -1,14 +1,14 @@
 package org.firstinspires.ftc.teamcode;
+
 import static android.os.SystemClock.sleep;
 
 import com.pedropathing.follower.Follower;
 import com.pedropathing.geometry.BezierLine;
 import com.pedropathing.geometry.Pose;
 import com.pedropathing.paths.PathChain;
+import com.pedropathing.util.Timer;
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 import com.qualcomm.robotcore.eventloop.opmode.OpMode;
-
-import com.pedropathing.util.Timer;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.DcMotorEx;
 import com.qualcomm.robotcore.hardware.Servo;
@@ -17,7 +17,7 @@ import com.qualcomm.robotcore.util.ElapsedTime;
 import org.firstinspires.ftc.teamcode.pedroPathing.Constants;
 
 @Autonomous
-public class autoBlueBackV3 extends OpMode {
+public class autoBlueBackV3a extends OpMode {
     private ElapsedTime runtime = new ElapsedTime();
 
     private Follower follower;
@@ -109,7 +109,7 @@ public class autoBlueBackV3 extends OpMode {
         DONE
     }
 
-    PathState pathState;
+    autoBlueBackV3a.PathState pathState;
 
     private final Pose startPose = new Pose(57.3, 9.2, Math.toRadians(90));
     private final Pose farShootPose = new Pose(57.3, 9.2, Math.toRadians(90));
