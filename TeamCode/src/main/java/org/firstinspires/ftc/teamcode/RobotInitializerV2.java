@@ -1,16 +1,14 @@
 package org.firstinspires.ftc.teamcode;
 
+import com.qualcomm.robotcore.hardware.CRServo;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.DcMotorEx;
-import com.qualcomm.robotcore.hardware.DcMotorSimple;
 import com.qualcomm.robotcore.hardware.HardwareMap;
 import com.qualcomm.robotcore.hardware.PIDFCoefficients;
 import com.qualcomm.robotcore.hardware.Servo;
 
-import org.firstinspires.ftc.teamcode.RobotHardware;
-
-public class RobotInitializer {
-    public static void initializeRobot(HardwareMap hardwareMap, RobotHardware robotHardware){
+public class RobotInitializerV2 {
+    public static void initializeRobot(HardwareMap hardwareMap, org.firstinspires.ftc.teamcode.RobotHardwareV2 robotHardware){
         double flywheelF = 21.2;
         double flywheelP = 530.0;
 
@@ -27,9 +25,9 @@ public class RobotInitializer {
         robotHardware.feeder = hardwareMap.get(Servo.class, "feeder");
         robotHardware.intakeRamp = hardwareMap.get(Servo.class, "intakeRamp");
         robotHardware.rotateLauncher = hardwareMap.get(Servo.class, "launcher");
-        robotHardware.gate1 = hardwareMap.get(Servo.class, "gate1");
         robotHardware.gate2 = hardwareMap.get(Servo.class, "gate2");
         robotHardware.gate3 = hardwareMap.get(Servo.class, "gate3");
+        robotHardware.spin = hardwareMap.get(CRServo.class, "spin");
 
         robotHardware.indicatorLightMotor = hardwareMap.get(Servo.class, "motorLight");
         robotHardware.indicatorLightLocation = hardwareMap.get(Servo.class, "locationLight");

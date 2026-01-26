@@ -33,13 +33,13 @@ public class Meet3TeleOp extends OpMode{
     double maximumMotorPower;
     private Limelight3A limelight;
 
-    RobotHardware robotHardware;
+    RobotHardwareV2 robotHardware;
 
     @Override
     public void init() {
 
-        robotHardware = new RobotHardware();
-        RobotInitializer.initializeRobot(hardwareMap, robotHardware);
+        robotHardware = new RobotHardwareV2();
+        RobotInitializerV2.initializeRobot(hardwareMap, robotHardware);
 
         backLeft = robotHardware.backLeft;
         backRight = robotHardware.backRight;
@@ -79,16 +79,24 @@ public class Meet3TeleOp extends OpMode{
         }
 
         if (gamepad2.dpad_down){
-            robotHardware.launch();
+            robotHardware.launch(true);
+        }
+
+        if (gamepad2.dpad_up){
+            robotHardware.dropGate2();
+        }
+
+        if (gamepad2.dpad_right){
+            robotHardware.dropGate3();
         }
 
         if (gamepad2.right_bumper){
-            robotHardware.setFlywheelSpeedBackPosition();
+            robotHardware.setFlywheelSpeedMiddlePosition();
         } else if (gamepad2.dpad_left){
             robotHardware.stopFlywheel();
             robotHardware.motorLightOff();
         } else if (gamepad2.left_bumper) {
-            robotHardware.setFlywheelSpeedMiddlePosition();
+            robotHardware.setFlywheelSpeedBackPosition();
         } else {
             robotHardware.setFlywheelSpeedFrontPosition();
         }
@@ -97,16 +105,24 @@ public class Meet3TeleOp extends OpMode{
             robotHardware.setBlueAngle();
         }
 
-        if (gamepad2.a){
-            robotHardware.startIntake();
-        } else if (gamepad2.y){
-            robotHardware.reverseIntake();
-        } else {
-            robotHardware.stopIntake();
+        if (gamepad2.bWasPressed()){
+            robotHardware.setRedAngle();
+        }
+
+        if (gamepad2.yWasPressed()){
+            robotHardware.setAngleStraight();
         }
 
         if (gamepad2.dpad_left){
             robotHardware.intakeRampUp();
+        }
+
+        if (gamepad2.right_stick_y > 0.5){
+            robotHardware.startIntake();
+        } else if(gamepad2.right_stick_y < -0.5){
+            robotHardware.reverseIntake();
+        } else {
+            robotHardware.stopIntake();
         }
 
         if (Math.abs(robotHardware.getFlywheelVelocityError()) <=50){

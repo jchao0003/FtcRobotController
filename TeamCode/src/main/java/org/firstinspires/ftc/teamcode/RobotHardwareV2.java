@@ -1,13 +1,12 @@
 package org.firstinspires.ftc.teamcode;
 
-import static android.os.SystemClock.sleep;
-
+import com.qualcomm.robotcore.hardware.CRServo;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.DcMotorEx;
-import com.qualcomm.robotcore.hardware.DcMotorSimple;
 import com.qualcomm.robotcore.hardware.Servo;
+import com.qualcomm.robotcore.util.ElapsedTime;
 
-public class RobotHardware {
+public class RobotHardwareV2 {
     public DcMotor backLeft;
     public DcMotor backRight;
     public DcMotor frontLeft;
@@ -20,24 +19,85 @@ public class RobotHardware {
     public Servo rotateLauncher;
     public Servo indicatorLightMotor;
     public Servo indicatorLightLocation;
-    public Servo gate1;
     public Servo gate2;
     public Servo gate3;
+    public CRServo spin;
 
-    public double backVelocity = 1550;
+    public double backVelocity = 500; //1550;
     public double frontVelocity = 1100;
     public double middleVelocity = 1200;
 
     private double flywheelTargetVelocity = 0;
+    final double TIME_BETWEEN_SHOTS = 1.0;
+    final double FEED_TIME = 0.3;
 
-    public void launch(){
-        feeder.setPosition(.77);
-        sleep(200);
-        feeder.setPosition(0.47);
+    private ElapsedTime feederTimer = new ElapsedTime();
+    private ElapsedTime shotTimer = new ElapsedTime();
+
+    private LaunchState launchState = LaunchState.IDLE;
+
+//
+//    public void launch(){
+//        feeder.setPosition(.77);
+//        sleep(200);
+//        feeder.setPosition(0.47);
+//    }
+
+    public void dropGate2(){
+        gate2.setPosition(0.84);
     }
 
+    public void dropGate3(){
+        gate3.setPosition(0.87);
+    }
+
+    private enum LaunchState {
+        IDLE,
+        START_LAUNCH,
+        WAIT_LAUNCH_COMPLETE,
+    }
+    boolean launch(boolean shotRequested){
+        switch (launchState) {
+            case IDLE:
+                if (shotRequested) {
+                    launchState = LaunchState.START_LAUNCH;
+                    shotTimer.reset();
+                }
+                break;
+            case START_LAUNCH:
+                if (flywheel.getVelocity() > flywheelTargetVelocity - 60){
+                    launchState = LaunchState.WAIT_LAUNCH_COMPLETE;
+                    feeder.setPosition(0.25);
+                    stopSpin();
+
+                    feederTimer.reset();
+                }
+                break;
+            case WAIT_LAUNCH_COMPLETE:
+                if (feederTimer.seconds() > FEED_TIME) {
+                    feeder.setPosition(0.55);
+                    startSpin();
+
+                    if(shotTimer.seconds() > TIME_BETWEEN_SHOTS){
+                        launchState = LaunchState.IDLE;
+                        return true;
+                    }
+                }
+        }
+        return false;
+    }
+
+    public void startSpin(){
+        spin.setPower(-1);
+    }
+
+    public void stopSpin(){
+        spin.setPower(0);
+    }
+
+
     public void launchPt2(){
-        feeder.setPosition(0.68);
+        //feeder.setPosition(0.68);
     }
 
     public void startIntake(){
@@ -48,13 +108,11 @@ public class RobotHardware {
         intake.setPower(0);
     }
     public void resetMechanisms(){
-        feeder.setPosition(0.47);
-        intakeRamp.setPosition(0.462);
+        feeder.setPosition(0.55);
+        intakeRamp.setPosition(0.4655);
         rotateLauncher.setPosition(0.2);
-        gate1.setPosition(0.5);
         gate2.setPosition(0.5);
         gate3.setPosition(0.535);
-        sleep(100);
     }
 
     public void reverseIntake(){
@@ -71,7 +129,7 @@ public class RobotHardware {
     }
 
     public void intakeRampUp(){
-        intakeRamp.setPosition(0.52);
+        intakeRamp.setPosition(0.525);
     }
 
     public void intakeRampDown(){

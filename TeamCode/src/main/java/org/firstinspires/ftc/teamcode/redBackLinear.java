@@ -7,6 +7,7 @@ import com.pedropathing.geometry.BezierLine;
 import com.pedropathing.geometry.Pose;
 import com.pedropathing.paths.PathChain;
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
+import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.eventloop.opmode.OpMode;
 
 import com.pedropathing.util.Timer;
@@ -18,7 +19,7 @@ import com.qualcomm.robotcore.util.ElapsedTime;
 import org.firstinspires.ftc.teamcode.pedroPathing.Constants;
 
 @Autonomous
-public class autoRedBack extends OpMode {
+public class redBackLinear extends LinearOpMode {
     private ElapsedTime runtime = new ElapsedTime();
 
     private Follower follower;
@@ -38,15 +39,12 @@ public class autoRedBack extends OpMode {
 
     public void launch3(){
         robotHardware.launch();
-        sleep(1000);
         robotHardware.launchPt2();
         sleep(500);
         robotHardware.launch();
-        sleep(1000);
         robotHardware.launchPt2();
         sleep(750);
         robotHardware.launch();
-        sleep(1000);
         robotHardware.launchPt2();
         sleep(750);
         robotHardware.launch();
@@ -119,7 +117,7 @@ public class autoRedBack extends OpMode {
         farPresetStartToFarPresetEnd = follower.pathBuilder()
                 .addPath(new BezierLine(farPresetStart, farPresetEnd))
                 .setLinearHeadingInterpolation(farPresetStart.getHeading(), farPresetEnd.getHeading())
-                .setVelocityConstraint(1)
+                .setVelocityConstraint(0.5)
                 .build();
         farPresetEndToShoot = follower.pathBuilder()
                 .addPath(new BezierLine(farPresetEnd, farShootPose))
@@ -132,11 +130,28 @@ public class autoRedBack extends OpMode {
         middlePresetStartToMiddlePresetEnd = follower.pathBuilder()
                 .addPath(new BezierLine(middlePresetStart, middlePresetEnd))
                 .setLinearHeadingInterpolation(middlePresetStart.getHeading(), middlePresetEnd.getHeading())
-                .setVelocityConstraint(1)
+                .setVelocityConstraint(0.5)
                 .build();
         middlePresetEndToShoot = follower.pathBuilder()
                 .addPath(new BezierLine(middlePresetEnd, farShootPose))
+                .setLinearHeadingInterpolation(middlePresetEnd.getHeading(), farShootPose.getHeading())
                 .build();
+    }
+
+    public void statePathUpdateTest() {
+        switch (pathState) {
+            case SHOOT_PRELOAD:
+                telemetry.addLine(" 1");
+                telemetry.update();
+                setPathState(PathState.DRIVE_TO_PRESET);
+            default:
+                telemetry.addLine(" 2");
+                telemetry.update();
+        }
+
+        telemetry.addLine(" DONE");
+        telemetry.update();
+        return;
     }
 
     public void statePathUpdate(){
@@ -150,16 +165,21 @@ public class autoRedBack extends OpMode {
                 robotHardware.setFlywheelSpeedBackPosition();
                 robotHardware.setRedAngle();
                 sleep(4000);
+                telemetry.addLine(" 2");
+                telemetry.update();
 
-                if (!follower.isBusy()){
+                if (!follower.isBusy() && opModeIsActive()){
                     launch3();
                     telemetry.addLine("Done Path 1");
+                    telemetry.update();
                     setPathState(PathState.DRIVE_TO_PRESET);
+                    telemetry.addLine(" 4");
+                    telemetry.update();
                 }
                 break;
             case DRIVE_TO_PRESET:
                 //all done!
-                if (!follower.isBusy()){
+                if (!follower.isBusy() && opModeIsActive()){
                     telemetry.addLine("To preload");
                     follower.followPath(startToFarPresetStart);
                     robotHardware.startIntake();
@@ -167,14 +187,14 @@ public class autoRedBack extends OpMode {
                 }
                 break;
             case PICKUP_PRESET:
-                if(!follower.isBusy()){
+                if(!follower.isBusy() && opModeIsActive()){
                     telemetry.addLine("Picking up preload");
                     follower.followPath(farPresetStartToFarPresetEnd);
                     setPathState(PathState.PRESET_TO_SHOOT);
                 }
                 break;
             case PRESET_TO_SHOOT:
-                if(!follower.isBusy()){
+                if(!follower.isBusy() && opModeIsActive()){
                     telemetry.addLine("To launch zone");
                     follower.followPath(farPresetEndToShoot);
                     robotHardware.stopIntake();
@@ -184,7 +204,7 @@ public class autoRedBack extends OpMode {
                 }
                 break;
             case SHOOT_PRESET:
-                if(!follower.isBusy()){
+                if(!follower.isBusy() && opModeIsActive()){
                     robotHardware.stopIntake();
                     telemetry.addLine("Launching");
                     launch3();
@@ -192,7 +212,7 @@ public class autoRedBack extends OpMode {
                 }
                 break;
             case DRIVE_TO_PRESET2:
-                if(!follower.isBusy()){
+                if(!follower.isBusy() && opModeIsActive()){
                     telemetry.addLine("To middle preset");
                     follower.followPath(shootToMiddlePresetStart);
                     robotHardware.startIntake();
@@ -200,14 +220,14 @@ public class autoRedBack extends OpMode {
                 }
                 break;
             case PICKUP_PRESET2:
-                if(!follower.isBusy()){
+                if(!follower.isBusy() && opModeIsActive()){
                     telemetry.addLine("Picking up middle preset");
                     follower.followPath(middlePresetStartToMiddlePresetEnd);
                     setPathState(PathState.PRESET2_TO_SHOOT);
                 }
                 break;
             case PRESET2_TO_SHOOT:
-                if(!follower.isBusy()){
+                if(!follower.isBusy() && opModeIsActive()){
                     telemetry.addLine("To launch zone");
                     follower.followPath(middlePresetEndToShoot);
                     robotHardware.stopIntake();
@@ -217,7 +237,7 @@ public class autoRedBack extends OpMode {
                 }
                 break;
             case SHOOT_PRESET2:
-                if(!follower.isBusy()){
+                if(!follower.isBusy() && opModeIsActive()){
                     robotHardware.stopIntake();
                     telemetry.addLine("Launching middle preset");
                     launch3();
@@ -225,14 +245,14 @@ public class autoRedBack extends OpMode {
                 }
                 break;
             case MOVE_OUT_OF_LAUNCH:
-                if(!follower.isBusy()){
+                if(!follower.isBusy() && opModeIsActive()){
                     telemetry.addLine("Moving out of launch");
                     follower.followPath(startToFarPresetStart);
                     setPathState(PathState.DONE);
                 }
                 break;
             case DONE:
-                if(!follower.isBusy()){
+                if(!follower.isBusy() && opModeIsActive()){
                     telemetry.addLine("Done with complete auto");
                     robotHardware.stopFlywheel();
                 }
@@ -241,14 +261,21 @@ public class autoRedBack extends OpMode {
                 telemetry.addLine("NO State Commanded");
                 break;
         }
+
+        telemetry.addLine("end of state machine");
+        telemetry.update();
+        return;
     }
     public void setPathState(PathState newState){
         pathState = newState;
         pathTimer.resetTimer();
     }
 
+
     @Override
-    public void init(){
+
+    public void runOpMode(){
+
         pathState = PathState.SHOOT_PRELOAD;
         pathTimer = new Timer();
         opModeTimer = new Timer();
@@ -259,24 +286,25 @@ public class autoRedBack extends OpMode {
         follower.setPose(farShootPose);
 
         hardwareInit();
-    }
 
-    public void start(){
         opModeTimer.resetTimer();
         setPathState(pathState);
-    }
 
-    @Override
-    public void loop(){
-        follower.update();
-        statePathUpdate();
+        waitForStart();
+        while (opModeIsActive()){
+            follower.update();
 
-        telemetry.addData("path state", pathState.toString());
-        telemetry.addData("x", follower.getPose().getX());
-        telemetry.addData("y", follower.getPose().getY());
-        telemetry.addData("heading", follower.getPose().getHeading());
-        telemetry.addData("path time", pathTimer.getElapsedTimeSeconds());
+            statePathUpdate();
 
+
+
+            telemetry.addData("path state", pathState.toString());
+            telemetry.addData("x", follower.getPose().getX());
+            telemetry.addData("y", follower.getPose().getY());
+            telemetry.addData("heading", follower.getPose().getHeading());
+            telemetry.addData("path time", pathTimer.getElapsedTimeSeconds());
+            telemetry.update();
+        }
     }
 
 

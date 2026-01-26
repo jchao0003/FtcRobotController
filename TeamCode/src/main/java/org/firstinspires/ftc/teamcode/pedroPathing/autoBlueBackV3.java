@@ -17,7 +17,7 @@ import com.qualcomm.robotcore.util.ElapsedTime;
 import org.firstinspires.ftc.teamcode.pedroPathing.Constants;
 
 @Autonomous
-public class autoBlueBackV2 extends OpMode {
+public class autoBlueBackV3 extends OpMode {
     private ElapsedTime runtime = new ElapsedTime();
 
     private Follower follower;
@@ -25,8 +25,10 @@ public class autoBlueBackV2 extends OpMode {
 
     private DcMotorEx flywheel;
     private DcMotor intake;
+    int shotsToFire = 3;
 
-    RobotHardware robotHardware;
+
+    RobotHardwareV2 robotHardware;
 
 
 
@@ -34,28 +36,28 @@ public class autoBlueBackV2 extends OpMode {
     private double fudgeFactor = Math.toRadians(15);
 
     private Servo feeder;
-
-    public void launch3(){
-        robotHardware.launch();
-        sleep(1000);
-        robotHardware.launchPt2();
-        sleep(750);
-        robotHardware.launch();
-        sleep(1250);
-        robotHardware.launchPt2();
-        sleep(750);
-        robotHardware.launch();
-        sleep(1250);
-        robotHardware.launchPt2();
-        sleep(750);
-        robotHardware.launch();
-    }
+//
+//    public void launch3(){
+//        robotHardware.launch(true);
+//        sleep(1000);
+//        robotHardware.launchPt2();
+//        sleep(750);
+//        robotHardware.launch();
+//        sleep(1250);
+//        robotHardware.launchPt2();
+//        sleep(750);
+//        robotHardware.launch();
+//        sleep(1250);
+//        robotHardware.launchPt2();
+//        sleep(750);
+//        robotHardware.launch();
+//    }
 
 
 
     public void hardwareInit(){
-        robotHardware = new RobotHardware();
-        RobotInitializer.initializeRobot(hardwareMap, robotHardware);
+        robotHardware = new RobotHardwareV2();
+        RobotInitializerV2.initializeRobot(hardwareMap, robotHardware);
 
         intake = robotHardware.intake;
         flywheel = robotHardware.flywheel;
@@ -72,7 +74,15 @@ public class autoBlueBackV2 extends OpMode {
 
         START_TO_SHOOT,
 
-        SHOOT_PRELOAD,
+        START,
+        LAUNCH_PRELOAD,
+        WAIT_FOR_LAUNCH_PRELOAD,
+        LAUNCH_CORNER,
+        WAIT_FOR_LAUNCH_CORNER,
+        LAUNCH_FAR,
+        WAIT_FOR_LAUNCH_FAR,
+        LAUNCH_MID,
+        WAIT_FOR_LAUNCH_MID,
         DRIVE_TO_PRESET_CORNER,
         PICKUP_PRESET_CORNER,
         PRESET_CORNER_TO_SHOOT,
@@ -158,7 +168,7 @@ public class autoBlueBackV2 extends OpMode {
 
     public void statePathUpdate(){
         switch(pathState){
-            case SHOOT_PRELOAD:
+            case START:
                 //check if follower is done with path
                 //and check that 5 seconds has elapsed
                 robotHardware.resetMechanisms();
@@ -168,9 +178,25 @@ public class autoBlueBackV2 extends OpMode {
                 sleep(4000);
 
                 if (!follower.isBusy()){
-                    launch3();
                     telemetry.addLine("Done Path 1");
-                    setPathState(PathState.DRIVE_TO_PRESET_FAR);
+                    setPathState(PathState.LAUNCH_PRELOAD);
+                }
+                break;
+            case LAUNCH_PRELOAD:
+                robotHardware.startSpin();
+                robotHardware.launch(true);
+                setPathState(PathState.WAIT_FOR_LAUNCH_PRELOAD);
+                break;
+
+            case WAIT_FOR_LAUNCH_PRELOAD:
+                if(robotHardware.launch(false)) {
+                    shotsToFire -= 1;
+                    if(shotsToFire > 0) {
+                        setPathState(PathState.LAUNCH_PRELOAD);
+                    } else {
+                        setPathState(PathState.DRIVE_TO_PRESET_FAR);
+                        shotsToFire = 3;
+                    }
                 }
                 break;
             case DRIVE_TO_PRESET_FAR:
@@ -196,17 +222,33 @@ public class autoBlueBackV2 extends OpMode {
                     //robotHardware.stopIntake();
                     sleep(500);
                     robotHardware.startIntake();
-                    setPathState(PathState.SHOOT_PRESET_FAR);
+                    setPathState(PathState.LAUNCH_FAR);
                 }
                 break;
-            case SHOOT_PRESET_FAR:
-                if(!follower.isBusy()){
-                    robotHardware.stopIntake();
-                    telemetry.addLine("Launching");
-                    robotHardware.startIntake();
-                    launch3();
-                    robotHardware.stopIntake();
-                    setPathState(PathState.DRIVE_TO_PRESET_CORNER); //If want to do second preset line change this to DRIVE_TO_PRESET2
+//            case SHOOT_PRESET_FAR:
+//                if(!follower.isBusy()){
+//                    robotHardware.stopIntake();
+//                    telemetry.addLine("Launching");
+//                    robotHardware.startIntake();
+//                    launch3();
+//                    robotHardware.stopIntake();
+//                    setPathState(PathState.DRIVE_TO_PRESET_CORNER); //If want to do second preset line change this to DRIVE_TO_PRESET2
+//                }
+//                break;
+            case LAUNCH_FAR:
+                robotHardware.launch(true);
+                setPathState(PathState.WAIT_FOR_LAUNCH_FAR);
+                break;
+
+            case WAIT_FOR_LAUNCH_FAR:
+                if(robotHardware.launch(false)) {
+                    shotsToFire -= 1;
+                    if(shotsToFire > 0) {
+                        setPathState(PathState.LAUNCH_FAR);
+                    } else {
+                        setPathState(PathState.DRIVE_TO_PRESET_CORNER);
+                        shotsToFire = 3;
+                    }
                 }
                 break;
             case DRIVE_TO_PRESET_CORNER:
@@ -231,17 +273,33 @@ public class autoBlueBackV2 extends OpMode {
                     robotHardware.stopIntake();
                     sleep(500);
                     robotHardware.startIntake();
-                    setPathState(PathState.SHOOT_PRESET_CORNER);
+                    setPathState(PathState.LAUNCH_CORNER);
                 }
                 break;
-            case SHOOT_PRESET_CORNER:
-                if(!follower.isBusy()){
-                    robotHardware.stopIntake();
-                    telemetry.addLine("Launching preset corner");
-                    robotHardware.startIntake();
-                    launch3();
-                    robotHardware.stopIntake();
-                    setPathState(PathState.DRIVE_TO_PRESET_MID);
+//            case SHOOT_PRESET_CORNER:
+//                if(!follower.isBusy()){
+//                    robotHardware.stopIntake();
+//                    telemetry.addLine("Launching preset corner");
+//                    robotHardware.startIntake();
+//                    launch3();
+//                    robotHardware.stopIntake();
+//                    setPathState(PathState.DRIVE_TO_PRESET_MID);
+//                }
+//                break;
+            case LAUNCH_CORNER:
+                robotHardware.launch(true);
+                setPathState(PathState.WAIT_FOR_LAUNCH_CORNER);
+                break;
+
+            case WAIT_FOR_LAUNCH_CORNER:
+                if(robotHardware.launch(false)) {
+                    shotsToFire -= 1;
+                    if(shotsToFire > 0) {
+                        setPathState(PathState.LAUNCH_CORNER);
+                    } else {
+                        setPathState(PathState.DRIVE_TO_PRESET_MID);
+                        shotsToFire = 3;
+                    }
                 }
                 break;
             case DRIVE_TO_PRESET_MID:
@@ -266,17 +324,33 @@ public class autoBlueBackV2 extends OpMode {
                     robotHardware.stopIntake();
                     sleep(500);
                     robotHardware.startIntake();
-                    setPathState(PathState.SHOOT_PRESET_MID);
+                    setPathState(PathState.LAUNCH_MID);
                 }
                 break;
-            case SHOOT_PRESET_MID:
-                if(!follower.isBusy()){
-                    robotHardware.stopIntake();
-                    telemetry.addLine("Launching middle preset");
-                    robotHardware.startIntake();
-                    launch3();
-                    robotHardware.stopIntake();
-                    setPathState(PathState.MOVE_OUT_OF_LAUNCH);
+//            case SHOOT_PRESET_MID:
+//                if(!follower.isBusy()){
+//                    robotHardware.stopIntake();
+//                    telemetry.addLine("Launching middle preset");
+//                    robotHardware.startIntake();
+//                    launch3();
+//                    robotHardware.stopIntake();
+//                    setPathState(PathState.MOVE_OUT_OF_LAUNCH);
+//                }
+//                break;
+            case LAUNCH_MID:
+                robotHardware.launch(true);
+                setPathState(PathState.WAIT_FOR_LAUNCH_MID);
+                break;
+
+            case WAIT_FOR_LAUNCH_MID:
+                if(robotHardware.launch(false)) {
+                    shotsToFire -= 1;
+                    if(shotsToFire > 0) {
+                        setPathState(PathState.LAUNCH_MID);
+                    } else {
+                        setPathState(PathState.MOVE_OUT_OF_LAUNCH);
+                        shotsToFire = 3;
+                    }
                 }
                 break;
             case MOVE_OUT_OF_LAUNCH:
@@ -305,7 +379,7 @@ public class autoBlueBackV2 extends OpMode {
 
     @Override
     public void init(){
-        pathState = PathState.SHOOT_PRELOAD;
+        pathState = PathState.START;
         pathTimer = new Timer();
         opModeTimer = new Timer();
         follower = Constants.createFollower(hardwareMap);

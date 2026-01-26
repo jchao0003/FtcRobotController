@@ -17,7 +17,7 @@ import com.qualcomm.robotcore.util.ElapsedTime;
 import org.firstinspires.ftc.teamcode.pedroPathing.Constants;
 
 @Autonomous
-public class autoBlueBackV2 extends OpMode {
+public class autoRedBackV2 extends OpMode {
     private ElapsedTime runtime = new ElapsedTime();
 
     private Follower follower;
@@ -31,21 +31,18 @@ public class autoBlueBackV2 extends OpMode {
 
 
 
-    private double fudgeFactor = Math.toRadians(15);
+    private double fudgeFactor = Math.toRadians(-10);
 
     private Servo feeder;
 
     public void launch3(){
         robotHardware.launch();
-        sleep(1000);
+        robotHardware.launchPt2();
+        sleep(500);
+        robotHardware.launch();
         robotHardware.launchPt2();
         sleep(750);
         robotHardware.launch();
-        sleep(1250);
-        robotHardware.launchPt2();
-        sleep(750);
-        robotHardware.launch();
-        sleep(1250);
         robotHardware.launchPt2();
         sleep(750);
         robotHardware.launch();
@@ -101,14 +98,20 @@ public class autoBlueBackV2 extends OpMode {
 
     PathState pathState;
 
-    private final Pose startPose = new Pose(57.3, 9.2, Math.toRadians(90));
-    private final Pose farShootPose = new Pose(57.3, 9.2, Math.toRadians(90));
-    private final Pose cornerPresetStart = new Pose(10, 32.5, Math.toRadians(90));
-    private final Pose cornerPresetEnd = new Pose(10, 12, Math.toRadians(90));
-    private final Pose farPresetStart = new Pose(45, 33.2, Math.toRadians(0));
-    private final Pose farPresetEnd = new Pose(15, 33.2, Math.toRadians(0));
-    private final Pose middlePresetStart = new Pose(45, 57.2, Math.toRadians(0));
-    private final Pose middlePresetEnd = new Pose(15, 57.2, Math.toRadians(0));
+//    private final Pose startPose = new Pose(57.3, 9.2, Math.toRadians(90));
+//    private final Pose farShootPose = new Pose(57.3, 9.2, Math.toRadians(90));
+    private final Pose startPose = new Pose(92, 9, Math.toRadians(90));
+    private final Pose farShootPose = new Pose(92, 9, Math.toRadians(90));
+    private final Pose cornerPresetStart = new Pose(137.5, 32.5, Math.toRadians(90));
+    private final Pose cornerPresetEnd = new Pose(138.9, 12, Math.toRadians(90));
+//    private final Pose farPresetStart = new Pose(45, 33.2, Math.toRadians(0));
+//    private final Pose farPresetEnd = new Pose(15, 33.2, Math.toRadians(0));
+//    private final Pose middlePresetStart = new Pose(45, 57.2, Math.toRadians(0));
+//    private final Pose middlePresetEnd = new Pose(15, 57.2, Math.toRadians(0));
+    private final Pose farPresetStart = new Pose(90, 32.5, Math.toRadians(180));
+    private final Pose farPresetEnd = new Pose(135, 32.5, Math.toRadians(180));
+    private final Pose middlePresetStart = new Pose(90, 56, Math.toRadians(180));
+    private final Pose middlePresetEnd = new Pose(135, 56, Math.toRadians(180));
 
 
     private PathChain startToCornerPresetStart, cornerPresetStartToCornerPresetEnd,cornerPresetEndToFarLaunch, farLaunchToFarPresetStart, farPresetStartToFarPresetEnd, farPresetEndToShoot, shootToMiddlePresetStart, middlePresetStartToMiddlePresetEnd, middlePresetEndToShoot, shootToOutOfLaunch;
@@ -162,9 +165,9 @@ public class autoBlueBackV2 extends OpMode {
                 //check if follower is done with path
                 //and check that 5 seconds has elapsed
                 robotHardware.resetMechanisms();
-                robotHardware.setFlywheelSpeedBackPosition();
-                robotHardware.setBlueAngle();
                 robotHardware.launchPt2();
+                robotHardware.setFlywheelSpeedBackPosition();
+                robotHardware.setRedAngle();
                 sleep(4000);
 
                 if (!follower.isBusy()){
@@ -193,7 +196,7 @@ public class autoBlueBackV2 extends OpMode {
                 if(!follower.isBusy()){
                     telemetry.addLine("To launch zone");
                     follower.followPath(farPresetEndToShoot);
-                    //robotHardware.stopIntake();
+                    robotHardware.stopIntake();
                     sleep(500);
                     robotHardware.startIntake();
                     setPathState(PathState.SHOOT_PRESET_FAR);
@@ -203,9 +206,7 @@ public class autoBlueBackV2 extends OpMode {
                 if(!follower.isBusy()){
                     robotHardware.stopIntake();
                     telemetry.addLine("Launching");
-                    robotHardware.startIntake();
                     launch3();
-                    robotHardware.stopIntake();
                     setPathState(PathState.DRIVE_TO_PRESET_CORNER); //If want to do second preset line change this to DRIVE_TO_PRESET2
                 }
                 break;
@@ -228,9 +229,9 @@ public class autoBlueBackV2 extends OpMode {
                 if(!follower.isBusy()){
                     telemetry.addLine("Preset corner to launch");
                     follower.followPath(cornerPresetEndToFarLaunch);
-                    robotHardware.stopIntake();
-                    sleep(500);
-                    robotHardware.startIntake();
+//                    robotHardware.stopIntake();
+//                    sleep(500);
+//                    robotHardware.startIntake();
                     setPathState(PathState.SHOOT_PRESET_CORNER);
                 }
                 break;
@@ -238,9 +239,7 @@ public class autoBlueBackV2 extends OpMode {
                 if(!follower.isBusy()){
                     robotHardware.stopIntake();
                     telemetry.addLine("Launching preset corner");
-                    robotHardware.startIntake();
                     launch3();
-                    robotHardware.stopIntake();
                     setPathState(PathState.DRIVE_TO_PRESET_MID);
                 }
                 break;
@@ -273,9 +272,7 @@ public class autoBlueBackV2 extends OpMode {
                 if(!follower.isBusy()){
                     robotHardware.stopIntake();
                     telemetry.addLine("Launching middle preset");
-                    robotHardware.startIntake();
                     launch3();
-                    robotHardware.stopIntake();
                     setPathState(PathState.MOVE_OUT_OF_LAUNCH);
                 }
                 break;
