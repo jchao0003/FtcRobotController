@@ -23,13 +23,13 @@ public class RobotHardwareV2 {
     public Servo gate3;
     public CRServo spin;
 
-    public double backVelocity = 1600;
+    public double backVelocity = 800; // 1600;
     public double frontVelocity = 1100;
     public double middleVelocity = 1200;
 
     private double flywheelTargetVelocity = 0;
-    final double TIME_BETWEEN_SHOTS = 1.0;
-    final double FEED_TIME = 0.5;
+    final double TIME_BETWEEN_SHOTS = 1.1;
+    final double FEED_TIME = 0.3;
 
     private ElapsedTime feederTimer = new ElapsedTime();
     private ElapsedTime shotTimer = new ElapsedTime();
@@ -68,7 +68,7 @@ public class RobotHardwareV2 {
                 if (flywheel.getVelocity() > flywheelTargetVelocity - 60){
                     launchState = LaunchState.WAIT_LAUNCH_COMPLETE;
                     stopSpin();
-                    feeder.setPosition(0.22);
+                    feeder.setPosition(0.40);
 
 
                     feederTimer.reset();
@@ -76,7 +76,7 @@ public class RobotHardwareV2 {
                 break;
             case WAIT_LAUNCH_COMPLETE:
                 if (feederTimer.seconds() > FEED_TIME) {
-                    feeder.setPosition(0.55);
+                    feeder.setPosition(0.66);
                     startSpin();
 
                     if(shotTimer.seconds() > TIME_BETWEEN_SHOTS){
@@ -89,11 +89,11 @@ public class RobotHardwareV2 {
     }
 
     public void manualLaunch(){
-        feeder.setPosition(0.22);
+        feeder.setPosition(0.40);
     }
 
     public void manualReset(){
-        feeder.setPosition(0.55);
+        feeder.setPosition(0.66);
     }
 
     public void startSpin(){
@@ -117,11 +117,11 @@ public class RobotHardwareV2 {
         intake.setPower(0);
     }
     public void resetMechanisms(){
-        feeder.setPosition(0.55);
+        feeder.setPosition(0.66);
         intakeRamp.setPosition(0.4655);
         rotateLauncher.setPosition(0.2);
         gate2.setPosition(0.5);
-        gate3.setPosition(0.535);
+        gate3.setPosition(0);
     }
 
     public void reverseIntake(){
@@ -138,7 +138,7 @@ public class RobotHardwareV2 {
     }
 
     public void intakeRampUp(){
-        intakeRamp.setPosition(0.525);
+        intakeRamp.setPosition(0.5185);
     }
 
     public void intakeRampDown(){
