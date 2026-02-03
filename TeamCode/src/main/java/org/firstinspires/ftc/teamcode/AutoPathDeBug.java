@@ -17,7 +17,7 @@ import com.qualcomm.robotcore.util.ElapsedTime;
 
 import org.firstinspires.ftc.teamcode.pedroPathing.Constants;
 
-@Autonomous
+//@Autonomous
 public class AutoPathDeBug extends OpMode {
     private ElapsedTime runtime = new ElapsedTime();
 

@@ -18,7 +18,7 @@ import com.qualcomm.robotcore.util.ElapsedTime;
 
 import org.firstinspires.ftc.teamcode.pedroPathing.Constants;
 
-@Autonomous
+//@Autonomous
 public class redBackLinear extends LinearOpMode {
     private ElapsedTime runtime = new ElapsedTime();
 

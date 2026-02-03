@@ -23,13 +23,16 @@ public class RobotHardwareV2 {
     public Servo gate3;
     public CRServo spin;
 
-    public double backVelocity = 800; // 1600;
-    public double frontVelocity = 1100;
+    public double backVelocity = 1600; // 1600;
+    public double frontVelocity = 1050; //1100;
     public double middleVelocity = 1200;
 
     private double flywheelTargetVelocity = 0;
-    final double TIME_BETWEEN_SHOTS = 1.1;
-    final double FEED_TIME = 0.3;
+    final double TIME_BETWEEN_SHOTS = .9;
+    final double FEED_TIME = 0.2;
+
+    final double TIME_BETWEEN_SHOTS_BACK = 1.3;
+    final double FEED_TIME_BACK = 0.5;
 
     private ElapsedTime feederTimer = new ElapsedTime();
     private ElapsedTime shotTimer = new ElapsedTime();
@@ -88,6 +91,38 @@ public class RobotHardwareV2 {
         return false;
     }
 
+    boolean launchBack(boolean shotRequested){
+
+        switch (launchState) {
+            case IDLE:
+                if (shotRequested) {
+                    launchState = LaunchState.START_LAUNCH;
+                    shotTimer.reset();
+                }
+                break;
+            case START_LAUNCH:
+                if (flywheel.getVelocity() > flywheelTargetVelocity - 60){
+                    launchState = LaunchState.WAIT_LAUNCH_COMPLETE;
+                    stopSpin();
+                    feeder.setPosition(0.40);
+
+                    feederTimer.reset();
+                }
+                break;
+            case WAIT_LAUNCH_COMPLETE:
+                if (feederTimer.seconds() > FEED_TIME_BACK) {
+                    feeder.setPosition(0.66);
+                    startSpin();
+
+                    if(shotTimer.seconds() > TIME_BETWEEN_SHOTS_BACK){
+                        launchState = LaunchState.IDLE;
+                        return true;
+                    }
+                }
+        }
+        return false;
+    }
+
     public void manualLaunch(){
         feeder.setPosition(0.40);
     }
@@ -120,8 +155,10 @@ public class RobotHardwareV2 {
         feeder.setPosition(0.66);
         intakeRamp.setPosition(0.4655);
         rotateLauncher.setPosition(0.2);
-        gate2.setPosition(0.5);
-        gate3.setPosition(0);
+        gate2.setPosition(0.84);
+        //gate2.setPosition(0.5);
+        gate3.setPosition(0.87);
+        //gate3.setPosition(0.55);
     }
 
     public void reverseIntake(){

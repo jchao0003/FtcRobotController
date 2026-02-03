@@ -8,7 +8,7 @@ import com.qualcomm.robotcore.hardware.PIDCoefficients;
 import com.qualcomm.robotcore.hardware.PIDFCoefficients;
 import com.qualcomm.robotcore.hardware.Servo;
 
-@TeleOp
+//@TeleOp
 public class FlywheelTuner extends OpMode {
     public DcMotorEx flywheel1;
     //public DcMotorEx flywheel2;

@@ -14,7 +14,7 @@ import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 
 import org.firstinspires.ftc.robotcore.external.navigation.Pose3D;
 
-@TeleOp
+//@TeleOp
 public class AprilTagLimelightTest extends OpMode {
     private Limelight3A limelight;
     private AprilTagProcessor myAprilTagProcessor;

@@ -9,6 +9,7 @@ public class ColorSensorTest extends OpMode {
     TestColorSensorsInit sensorInit = new TestColorSensorsInit();
 
     TestColorSensorsInit.DetectedColor detectedColor2;
+    TestColorSensorsInit.DetectedColor detectedColor3;
 
     public void init(){
         sensorInit.init(hardwareMap);
@@ -16,7 +17,11 @@ public class ColorSensorTest extends OpMode {
 
     @Override
     public void loop() {
-        detectedColor2 = sensorInit.getDetectedColor(telemetry);
+        detectedColor2 = sensorInit.getDetectedColor2(telemetry);
         telemetry.addData("Color Detected", detectedColor2);
+
+        detectedColor3 = sensorInit.getDetectedColor3(telemetry);
+        telemetry.addData("Color Detected", detectedColor3);
+
     }
 }

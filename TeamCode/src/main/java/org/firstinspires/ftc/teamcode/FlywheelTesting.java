@@ -20,7 +20,7 @@ import com.qualcomm.robotcore.util.Range;
 import com.qualcomm.robotcore.robot.Robot;
 import org.firstinspires.ftc.robotcore.external.JavaUtil;
 
-@TeleOp(name="FlywheelTesting", group="Linear Opmode")
+//@TeleOp(name="FlywheelTesting", group="Linear Opmode")
 
 
 public class FlywheelTesting extends LinearOpMode{
