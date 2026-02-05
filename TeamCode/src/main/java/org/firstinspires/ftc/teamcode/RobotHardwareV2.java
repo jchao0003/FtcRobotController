@@ -1,5 +1,8 @@
 package org.firstinspires.ftc.teamcode;
 
+import java.util.HashMap;
+import java.util.Map;
+
 import com.qualcomm.robotcore.hardware.CRServo;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.DcMotorEx;
@@ -38,6 +41,29 @@ public class RobotHardwareV2 {
     private ElapsedTime shotTimer = new ElapsedTime();
 
     private LaunchState launchState = LaunchState.IDLE;
+    private SortAndLaunchState sortAndLaunchState = SortAndLaunchState.IDLE;
+    private int[] sortAndLaunchSequence;
+    private double[] sortAndLaunchWaits;  // [waitAfterDrop0, waitAfterDrop1, waitAfterDrop2]
+    private ElapsedTime sortAndLaunchTimer = new ElapsedTime();
+
+    /** Maps launchSequence string (e.g. "1,2,3") to [waitFirst, waitSecond, waitThird] in seconds */
+    private static final Map<String, double[]> SORT_AND_LAUNCH_WAIT_TIMES = new HashMap<>();
+    static {
+        SORT_AND_LAUNCH_WAIT_TIMES.put("1,2,3", new double[]{3.0, 3.0, 3.0});
+        SORT_AND_LAUNCH_WAIT_TIMES.put("1,3,2", new double[]{0.3, 0.7, 0.4});
+        SORT_AND_LAUNCH_WAIT_TIMES.put("2,1,3", new double[]{0.7, 0.3, 0.8});
+        SORT_AND_LAUNCH_WAIT_TIMES.put("2,3,1", new double[]{0.7, 0.5, 0.3});
+        SORT_AND_LAUNCH_WAIT_TIMES.put("3,1,2", new double[]{0.7, 0.3, 0.7});
+        SORT_AND_LAUNCH_WAIT_TIMES.put("3,2,1", new double[]{0.7, 0.7, 0.3});
+    }
+
+    /** Register wait times for a launch sequence. Call before sortAndLaunch if sequence not pre-defined. 
+    public static void registerSortAndLaunchWaitTimes(int[] sequence, double waitFirst, double waitSecond, double waitThird) {
+        if (sequence != null && sequence.length == 3) {
+            SORT_AND_LAUNCH_WAIT_TIMES.put(sequence[0] + "," + sequence[1] + "," + sequence[2],
+                    new double[]{waitFirst, waitSecond, waitThird});
+        }
+    }*/
 
 //
 //    public void launch(){
@@ -54,10 +80,36 @@ public class RobotHardwareV2 {
         gate3.setPosition(0.87);
     }
 
+    private void dropByPosition(int position) {
+        switch (position) {
+            case 1: dropGate2(); break;
+            case 2: dropGate3(); break;
+            case 3: intakeRampDown(); break;
+        }
+    }
+
     private enum LaunchState {
         IDLE,
         START_LAUNCH,
         WAIT_LAUNCH_COMPLETE,
+    }
+
+    private enum SortAndLaunchState {
+        IDLE,
+        DROP_0,
+        WAIT_AFTER_DROP_0,
+        DROP_1,
+        WAIT_AFTER_DROP_1,
+        START_LAUNCH_0,
+        WAIT_LAUNCH_COMPLETE_0,
+        DROP_2,
+        START_LAUNCH_1,
+        WAIT_LAUNCH_COMPLETE_1,
+        WAIT_AFTER_DROP_2,
+        START_LAUNCH_2,
+        WAIT_LAUNCH_COMPLETE_2,
+        START_LAUNCH_EXTRA,
+        WAIT_LAUNCH_COMPLETE_EXTRA,
     }
     boolean launch(boolean shotRequested){
         switch (launchState) {
@@ -87,6 +139,161 @@ public class RobotHardwareV2 {
                         return true;
                     }
                 }
+        }
+        return false;
+    }
+
+    /**
+     * sortAndLaunch - State machine for sorted launch sequence.
+     * Transition order is driven by launchSequence: drop first, wait, drop second, wait, launch 1,
+     * drop third, wait (waits[2]), launch 2, launch 3. All waits use WAIT_AFTER_DROP.
+     * @param launchSequence Array of 3 integers (1-3) specifying gate order
+     * @return true when entire sequence is complete, false if sequence not in wait-times map
+     * 
+     * 
+     * 
+     * 
+     * State sequence:
+        IDLE
+        DROP_0 → drop sequence[0]
+        WAIT_AFTER_DROP_0 → wait waits[0]
+        DROP_1 → drop sequence[1]
+        WAIT_AFTER_DROP_1 → wait waits[1], then require okToLaunch for first launch
+        START_LAUNCH_1 → launch 1 (requires okToLaunch)
+        WAIT_LAUNCH_COMPLETE_1
+        DROP_2 → drop sequence[2] (third item), start timer for waits[2]
+        START_LAUNCH_2 → launch 2
+        WAIT_LAUNCH_COMPLETE_2
+        WAIT_AFTER_DROP_2 → wait waits[2] (only if longer than launch 2 time; timer started in DROP_2)
+        START_LAUNCH_3 → launch 3
+        WAIT_LAUNCH_COMPLETE_3 → IDLE
+     */
+    boolean sortAndLaunch(boolean okToLaunch, int[] launchSequence) {
+        if (launchSequence == null || launchSequence.length != 3) {
+            return false;
+        }
+
+        switch (sortAndLaunchState) {
+            case IDLE:
+                String key = launchSequence[0] + "," + launchSequence[1] + "," + launchSequence[2];
+                double[] waits = SORT_AND_LAUNCH_WAIT_TIMES.get(key);
+                if (waits == null || waits.length < 3) {
+                    return false;
+                }
+                sortAndLaunchSequence = launchSequence;
+                sortAndLaunchWaits = waits;
+                sortAndLaunchState = SortAndLaunchState.DROP_0;
+                break;
+            case DROP_0:
+                dropByPosition(sortAndLaunchSequence[0]);
+                sortAndLaunchTimer.reset();
+                startSpin();
+                sortAndLaunchState = SortAndLaunchState.WAIT_AFTER_DROP_0;
+                break;
+            case WAIT_AFTER_DROP_0:
+                if (sortAndLaunchTimer.seconds() > sortAndLaunchWaits[0]) {
+                    sortAndLaunchState = SortAndLaunchState.DROP_1;
+                }
+                break;
+            case DROP_1:
+                dropByPosition(sortAndLaunchSequence[1]);
+                sortAndLaunchTimer.reset();
+                sortAndLaunchState = SortAndLaunchState.WAIT_AFTER_DROP_1;
+                break;
+            case WAIT_AFTER_DROP_1:
+                if (sortAndLaunchTimer.seconds() > sortAndLaunchWaits[1]) {
+                    stopSpin();
+                    if (!okToLaunch) {
+                        break;
+                    }
+                    sortAndLaunchState = SortAndLaunchState.START_LAUNCH_0;
+                    shotTimer.reset();
+                    feederTimer.reset();
+                }
+                break;
+            case START_LAUNCH_0:
+                if (flywheel.getVelocity() > flywheelTargetVelocity - 60) {
+                    stopSpin();
+                    feeder.setPosition(0.40);
+                    feederTimer.reset();
+                    sortAndLaunchState = SortAndLaunchState.WAIT_LAUNCH_COMPLETE_0;
+                }
+                break;
+            case WAIT_LAUNCH_COMPLETE_0:
+                if (feederTimer.seconds() > FEED_TIME) {
+                    feeder.setPosition(0.66);
+                    if (shotTimer.seconds() > TIME_BETWEEN_SHOTS) {
+                        startSpin();
+                        sortAndLaunchState = SortAndLaunchState.DROP_2;
+                    }
+                }
+                break;
+            case DROP_2:
+                dropByPosition(sortAndLaunchSequence[2]);
+                sortAndLaunchTimer.reset();
+                sortAndLaunchState = SortAndLaunchState.START_LAUNCH_1;
+                shotTimer.reset();
+                feederTimer.reset();
+                break;
+            case START_LAUNCH_1:
+                if (flywheel.getVelocity() > flywheelTargetVelocity - 60) {
+                    stopSpin();
+                    feeder.setPosition(0.40);
+                    feederTimer.reset();
+                    sortAndLaunchState = SortAndLaunchState.WAIT_LAUNCH_COMPLETE_1;
+                }
+                break;
+            case WAIT_LAUNCH_COMPLETE_1:
+                if (feederTimer.seconds() > FEED_TIME) {
+                    feeder.setPosition(0.66);
+                    startSpin();
+                    if (shotTimer.seconds() > TIME_BETWEEN_SHOTS) {
+                        sortAndLaunchState = SortAndLaunchState.WAIT_AFTER_DROP_2;
+                    }
+                }
+                break;
+            case WAIT_AFTER_DROP_2:
+                if (sortAndLaunchTimer.seconds() > sortAndLaunchWaits[2]) {
+                    sortAndLaunchState = SortAndLaunchState.START_LAUNCH_2;
+                    shotTimer.reset();
+                    feederTimer.reset();
+                }
+                break;
+            case START_LAUNCH_2:
+                if (flywheel.getVelocity() > flywheelTargetVelocity - 60) {
+                    stopSpin();
+                    feeder.setPosition(0.40);
+                    feederTimer.reset();
+                    shotTimer.reset();
+                    sortAndLaunchState = SortAndLaunchState.WAIT_LAUNCH_COMPLETE_2;
+                }
+                break;
+            case WAIT_LAUNCH_COMPLETE_2:
+                if (feederTimer.seconds() > FEED_TIME) {
+                    feeder.setPosition(0.66);
+                    startSpin();
+                    if (shotTimer.seconds() > TIME_BETWEEN_SHOTS) {
+                        sortAndLaunchState = SortAndLaunchState.START_LAUNCH_EXTRA;
+                    }
+                }
+                break;
+                case START_LAUNCH_EXTRA:
+                    if (flywheel.getVelocity() > flywheelTargetVelocity - 60) {
+                        stopSpin();
+                        feeder.setPosition(0.40);
+                        feederTimer.reset();
+                        sortAndLaunchState = SortAndLaunchState.WAIT_LAUNCH_COMPLETE_EXTRA;
+                    }
+                    break;
+                case WAIT_LAUNCH_COMPLETE_EXTRA:
+                    if (feederTimer.seconds() > FEED_TIME) {
+                        feeder.setPosition(0.66);
+                        sortAndLaunchState = SortAndLaunchState.IDLE;
+                        return true;
+                    }
+                    break;                
+            default:
+                break;
         }
         return false;
     }
@@ -151,6 +358,16 @@ public class RobotHardwareV2 {
     public void stopIntake(){
         intake.setPower(0);
     }
+
+
+    public void resetMechanismsUp(){
+        feeder.setPosition(0.66);
+        intakeRamp.setPosition(0.519);
+        rotateLauncher.setPosition(0.2);
+        gate2.setPosition(0.5);
+        gate3.setPosition(0.55);
+    }
+
     public void resetMechanisms(){
         feeder.setPosition(0.66);
         intakeRamp.setPosition(0.4655);

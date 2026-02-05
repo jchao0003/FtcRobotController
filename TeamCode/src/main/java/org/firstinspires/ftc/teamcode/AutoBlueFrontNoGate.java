@@ -17,13 +17,13 @@ import com.qualcomm.robotcore.util.ElapsedTime;
 import org.firstinspires.ftc.teamcode.pedroPathing.Constants;
 
 @Autonomous
-public class AutoRedFront extends OpMode {
+public class AutoBlueFrontNoGate extends OpMode {
     private ElapsedTime runtime = new ElapsedTime();
 
     private Follower follower;
     private Timer pathTimer, opModeTimer;
 
-    int shotsToFire = 3;
+    int shotsToFire = 4;
 
     RobotHardwareV2 robotHardware;
 
@@ -69,16 +69,16 @@ public class AutoRedFront extends OpMode {
 
     PathState pathState;
 
-    private final Pose startPose = new Pose(124.8, 119.2, Math.toRadians(36));
-    private final Pose closeShoot = new Pose(107.4, 106.6, Math.toRadians(45));
-    private final Pose startClose = new Pose(102.3, 88.1, Math.toRadians(175));
-    private final Pose endClose = new Pose(129.8, 76.6, Math.toRadians(180));
-    private final Pose middleShoot = new Pose(85.5, 84.6, Math.toRadians(45));
-    private final Pose startMid = new Pose(102.4, 60, Math.toRadians(180));
-    private final Pose endMid = new Pose(131.7, 60, Math.toRadians(180));
-    private final Pose startFar = new Pose(101.4, 37, Math.toRadians(180));
-    private final Pose endFar = new Pose(131, 37, Math.toRadians(180));
-    private final Pose endPose = new Pose(85.6, 105, Math.toRadians(140));
+    private final Pose startPose = new Pose(19.2, 119.1, Math.toRadians(144));
+    private final Pose closeShoot = new Pose(36.6, 106.6, Math.toRadians(145));
+    private final Pose startClose = new Pose(44, 80, Math.toRadians(5));//(42, 88.1, Math.toRadians(5));
+    private final Pose endClose = new Pose(23, 80, Math.toRadians(0));//(15.4, 76.6, Math.toRadians(0));
+    private final Pose middleShoot = new Pose(58.7, 84.6, Math.toRadians(135));
+    private final Pose startMid = new Pose(41.9, 52, Math.toRadians(0));//(41.9, 57.5, Math.toRadians(0));
+    private final Pose endMid = new Pose(15, 52, Math.toRadians(0));//(10.4, 57.5, Math.toRadians(0));
+    private final Pose startFar = new Pose(38, 30, Math.toRadians(0));//(41.6, 33.8, Math.toRadians(0));
+    private final Pose endFar = new Pose(15, 30, Math.toRadians(0));//(11.1, 33.8, Math.toRadians(0));
+    private final Pose endPose = new Pose(59.1, 105, Math.toRadians(145));
 
 
     private PathChain startToCloseShoot, closeShootToStartClose, startCloseToEndClose, endCloseToMiddleShoot, middleShootToStartMid, startMidToEndMid, endMidToMiddleShoot, middleShootToStartFar, startFarToEndFar, endFarToEnd;
@@ -168,6 +168,9 @@ public class AutoRedFront extends OpMode {
             case SHOOT_PRELOAD_TO_START_CLOSE:
                 if (!follower.isBusy()){
                     telemetry.addLine("Path State: Shoot preload to start close");
+
+                    robotHardware.resetMechanismsUp();
+
                     follower.followPath(closeShootToStartClose, .8, true);
 
                     robotHardware.setFlywheelSpeedMiddlePosition();
@@ -198,6 +201,11 @@ public class AutoRedFront extends OpMode {
             case LAUNCH_CLOSE:
                 if (!follower.isBusy()){
                     telemetry.addLine("Path State: Launch close");
+
+                    robotHardware.dropGate2();
+                    robotHardware.dropGate3();
+                    //sleep(500);
+
                     robotHardware.launch(true);
                     setPathState(PathState.WAIT_FOR_LAUNCH_CLOSE);
                 }
@@ -218,6 +226,9 @@ public class AutoRedFront extends OpMode {
             case SHOOT_CLOSE_TO_START_MID:
                 if (!follower.isBusy()){
                     telemetry.addLine("Path State: Shoot close to start mid");
+
+                    robotHardware.resetMechanismsUp();
+
                     follower.followPath(middleShootToStartMid, 0.8, true);
 
 //                    robotHardware.startIntake();
@@ -246,6 +257,11 @@ public class AutoRedFront extends OpMode {
             case LAUNCH_MID:
                 if (!follower.isBusy()) {
                     telemetry.addLine("Path State: Launch mid");
+
+                    robotHardware.dropGate2();
+                    robotHardware.dropGate3();
+                    //sleep(500);
+
                     robotHardware.launch(true);
                     setPathState(PathState.WAIT_FOR_LAUNCH_MID);
                 }
@@ -266,6 +282,9 @@ public class AutoRedFront extends OpMode {
             case SHOOT_MID_TO_START_FAR:
                 if (!follower.isBusy()){
                     telemetry.addLine("Path State: Shoot mid to start far");
+
+                    robotHardware.resetMechanismsUp();
+
                     follower.followPath(middleShootToStartFar, .8, true);
 
 //                    robotHardware.startIntake();
@@ -295,6 +314,11 @@ public class AutoRedFront extends OpMode {
             case LAUNCH_FAR:
                 if (!follower.isBusy()){
                     telemetry.addLine("Path State: Launch far");
+
+                    robotHardware.dropGate2();
+                    robotHardware.dropGate3();
+                    //sleep(500);
+
                     robotHardware.launch(true);
                     setPathState(PathState.WAIT_FOR_LAUNCH_FAR);
                 }
@@ -318,7 +342,8 @@ public class AutoRedFront extends OpMode {
                 break;
             default:
                 telemetry.addLine("No State Commanded");
-                break;        }
+                break;
+        }
     }
 
     public void setPathState(PathState newState){

@@ -8,7 +8,7 @@ import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import org.firstinspires.ftc.robotcore.external.JavaUtil;
 
-@TeleOp(name="Meet2TeleOp", group="Linear Opmode")
+//@TeleOp(name="Meet2TeleOp", group="Linear Opmode")
 
 public class Meet2TeleOp extends LinearOpMode {
 
