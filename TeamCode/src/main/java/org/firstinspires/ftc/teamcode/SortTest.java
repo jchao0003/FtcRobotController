@@ -29,8 +29,14 @@ public class SortTest extends OpMode {
 
     private double fudgeFactor = Math.toRadians(15);
 
-    int[] order = new int[]{1, 2, 3};
+    int[] order123 = new int[]{1, 2, 3};
+    int[] order132 = new int[]{1, 3, 2};
+    int[] order213 = new int[]{2, 1, 3};
+    int[] order231 = new int[]{2, 3, 1};
+    int[] order321 = new int[]{3, 2, 1};
+    int[] order312 = new int[]{3, 1, 2};
 
+    int[] order = order213;
 
 
     public void hardwareInit(){
@@ -154,7 +160,7 @@ public class SortTest extends OpMode {
                 break;
             case WAIT_FOR_LAUNCH_PRELOAD:
                 telemetry.addLine("Path State: Wait for launch preload");
-                if (robotHardware.sortAndLaunch(true, order)) {
+                if (robotHardware.sortAndLaunch(true, order, telemetry)) {
                         setPathState(PathState.DONE);
                         robotHardware.stopSpin();
                 }
