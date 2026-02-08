@@ -14,6 +14,7 @@ import com.qualcomm.robotcore.hardware.DcMotorEx;
 import com.qualcomm.robotcore.hardware.Servo;
 import com.qualcomm.robotcore.util.ElapsedTime;
 
+import org.firstinspires.ftc.robotcore.external.Telemetry;
 import org.firstinspires.ftc.teamcode.pedroPathing.Constants;
 
 @Autonomous
@@ -24,6 +25,8 @@ public class SortTest extends OpMode {
     private Timer pathTimer, opModeTimer;
 
     int shotsToFire = 4;
+
+    int patternNum;
 
     RobotHardwareV2 robotHardware;
 
@@ -36,8 +39,7 @@ public class SortTest extends OpMode {
     int[] order321 = new int[]{3, 2, 1};
     int[] order312 = new int[]{3, 1, 2};
 
-    int[] order = order213;
-
+    int[] launchOrder;
 
     public void hardwareInit(){
         robotHardware = new RobotHardwareV2();
@@ -77,7 +79,8 @@ public class SortTest extends OpMode {
     PathState pathState;
 
     private final Pose startPose = new Pose(19.2, 119.1, Math.toRadians(144));
-    private final Pose closeShoot = new Pose(36.6, 106.6, Math.toRadians(145));
+    private final Pose detectAprilTag = new Pose(36.6, 106.6, Math.toRadians(85));
+    private final Pose closeShoot = new Pose(37, 105, Math.toRadians(145));
     private final Pose startClose = new Pose(44, 80, Math.toRadians(5));//(42, 88.1, Math.toRadians(5));
     private final Pose endClose = new Pose(23, 80, Math.toRadians(0));//(15.4, 76.6, Math.toRadians(0));
     private final Pose middleShoot = new Pose(58.7, 84.6, Math.toRadians(135));
@@ -88,13 +91,17 @@ public class SortTest extends OpMode {
     private final Pose endPose = new Pose(59.1, 105, Math.toRadians(145));
 
 
-    private PathChain startToCloseShoot, closeShootToStartClose, startCloseToEndClose, endCloseToMiddleShoot, middleShootToStartMid, startMidToEndMid, endMidToMiddleShoot, middleShootToStartFar, startFarToEndFar, endFarToEnd;
+    private PathChain startToDetectTag, detectTagToCloseShoot, closeShootToStartClose, startCloseToEndClose, endCloseToMiddleShoot, middleShootToStartMid, startMidToEndMid, endMidToMiddleShoot, middleShootToStartFar, startFarToEndFar, endFarToEnd;
 
     public void buildPaths(){
         // put in coordinates for starting pose then coordinates for ending pose
-        startToCloseShoot = follower.pathBuilder()
-                .addPath(new BezierLine(startPose, closeShoot))
-                .setLinearHeadingInterpolation(startPose.getHeading(), closeShoot.getHeading())
+        startToDetectTag = follower.pathBuilder()
+                .addPath(new BezierLine(startPose, detectAprilTag))
+                .setLinearHeadingInterpolation(startPose.getHeading(), detectAprilTag.getHeading())
+                .build();
+        detectTagToCloseShoot = follower.pathBuilder()
+                .addPath(new BezierLine(detectAprilTag, closeShoot))
+                .setLinearHeadingInterpolation(detectAprilTag.getHeading(), closeShoot.getHeading())
                 .build();
         closeShootToStartClose = follower.pathBuilder()
                 .addPath(new BezierLine(closeShoot, startClose))
@@ -148,21 +155,45 @@ public class SortTest extends OpMode {
             case START_TO_PRELOAD_SHOOT:
                 if (!follower.isBusy()){
                     telemetry.addLine("Path State: Start to preload shoot");
-                    follower.followPath(startToCloseShoot, 0.4, true);
+                    robotHardware.setRedAngle();
+                    follower.followPath(startToDetectTag, 0.5, true);
+
                     setPathState(PathState.LAUNCH_PRELOAD);
                 }
                 break;
             case LAUNCH_PRELOAD:
+                if (patternNum == 0){
+                    int aprilTagID = robotHardware.getDetectedAprilTag(telemetry);
+                    if (aprilTagID != 0 ){
+                        patternNum = aprilTagID;
+                    }
+                }
+
                 if (!follower.isBusy()){
-                    telemetry.addLine("Path State: Launch preload");
-                    setPathState(PathState.WAIT_FOR_LAUNCH_PRELOAD);
+                    if (patternNum != 0) { // detected pattern
+
+                        if (patternNum == 21) { // GPP
+                            launchOrder = order213;
+                        } else if (patternNum == 22) { // PGP
+                            launchOrder = order123;
+                        } else {
+                            launchOrder = order132; // PPG
+                        }
+                        telemetry.addLine("Path State: Launch preload. order: " + launchOrder);
+                        follower.followPath(detectTagToCloseShoot, 0.4, true);
+                        setPathState(PathState.WAIT_FOR_LAUNCH_PRELOAD);
+                    }
                 }
                 break;
             case WAIT_FOR_LAUNCH_PRELOAD:
                 telemetry.addLine("Path State: Wait for launch preload");
-                if (robotHardware.sortAndLaunch(true, order, telemetry)) {
+                robotHardware.setAngleStraight();
+
+                if (!follower.isBusy()) {
+                    if (robotHardware.sortAndLaunch(true, launchOrder, telemetry)) {
                         setPathState(PathState.DONE);
                         robotHardware.stopSpin();
+                    }
                 }
                 break;
 
@@ -200,12 +231,13 @@ public class SortTest extends OpMode {
     public void loop(){
         follower.update();
         statePathUpdate();
-
-        telemetry.addData("path state", pathState.toString());
-        telemetry.addData("x", follower.getPose().getX());
-        telemetry.addData("y", follower.getPose().getY());
-        telemetry.addData("heading", follower.getPose().getHeading());
-        telemetry.addData("path time", pathTimer.getElapsedTimeSeconds());
+//
+//        telemetry.addData("path state", pathState.toString());
+//        telemetry.addData("x", follower.getPose().getX());
+//        telemetry.addData("y", follower.getPose().getY());
+//        telemetry.addData("heading", follower.getPose().getHeading());
+//        telemetry.addData("path time", pathTimer.getElapsedTimeSeconds());
+        telemetry.addData("April Tag Num: ", patternNum);
 
     }
 

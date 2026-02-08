@@ -1,8 +1,12 @@
 package org.firstinspires.ftc.teamcode;
 
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
+import com.qualcomm.hardware.limelightvision.LLResult;
+import com.qualcomm.hardware.limelightvision.LLResultTypes;
+import com.qualcomm.hardware.limelightvision.Limelight3A;
 import com.qualcomm.robotcore.hardware.CRServo;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.DcMotorEx;
@@ -10,6 +14,7 @@ import com.qualcomm.robotcore.hardware.Servo;
 import com.qualcomm.robotcore.util.ElapsedTime;
 
 import org.firstinspires.ftc.robotcore.external.Telemetry;
+import org.firstinspires.ftc.robotcore.external.navigation.Pose3D;
 
 public class RobotHardwareV2 {
     public DcMotor backLeft;
@@ -27,6 +32,8 @@ public class RobotHardwareV2 {
     public Servo gate2;
     public Servo gate3;
     public CRServo spin;
+
+    public Limelight3A limelight;
 
     public double backVelocity = 1600; // 1600;
     public double frontVelocity = 1050; //1100;
@@ -47,6 +54,45 @@ public class RobotHardwareV2 {
     private int[] sortAndLaunchSequence;
     private double[] sortAndLaunchWaits;  // [waitAfterDrop0, waitAfterDrop1, waitAfterDrop2]
     private ElapsedTime sortAndLaunchTimer = new ElapsedTime();
+
+
+
+
+
+    public int getDetectedAprilTag(Telemetry telemetry){
+        LLResult llResult = limelight.getLatestResult();
+
+
+        // telemetry.addLine("Detect April Tag");
+        // telemetry.update();
+
+        if (llResult != null && llResult.isValid()) {
+            /* for debugging
+            Pose3D botPose = llResult.getBotpose();
+            telemetry.addData("Tx", llResult.getTx());
+            telemetry.addData("Ty", llResult.getTy());
+            telemetry.addData("Ta", llResult.getTa());
+            telemetry.addData("Bot Pose", botPose.toString());
+             */
+
+
+            // telemetry.addLine("got llresult" + llResult);
+            // telemetry.update();
+
+            List<LLResultTypes.FiducialResult> fiducials = llResult.getFiducialResults();
+            for (LLResultTypes.FiducialResult fiducial : fiducials) {
+                int id = fiducial.getFiducialId(); // The ID number of the fiducial
+
+                telemetry.addData("April Tag Detected is: ", id);
+                telemetry.update();
+                if (id == 21 || id == 22 || id == 23){
+                    return id;
+                }
+            }
+        }
+        telemetry.update();
+        return 0;
+    }
 
     /** Maps launchSequence string (e.g. "1,2,3") to [waitFirst, waitSecond, waitThird] in seconds */
     private static final Map<String, double[]> SORT_AND_LAUNCH_WAIT_TIMES = new HashMap<>();
@@ -71,7 +117,20 @@ public class RobotHardwareV2 {
     }
 
     public void dropGate3(){
-        gate3.setPosition(0.87);
+        gate3.setPosition(0.89);
+    }
+
+    public void gate2up() {
+        gate2.setPosition(0.42); // ????
+    }
+    public void gate3up() {
+        gate3.setPosition(0.47); // ???
+    }
+    public void gate2middle() {
+        gate2.setPosition(0.45);
+    }
+    public void gate3middle() {
+        gate3.setPosition(0.5);
     }
 
     private void dropByPosition(int position) {
@@ -178,6 +237,9 @@ public class RobotHardwareV2 {
                 sortAndLaunchSequence = launchSequence;
                 sortAndLaunchWaits = waits;
                 sortAndLaunchState = SortAndLaunchState.DROP_0;
+                // set gates to stow positions
+                gate2up();
+                gate3up();
                 intakeRampMiddle();
                 break;
             case DROP_0:
@@ -399,18 +461,24 @@ public class RobotHardwareV2 {
         feeder.setPosition(0.66);
         intakeRamp.setPosition(0.519);
         rotateLauncher.setPosition(0.2);
+        gate2up();
+        gate3up();
+        /*
         gate2.setPosition(0.45);
         gate3.setPosition(0.5);
+         */
     }
 
     public void resetMechanisms(){
         feeder.setPosition(0.66);
         intakeRamp.setPosition(0.4655);
         rotateLauncher.setPosition(0.2);
+        dropGate2();
+        dropGate3();
+        /*
         gate2.setPosition(0.84);
-        //gate2.setPosition(0.5);
         gate3.setPosition(0.89);
-        //gate3.setPosition(0.55);
+         */
     }
 
     public void reverseIntake(){

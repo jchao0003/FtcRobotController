@@ -1,5 +1,6 @@
 package org.firstinspires.ftc.teamcode;
 
+import com.qualcomm.hardware.limelightvision.Limelight3A;
 import com.qualcomm.robotcore.hardware.CRServo;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.DcMotorEx;
@@ -59,6 +60,11 @@ public class RobotInitializerV2 {
         PIDFCoefficients flywheelPidfCoefficients = new PIDFCoefficients(flywheelP, 0, 0, flywheelF);
 
         robotHardware.flywheel.setPIDFCoefficients(DcMotor.RunMode.RUN_USING_ENCODER, flywheelPidfCoefficients);
+
+        robotHardware.limelight = hardwareMap.get(Limelight3A.class, "Limelight3A");
+        robotHardware.limelight.pipelineSwitch(0);
+
+        robotHardware.limelight.start();
 
     }
 
