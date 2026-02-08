@@ -83,8 +83,8 @@ public class SortTest extends OpMode {
     private final Pose closeShoot = new Pose(37, 105, Math.toRadians(145));
     private final Pose startClose = new Pose(44, 80, Math.toRadians(5));//(42, 88.1, Math.toRadians(5));
     private final Pose endClose = new Pose(23, 80, Math.toRadians(0));//(15.4, 76.6, Math.toRadians(0));
-    private final Pose middleShoot = new Pose(58.7, 84.6, Math.toRadians(135));
-    private final Pose startMid = new Pose(41.9, 52, Math.toRadians(0));//(41.9, 57.5, Math.toRadians(0));
+    private final Pose middleShoot = new Pose(58.7, 84.6, Math.toRadians(140));
+    private final Pose startMid = new Pose(43.9, 52, Math.toRadians(0));//(41.9, 57.5, Math.toRadians(0));
     private final Pose endMid = new Pose(15, 52, Math.toRadians(0));//(10.4, 57.5, Math.toRadians(0));
     private final Pose startFar = new Pose(38, 30, Math.toRadians(0));//(41.6, 33.8, Math.toRadians(0));
     private final Pose endFar = new Pose(15, 30, Math.toRadians(0));//(11.1, 33.8, Math.toRadians(0));
@@ -179,6 +179,7 @@ public class SortTest extends OpMode {
                         } else {
                             launchOrder = order132; // PPG
                         }
+                        robotHardware.resetLaunchAndSortState();
                         telemetry.addLine("Path State: Launch preload. order: " + launchOrder);
                         follower.followPath(detectTagToCloseShoot, 0.4, true);
                         setPathState(PathState.WAIT_FOR_LAUNCH_PRELOAD);
@@ -187,6 +188,64 @@ public class SortTest extends OpMode {
                 break;
             case WAIT_FOR_LAUNCH_PRELOAD:
                 telemetry.addLine("Path State: Wait for launch preload");
+                robotHardware.setAngleStraight();
+
+                if (!follower.isBusy()) {
+                    if (robotHardware.sortAndLaunch(true, launchOrder, telemetry)) {
+                        setPathState(PathState.SHOOT_PRELOAD_TO_START_CLOSE);
+                        robotHardware.stopSpin();
+                    }
+                }
+                break;
+            case SHOOT_PRELOAD_TO_START_CLOSE:
+                if (!follower.isBusy()){
+                    telemetry.addLine("Path State: Shoot preload to start close");
+                    follower.followPath(closeShootToStartClose, .8, true);
+
+                    robotHardware.resetMechanismsMiddle();
+                    robotHardware.setFlywheelSpeedMiddlePosition();
+                    robotHardware.startIntake();
+                    robotHardware.startSpin();
+
+                    setPathState(PathState.START_CLOSE_TO_END_CLOSE);
+                }
+                break;
+            case START_CLOSE_TO_END_CLOSE:
+                if (!follower.isBusy()){
+                    telemetry.addLine("Path State: Start close to end close");
+                    follower.followPath(startCloseToEndClose, .4, true);
+                    setPathState(PathState.END_CLOSE_TO_SHOOT_CLOSE);
+                }
+                break;
+            case END_CLOSE_TO_SHOOT_CLOSE:
+                if (!follower.isBusy()){
+                    telemetry.addLine("Path State: End close to shoot close");
+                    follower.followPath(endCloseToMiddleShoot, .8, true);
+
+//                    robotHardware.stopIntake();
+                    robotHardware.stopSpin();
+
+                    setPathState(PathState.LAUNCH_CLOSE);
+                }
+                break;
+            case LAUNCH_CLOSE:
+                if (!follower.isBusy()){
+                    if (patternNum != 0) { // detected pattern
+                        if (patternNum == 21) { // GPP
+                            launchOrder = order312;
+                        } else if (patternNum == 22) { // PGP
+                            launchOrder = order132;
+                        } else {
+                            launchOrder = order123; // PPG
+                        }
+                        robotHardware.resetLaunchAndSortState();
+                        telemetry.addLine("Path State: Launch close. order: " + launchOrder);
+                        setPathState(PathState.WAIT_FOR_LAUNCH_CLOSE);
+                    }
+                }
+                break;
+            case WAIT_FOR_LAUNCH_CLOSE:
+                telemetry.addLine("Path State: Wait for launch close");
                 robotHardware.setAngleStraight();
 
                 if (!follower.isBusy()) {

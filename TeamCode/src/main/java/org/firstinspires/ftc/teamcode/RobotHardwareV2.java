@@ -177,7 +177,8 @@ public class RobotHardwareV2 {
                 if (flywheel.getVelocity() > flywheelTargetVelocity - 60){
                     launchState = LaunchState.WAIT_LAUNCH_COMPLETE;
                     stopSpin();
-                    feeder.setPosition(0.40);
+                    setFeedLaunch();
+                    //feeder.setPosition(0.40);
 
 
                     feederTimer.reset();
@@ -185,7 +186,8 @@ public class RobotHardwareV2 {
                 break;
             case WAIT_LAUNCH_COMPLETE:
                 if (feederTimer.seconds() > FEED_TIME) {
-                    feeder.setPosition(0.66);
+                    setFeedDown();
+                    //feeder.setPosition(0.66);
                     startSpin();
 
                     if(shotTimer.seconds() > TIME_BETWEEN_SHOTS){
@@ -222,6 +224,9 @@ public class RobotHardwareV2 {
         START_LAUNCH_3 → launch 3
         WAIT_LAUNCH_COMPLETE_3 → IDLE
      */
+    public void resetLaunchAndSortState(){
+        sortAndLaunchState = SortAndLaunchState.IDLE;
+    }
     boolean sortAndLaunch(boolean okToLaunch, int[] launchSequence, Telemetry telemetry) {
         if (launchSequence == null || launchSequence.length != 3) {
             return false;
@@ -290,7 +295,8 @@ public class RobotHardwareV2 {
                     telemetry.addLine("start launch_0");
 
                     stopSpin();
-                    feeder.setPosition(0.40);
+                    setFeedLaunch();
+                    //feeder.setPosition(0.40);
                     feederTimer.reset();
                     sortAndLaunchState = SortAndLaunchState.WAIT_LAUNCH_COMPLETE_0;
                 }
@@ -298,7 +304,8 @@ public class RobotHardwareV2 {
             case WAIT_LAUNCH_COMPLETE_0:
                 if (feederTimer.seconds() > FEED_TIME) {
                     telemetry.addLine("done launch_0");
-                    feeder.setPosition(0.66);
+                    setFeedDown();
+                    //feeder.setPosition(0.66);
                     startSpin();
                     if (shotTimer.seconds() > TIME_BETWEEN_SHOTS) {
                         sortAndLaunchState = SortAndLaunchState.START_LAUNCH_1;
@@ -310,7 +317,8 @@ public class RobotHardwareV2 {
                 if (flywheel.getVelocity() > flywheelTargetVelocity - 60) {
                     telemetry.addLine("start launch_1");
                     stopSpin();
-                    feeder.setPosition(0.40);
+                    setFeedLaunch();
+                    //feeder.setPosition(0.40);
                     feederTimer.reset();
                     sortAndLaunchState = SortAndLaunchState.WAIT_LAUNCH_COMPLETE_1;
                 }
@@ -318,10 +326,12 @@ public class RobotHardwareV2 {
             case WAIT_LAUNCH_COMPLETE_1:
                 if (feederTimer.seconds() > FEED_TIME) {
                     telemetry.addLine("done launch_1");
-                    feeder.setPosition(0.66);
+                    setFeedDown();
+                    //feeder.setPosition(0.66);
                     startSpin();
                     if (shotTimer.seconds() > TIME_BETWEEN_SHOTS) {
                         sortAndLaunchState = SortAndLaunchState.DROP_2;
+
                     }
                 }
                 break;
@@ -333,7 +343,7 @@ public class RobotHardwareV2 {
                 startSpin();
                 dropByPosition(sortAndLaunchSequence[2]);
                 sortAndLaunchTimer.reset();
-                sortAndLaunchState = SortAndLaunchState.START_LAUNCH_1;
+                sortAndLaunchState = SortAndLaunchState.WAIT_AFTER_DROP_2;
                 shotTimer.reset();
                 feederTimer.reset();
                 break;
@@ -354,7 +364,8 @@ public class RobotHardwareV2 {
                     telemetry.addLine("start launch_2");
 
                     stopSpin();
-                    feeder.setPosition(0.40);
+                    setFeedLaunch();
+                    //feeder.setPosition(0.40);
                     feederTimer.reset();
                     sortAndLaunchState = SortAndLaunchState.WAIT_LAUNCH_COMPLETE_2;
                 }
@@ -362,8 +373,8 @@ public class RobotHardwareV2 {
             case WAIT_LAUNCH_COMPLETE_2:
                 if (feederTimer.seconds() > FEED_TIME) {
                     telemetry.addLine("done launch_2");
-
-                    feeder.setPosition(0.66);
+                    setFeedDown();
+                    //feeder.setPosition(0.66);
                     startSpin();
                     if (shotTimer.seconds() > TIME_BETWEEN_SHOTS) {
                         sortAndLaunchState = SortAndLaunchState.START_LAUNCH_EXTRA;
@@ -375,14 +386,16 @@ public class RobotHardwareV2 {
                 case START_LAUNCH_EXTRA:
                     if (flywheel.getVelocity() > flywheelTargetVelocity - 60) {
                         stopSpin();
-                        feeder.setPosition(0.40);
+                        setFeedLaunch();
+                        //feeder.setPosition(0.40);
                         feederTimer.reset();
                         sortAndLaunchState = SortAndLaunchState.WAIT_LAUNCH_COMPLETE_EXTRA;
                     }
                     break;
                 case WAIT_LAUNCH_COMPLETE_EXTRA:
                     if (feederTimer.seconds() > FEED_TIME) {
-                        feeder.setPosition(0.66);
+                        setFeedDown();
+                        //feeder.setPosition(0.66);
                         sortAndLaunchState = SortAndLaunchState.DONE;
                         return true;
                     }
@@ -408,14 +421,16 @@ public class RobotHardwareV2 {
                 if (flywheel.getVelocity() > flywheelTargetVelocity - 60){
                     launchState = LaunchState.WAIT_LAUNCH_COMPLETE;
                     stopSpin();
-                    feeder.setPosition(0.40);
+                    setFeedLaunch();
+                    //feeder.setPosition(0.40);
 
                     feederTimer.reset();
                 }
                 break;
             case WAIT_LAUNCH_COMPLETE:
                 if (feederTimer.seconds() > FEED_TIME_BACK) {
-                    feeder.setPosition(0.66);
+                    setFeedDown();
+                    //feeder.setPosition(0.66);
                     startSpin();
 
                     if(shotTimer.seconds() > TIME_BETWEEN_SHOTS_BACK){
@@ -427,11 +442,11 @@ public class RobotHardwareV2 {
         return false;
     }
 
-    public void manualLaunch(){
+    public void setFeedLaunch(){
         feeder.setPosition(0.40);
     }
 
-    public void manualReset(){
+    public void setFeedDown(){
         feeder.setPosition(0.66);
     }
 
@@ -458,9 +473,13 @@ public class RobotHardwareV2 {
 
 
     public void resetMechanismsUp(){
-        feeder.setPosition(0.66);
-        intakeRamp.setPosition(0.519);
-        rotateLauncher.setPosition(0.2);
+        setFeedDown();
+        //feeder.setPosition(0.66);
+
+        intakeRampUp();
+        //intakeRamp.setPosition(0.519);
+        setAngleStraight();
+        //rotateLauncher.setPosition(0.2);
         gate2up();
         gate3up();
         /*
@@ -469,10 +488,22 @@ public class RobotHardwareV2 {
          */
     }
 
+    public void resetMechanismsMiddle(){
+        setFeedDown();
+        intakeRampUp();
+        gate2middle();
+        gate3middle();
+    }
+
+
+
     public void resetMechanisms(){
-        feeder.setPosition(0.66);
-        intakeRamp.setPosition(0.4655);
-        rotateLauncher.setPosition(0.2);
+        setFeedDown();
+        //feeder.setPosition(0.66);
+        intakeRampUp();
+        //intakeRamp.setPosition(0.4655);
+        setAngleStraight();
+        //rotateLauncher.setPosition(0.2);
         dropGate2();
         dropGate3();
         /*

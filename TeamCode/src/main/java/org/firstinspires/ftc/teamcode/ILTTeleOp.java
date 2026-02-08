@@ -79,11 +79,11 @@ public class ILTTeleOp extends OpMode{
         }
 
         if (gamepad2.dpad_down){
-            robotHardware.manualLaunch();
+            robotHardware.setFeedLaunch();
         }
 
         if (gamepad2.aWasPressed()){
-            robotHardware.manualReset();
+            robotHardware.setFeedDown();
         }
 
         if (gamepad2.dpad_up){
