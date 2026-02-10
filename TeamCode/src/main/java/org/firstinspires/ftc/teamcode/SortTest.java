@@ -213,7 +213,7 @@ public class SortTest extends OpMode {
             case START_CLOSE_TO_END_CLOSE:
                 if (!follower.isBusy()){
                     telemetry.addLine("Path State: Start close to end close");
-                    follower.followPath(startCloseToEndClose, .5, true);
+                    follower.followPath(startCloseToEndClose, .6, true);
                     setPathState(PathState.END_CLOSE_TO_SHOOT_CLOSE);
                 }
                 break;

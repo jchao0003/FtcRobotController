@@ -36,7 +36,7 @@ public class RobotHardwareV2 {
     public Limelight3A limelight;
 
     public double backVelocity = 1600; // 1600;
-    public double frontVelocity = 1050; //1100;
+    public double frontVelocity = 1000; //1100;
     public double middleVelocity = 1200;
 
     private double flywheelTargetVelocity = 0;
