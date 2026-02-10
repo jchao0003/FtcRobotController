@@ -81,11 +81,11 @@ public class SortTest extends OpMode {
     private final Pose startPose = new Pose(19.2, 119.1, Math.toRadians(144));
     private final Pose detectAprilTag = new Pose(36.6, 106.6, Math.toRadians(85));
     private final Pose closeShoot = new Pose(37, 105, Math.toRadians(145));
-    private final Pose startClose = new Pose(44, 80, Math.toRadians(5));//(42, 88.1, Math.toRadians(5));
-    private final Pose endClose = new Pose(23, 80, Math.toRadians(0));//(15.4, 76.6, Math.toRadians(0));
-    private final Pose middleShoot = new Pose(58.7, 84.6, Math.toRadians(140));
+    private final Pose startClose = new Pose(52, 78, Math.toRadians(5));//(42, 88.1, Math.toRadians(5));
+    private final Pose endClose = new Pose(23, 78, Math.toRadians(0));//(15.4, 76.6, Math.toRadians(0));
+    private final Pose middleShoot = new Pose(58.7, 84.6, Math.toRadians(139));
     private final Pose startMid = new Pose(43.9, 52, Math.toRadians(0));//(41.9, 57.5, Math.toRadians(0));
-    private final Pose endMid = new Pose(15, 52, Math.toRadians(0));//(10.4, 57.5, Math.toRadians(0));
+    private final Pose endMid = new Pose(17, 52, Math.toRadians(0));//(10.4, 57.5, Math.toRadians(0));
     private final Pose startFar = new Pose(38, 30, Math.toRadians(0));//(41.6, 33.8, Math.toRadians(0));
     private final Pose endFar = new Pose(15, 30, Math.toRadians(0));//(11.1, 33.8, Math.toRadians(0));
     private final Pose endPose = new Pose(59.1, 105, Math.toRadians(145));
@@ -213,7 +213,7 @@ public class SortTest extends OpMode {
             case START_CLOSE_TO_END_CLOSE:
                 if (!follower.isBusy()){
                     telemetry.addLine("Path State: Start close to end close");
-                    follower.followPath(startCloseToEndClose, .4, true);
+                    follower.followPath(startCloseToEndClose, .5, true);
                     setPathState(PathState.END_CLOSE_TO_SHOOT_CLOSE);
                 }
                 break;
@@ -221,6 +221,7 @@ public class SortTest extends OpMode {
                 if (!follower.isBusy()){
                     telemetry.addLine("Path State: End close to shoot close");
                     follower.followPath(endCloseToMiddleShoot, .8, true);
+                    robotHardware.resetMechanismsUp();
 
 //                    robotHardware.stopIntake();
                     robotHardware.stopSpin();
@@ -246,6 +247,63 @@ public class SortTest extends OpMode {
                 break;
             case WAIT_FOR_LAUNCH_CLOSE:
                 telemetry.addLine("Path State: Wait for launch close");
+                robotHardware.setAngleStraight();
+
+                if (!follower.isBusy()) {
+                    if (robotHardware.sortAndLaunch(true, launchOrder, telemetry)) {
+                        setPathState(PathState.SHOOT_CLOSE_TO_START_MID);
+                        robotHardware.stopSpin();
+                    }
+                }
+                break;
+            case SHOOT_CLOSE_TO_START_MID:
+                if (!follower.isBusy()){
+                    telemetry.addLine("Path State: Shoot close to start mid");
+                    follower.followPath(middleShootToStartMid, 0.8, true);
+
+                    robotHardware.resetMechanismsMiddle();
+                    robotHardware.startIntake();
+                    robotHardware.startSpin();
+
+                    setPathState(PathState.START_MID_TO_END_MID);
+                }
+                break;
+            case START_MID_TO_END_MID:
+                if (!follower.isBusy()){
+                    telemetry.addLine("Path State: Start mid to end mid");
+                    follower.followPath(startMidToEndMid, 0.6, true);
+                    setPathState(PathState.END_MID_TO_SHOOT_MID);
+                }
+                break;
+            case END_MID_TO_SHOOT_MID:
+                if (!follower.isBusy()){
+                    telemetry.addLine("Path State: End mid to shoot mid");
+                    follower.followPath(endMidToMiddleShoot, 0.8, true);
+                    robotHardware.resetMechanismsUp();
+
+//                    robotHardware.stopIntake();
+                    robotHardware.stopSpin();
+
+                    setPathState(PathState.LAUNCH_MID);
+                }
+            case LAUNCH_MID:
+                if (!follower.isBusy()){
+                    if (patternNum != 0) { // detected pattern
+                        if (patternNum == 21) { // GPP
+                            launchOrder = order213;
+                        } else if (patternNum == 22) { // PGP
+                            launchOrder = order123;
+                        } else {
+                            launchOrder = order132; // PPG
+                        }
+                        robotHardware.resetLaunchAndSortState();
+                        telemetry.addLine("Path State: Launch mid. order: " + launchOrder);
+                        setPathState(PathState.WAIT_FOR_LAUNCH_MID);
+                    }
+                }
+                break;
+            case WAIT_FOR_LAUNCH_MID:
+                telemetry.addLine("Path State: Wait for launch mid");
                 robotHardware.setAngleStraight();
 
                 if (!follower.isBusy()) {

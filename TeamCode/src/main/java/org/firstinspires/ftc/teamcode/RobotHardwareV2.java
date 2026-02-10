@@ -98,10 +98,10 @@ public class RobotHardwareV2 {
     private static final Map<String, double[]> SORT_AND_LAUNCH_WAIT_TIMES = new HashMap<>();
     static {
         SORT_AND_LAUNCH_WAIT_TIMES.put("1,2,3", new double[]{0.5, 0.5, 1.5});
-        SORT_AND_LAUNCH_WAIT_TIMES.put("1,3,2", new double[]{0.5, 1.5, 1.2});
+        SORT_AND_LAUNCH_WAIT_TIMES.put("1,3,2", new double[]{0.7, 1.5, 1.2});
         SORT_AND_LAUNCH_WAIT_TIMES.put("2,1,3", new double[]{1.9, 0.3, 1.5});
         SORT_AND_LAUNCH_WAIT_TIMES.put("2,3,1", new double[]{1.5, 1.5, 0.5});
-        SORT_AND_LAUNCH_WAIT_TIMES.put("3,1,2", new double[]{1.5, 0.3, 0.7});
+        SORT_AND_LAUNCH_WAIT_TIMES.put("3,1,2", new double[]{1.7, 0.3, 0.7});
         SORT_AND_LAUNCH_WAIT_TIMES.put("3,2,1", new double[]{1.5, 0.3, 0.3});
     }
 
@@ -245,7 +245,7 @@ public class RobotHardwareV2 {
                 // set gates to stow positions
                 gate2up();
                 gate3up();
-                intakeRampMiddle();
+                //intakeRampMiddle();
                 break;
             case DROP_0:
                 telemetry.addLine("start drop_0");
@@ -385,6 +385,8 @@ public class RobotHardwareV2 {
                 break;
                 case START_LAUNCH_EXTRA:
                     if (flywheel.getVelocity() > flywheelTargetVelocity - 60) {
+                        gate2middle();
+                        gate3middle();
                         stopSpin();
                         setFeedLaunch();
                         //feeder.setPosition(0.40);
@@ -464,7 +466,7 @@ public class RobotHardwareV2 {
     }
 
     public void startIntake(){
-        intake.setPower(.7);
+        intake.setPower(.75);
     }
 
     public void stopIntake(){
@@ -500,7 +502,7 @@ public class RobotHardwareV2 {
     public void resetMechanisms(){
         setFeedDown();
         //feeder.setPosition(0.66);
-        intakeRampUp();
+        intakeRampDown();
         //intakeRamp.setPosition(0.4655);
         setAngleStraight();
         //rotateLauncher.setPosition(0.2);

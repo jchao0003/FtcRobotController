@@ -13,6 +13,8 @@ import org.firstinspires.ftc.robotcore.external.JavaUtil;
 import org.firstinspires.ftc.robotcore.external.navigation.Pose3D;
 import org.firstinspires.ftc.teamcode.RobotInitializer;
 
+import java.util.Timer;
+
 @TeleOp
 public class ILTTeleOp extends OpMode{
     public DcMotor backLeft;
@@ -52,7 +54,8 @@ public class ILTTeleOp extends OpMode{
         limelight = hardwareMap.get(Limelight3A.class, "Limelight3A");
         limelight.pipelineSwitch(0);
 
-        robotHardware.resetMechanisms();
+        robotHardware.resetMechanismsMiddle();
+        robotHardware.intakeRampDown();
     }
 
     public void start(){
@@ -123,10 +126,12 @@ public class ILTTeleOp extends OpMode{
 
         if (gamepad2.right_stick_y > 0.5){
             robotHardware.startIntake();
+            robotHardware.startSpin();
         } else if(gamepad2.right_stick_y < -0.5){
             robotHardware.reverseIntake();
         } else {
             robotHardware.stopIntake();
+            robotHardware.stopSpin();
         }
 
         if (Math.abs(robotHardware.getFlywheelVelocityError()) <=50){
