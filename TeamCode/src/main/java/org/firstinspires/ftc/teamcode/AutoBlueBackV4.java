@@ -33,7 +33,7 @@ public class AutoBlueBackV4 extends OpMode {
 
 
 
-    private double fudgeFactor = Math.toRadians(15);
+    private double fudgeFactor = Math.toRadians(0);
 
     private Servo feeder;
 
@@ -49,6 +49,9 @@ public class AutoBlueBackV4 extends OpMode {
 
         robotHardware.resetMechanisms();
         robotHardware.launchPt2();
+
+        robotHardware.gate2up();
+        robotHardware.gate3up();
     }
 
 
@@ -96,12 +99,12 @@ public class AutoBlueBackV4 extends OpMode {
 
     PathState pathState;
 
-    private final Pose startPose = new Pose(57.3, 9.2, Math.toRadians(90));
-    private final Pose farShootPose = new Pose(57.3, 13, Math.toRadians(90));
-    private final Pose cornerPresetStart = new Pose(10, 32.5, Math.toRadians(90));
-    private final Pose cornerPresetEnd = new Pose(10, 12, Math.toRadians(90));
+    private final Pose startPose = new Pose(57.3, 10, Math.toRadians(90));
+    private final Pose farShootPose = new Pose(57.3, 12, Math.toRadians(90));
+    private final Pose cornerPresetStart = new Pose(12, 32.5, Math.toRadians(90));
+    private final Pose cornerPresetEnd = new Pose(12, 12, Math.toRadians(90));
     private final Pose farPresetStart = new Pose(45, 33.2, Math.toRadians(0));
-    private final Pose farPresetEnd = new Pose(15, 33.2, Math.toRadians(0));
+    private final Pose farPresetEnd = new Pose(18, 33.2, Math.toRadians(0));
     private final Pose middlePresetStart = new Pose(45, 57.2, Math.toRadians(0));
     private final Pose middlePresetEnd = new Pose(15, 57.2, Math.toRadians(0));
 
@@ -111,20 +114,20 @@ public class AutoBlueBackV4 extends OpMode {
     public void buildPaths(){
         // put in coordinates for starting pose then coordinates for ending pose
         startToCornerPresetStart = follower.pathBuilder()
-                .addPath(new BezierLine(startPose, cornerPresetStart))
-                .setLinearHeadingInterpolation(startPose.getHeading(), cornerPresetStart.getHeading())
+                .addPath(new BezierLine(farShootPose, cornerPresetStart))
+                .setLinearHeadingInterpolation(farShootPose.getHeading() + fudgeFactor, cornerPresetStart.getHeading())
                 .build();
         cornerPresetStartToCornerPresetEnd = follower.pathBuilder()
                 .addPath(new BezierLine(cornerPresetStart,cornerPresetEnd))
-                .setLinearHeadingInterpolation(cornerPresetStart.getHeading(),cornerPresetEnd.getHeading())
+                .setLinearHeadingInterpolation(cornerPresetStart.getHeading() + fudgeFactor,cornerPresetEnd.getHeading())
                 .build();
         cornerPresetEndToFarLaunch = follower.pathBuilder()
                 .addPath(new BezierLine(cornerPresetEnd, farShootPose))
                 .setLinearHeadingInterpolation(cornerPresetEnd.getHeading(), farShootPose.getHeading()+fudgeFactor)
                 .build();
         farLaunchToFarPresetStart = follower.pathBuilder()
-                .addPath(new BezierLine(farShootPose, farPresetStart))
-                .setLinearHeadingInterpolation(farShootPose.getHeading()+fudgeFactor, farPresetStart.getHeading())
+                .addPath(new BezierLine(startPose, farPresetStart))
+                .setLinearHeadingInterpolation(startPose.getHeading()+fudgeFactor, farPresetStart.getHeading())
                 .build();
         farPresetStartToFarPresetEnd = follower.pathBuilder()
                 .addPath(new BezierLine(farPresetStart, farPresetEnd))
@@ -154,6 +157,8 @@ public class AutoBlueBackV4 extends OpMode {
                 //check if follower is done with path
                 //and check that 5 seconds has elapsed
                 robotHardware.resetMechanisms();
+                robotHardware.gate2up();
+                robotHardware.gate3up();
                 robotHardware.setFlywheelSpeedBackPosition();
                 robotHardware.setBlueAngle();
                 robotHardware.launchPt2();
@@ -187,6 +192,7 @@ public class AutoBlueBackV4 extends OpMode {
                     telemetry.addLine("To preload");
                     follower.followPath(farLaunchToFarPresetStart);
                     robotHardware.startIntake();
+                    robotHardware.spin.setPower(-0.5);
                     setPathState(PathState.PICKUP_PRESET_FAR);
                 }
                 break;
@@ -230,13 +236,14 @@ public class AutoBlueBackV4 extends OpMode {
                     telemetry.addLine("To preset corner");
                     follower.followPath(startToCornerPresetStart);
                     robotHardware.startIntake();
+                    robotHardware.spin.setPower(-0.5);
                     setPathState(PathState.PICKUP_PRESET_CORNER);
                 }
                 break;
             case PICKUP_PRESET_CORNER:
                 if(!follower.isBusy()){
                     telemetry.addLine("Picking up preset corner");
-                    follower.followPath(cornerPresetStartToCornerPresetEnd, 0.6, true);
+                    follower.followPath(cornerPresetStartToCornerPresetEnd, 0.2, true);
                     setPathState(PathState.PRESET_CORNER_TO_SHOOT);
                 }
                 break;
@@ -344,7 +351,7 @@ public class AutoBlueBackV4 extends OpMode {
 
         buildPaths();
 
-        follower.setPose(farShootPose);
+        follower.setPose(startPose);
 
         hardwareInit();
     }

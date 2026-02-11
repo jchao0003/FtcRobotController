@@ -232,7 +232,7 @@ public class SortTest extends OpMode {
             case LAUNCH_CLOSE:
                 if (!follower.isBusy()){
                     if (patternNum != 0) { // detected pattern
-                        if (patternNum == 21) { // GPP
+                        if (patternNum == 21) { // GPPq
                             launchOrder = order312;
                         } else if (patternNum == 22) { // PGP
                             launchOrder = order132;
