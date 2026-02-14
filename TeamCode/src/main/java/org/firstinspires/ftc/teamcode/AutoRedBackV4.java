@@ -26,6 +26,7 @@ public class AutoRedBackV4 extends OpMode {
     private DcMotorEx flywheel;
     private DcMotor intake;
     int shotsToFire = 4;
+    int adjustCount = 0;
 
 
     RobotHardwareV2 robotHardware;
@@ -63,8 +64,10 @@ public class AutoRedBackV4 extends OpMode {
         START,
         LAUNCH_PRELOAD,
         WAIT_FOR_LAUNCH_PRELOAD,
+        ADJUST_LAUNCHER_PRESET_CORNER,
         LAUNCH_CORNER,
         WAIT_FOR_LAUNCH_CORNER,
+        ADJUST_LAUNCHER_PRESET_FAR,
         LAUNCH_FAR,
         WAIT_FOR_LAUNCH_FAR,
         LAUNCH_MID,
@@ -99,8 +102,8 @@ public class AutoRedBackV4 extends OpMode {
 
     private final Pose startPose = new Pose(92, 9, Math.toRadians(90));
     private final Pose farShootPose = new Pose(92, 11, Math.toRadians(90));
-    private final Pose cornerPresetStart = new Pose(90, 12, Math.toRadians(180));
-    private final Pose cornerPresetEnd = new Pose(137, 12, Math.toRadians(180));
+    private final Pose cornerPresetStart = new Pose(90, 11, Math.toRadians(180));
+    private final Pose cornerPresetEnd = new Pose(137, 11, Math.toRadians(180));
     private final Pose farPresetStart = new Pose(90, 32.5, Math.toRadians(180));
     private final Pose farPresetEnd = new Pose(133, 32.5, Math.toRadians(180));
     private final Pose middlePresetStart = new Pose(90, 56, Math.toRadians(180));
@@ -162,6 +165,7 @@ public class AutoRedBackV4 extends OpMode {
                     setPathState(PathState.LAUNCH_PRELOAD);
                 }
                 break;
+
             case LAUNCH_PRELOAD:
                 if (!follower.isBusy()){
                     robotHardware.launchBack(true);
@@ -204,6 +208,16 @@ public class AutoRedBackV4 extends OpMode {
                     //robotHardware.stopIntake();
                     //sleep(500);
                     robotHardware.startIntake();
+                    setPathState(PathState.ADJUST_LAUNCHER_PRESET_FAR);
+                }
+                break;
+            case ADJUST_LAUNCHER_PRESET_FAR:
+                if (!follower.isBusy()){
+                    robotHardware.adjustLauncherUsingAprilTagRedBack();
+                    adjustCount++;
+                }
+                if (robotHardware.adjustLauncherUsingAprilTagRedBack() || adjustCount ==3){
+                    adjustCount = 0;
                     setPathState(PathState.LAUNCH_FAR);
                 }
                 break;
@@ -248,6 +262,16 @@ public class AutoRedBackV4 extends OpMode {
                     sleep(500);
                     robotHardware.stopIntake();
                     robotHardware.startIntake();
+                    setPathState(PathState.LAUNCH_CORNER);
+                }
+                break;
+            case ADJUST_LAUNCHER_PRESET_CORNER:
+                if (!follower.isBusy()){
+                    robotHardware.adjustLauncherUsingAprilTagRedBack();
+                    adjustCount++;
+                }
+                if (robotHardware.adjustLauncherUsingAprilTagRedBack() || adjustCount ==3){
+                    adjustCount = 0;
                     setPathState(PathState.LAUNCH_CORNER);
                 }
                 break;

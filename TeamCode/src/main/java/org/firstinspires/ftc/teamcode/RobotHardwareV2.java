@@ -94,6 +94,78 @@ public class RobotHardwareV2 {
         return 0;
     }
 
+    public boolean adjustLauncherUsingAprilTagRedBack(){
+        LLResult llResult = limelight.getLatestResult();
+        double Tx = 0.0;
+
+        if (llResult != null && llResult.isValid()) {
+            Tx = llResult.getTx();
+
+            if (0 <= Tx) {
+                rotateLauncher.setPosition(rotateLauncher.getPosition() - 0.002);
+                return false;
+            } else if (Tx <= -3){
+                rotateLauncher.setPosition(rotateLauncher.getPosition() + 0.002);
+                return false;
+            }
+        }
+        return true;
+    }
+
+    public boolean adjustLauncherUsingAprilTagBlueBack(){
+        LLResult llResult = limelight.getLatestResult();
+        double Tx = 0.0;
+
+        if (llResult != null && llResult.isValid()) {
+            Tx = llResult.getTx();
+
+            if (-2 >= Tx) {
+                rotateLauncher.setPosition(rotateLauncher.getPosition() + 0.002);
+                return true;
+            } else if (Tx >= 5){
+                rotateLauncher.setPosition(rotateLauncher.getPosition() - 0.002);
+                return false;
+            }
+        }
+        return true;
+    }
+
+    public boolean adjustLauncherUsingAprilTagRedFront(){
+        LLResult llResult = limelight.getLatestResult();
+        double Tx = 0.0;
+
+        if (llResult != null && llResult.isValid()) {
+            Tx = llResult.getTx();
+
+            if (4 <= Tx) {
+                rotateLauncher.setPosition(rotateLauncher.getPosition() - 0.002);
+                return true;
+            } else if (Tx <= -6){
+                rotateLauncher.setPosition(rotateLauncher.getPosition() + 0.002);
+                return false;
+            }
+        }
+        return true;
+    }
+
+    public boolean adjustLauncherUsingAprilTagBlueFront(){
+        LLResult llResult = limelight.getLatestResult();
+        double Tx = 0.0;
+
+        if (llResult != null && llResult.isValid()) {
+            Tx = llResult.getTx();
+
+            if (-5 >= Tx) {
+                rotateLauncher.setPosition(rotateLauncher.getPosition() + 0.002);
+                return true;
+            } else if (Tx >= 5){
+                rotateLauncher.setPosition(rotateLauncher.getPosition() - 0.002);
+                return false;
+            }
+        }
+        return true;
+    }
+
     /** Maps launchSequence string (e.g. "1,2,3") to [waitFirst, waitSecond, waitThird] in seconds */
     private static final Map<String, double[]> SORT_AND_LAUNCH_WAIT_TIMES = new HashMap<>();
     static {
@@ -581,7 +653,7 @@ public class RobotHardwareV2 {
     }
 
     public void setBlueAngle(){
-        rotateLauncher.setPosition(0.222);
+        rotateLauncher.setPosition(0.222); //-19.7+2.9
     }
 
     public void setRedAngle(){
@@ -589,6 +661,6 @@ public class RobotHardwareV2 {
     }
 
     public void setAngleStraight(){
-        rotateLauncher.setPosition(0.195);
+        rotateLauncher.setPosition(0.195); //0.031/18
     }
 }
