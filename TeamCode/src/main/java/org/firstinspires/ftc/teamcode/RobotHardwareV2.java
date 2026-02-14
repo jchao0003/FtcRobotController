@@ -35,7 +35,7 @@ public class RobotHardwareV2 {
 
     public Limelight3A limelight;
 
-    public double backVelocity = 1600; // 1600;
+    public double backVelocity = 1550; // 1600;
     public double frontVelocity = 1000; //1100;
     public double middleVelocity = 1200;
 
@@ -456,6 +456,10 @@ public class RobotHardwareV2 {
         spin.setPower(-1);
     }
 
+    public void reverseSpin(){
+        spin.setPower(1);
+    }
+
     public void stopSpin(){
         spin.setPower(0);
     }
@@ -581,7 +585,7 @@ public class RobotHardwareV2 {
     }
 
     public void setRedAngle(){
-        rotateLauncher.setPosition(0.16);
+        rotateLauncher.setPosition(0.164);
     }
 
     public void setAngleStraight(){

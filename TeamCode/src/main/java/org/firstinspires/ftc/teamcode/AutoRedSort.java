@@ -1,7 +1,5 @@
 package org.firstinspires.ftc.teamcode;
 
-import static android.os.SystemClock.sleep;
-
 import com.pedropathing.follower.Follower;
 import com.pedropathing.geometry.BezierLine;
 import com.pedropathing.geometry.Pose;
@@ -9,17 +7,15 @@ import com.pedropathing.paths.PathChain;
 import com.pedropathing.util.Timer;
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 import com.qualcomm.robotcore.eventloop.opmode.OpMode;
-import com.qualcomm.robotcore.hardware.DcMotor;
-import com.qualcomm.robotcore.hardware.DcMotorEx;
-import com.qualcomm.robotcore.hardware.Servo;
 import com.qualcomm.robotcore.util.ElapsedTime;
 
-import org.firstinspires.ftc.robotcore.external.Telemetry;
 import org.firstinspires.ftc.teamcode.pedroPathing.Constants;
 
 @Autonomous
-public class SortTest extends OpMode {
+public class AutoRedSort extends OpMode {
     private ElapsedTime runtime = new ElapsedTime();
+
+
 
     private Follower follower;
     private Timer pathTimer, opModeTimer;
@@ -78,17 +74,17 @@ public class SortTest extends OpMode {
 
     PathState pathState;
 
-    private final Pose startPose = new Pose(19.2, 119.1, Math.toRadians(144));
-    private final Pose detectAprilTag = new Pose(36.6, 106.6, Math.toRadians(85));
-    private final Pose closeShoot = new Pose(37, 105, Math.toRadians(145));
-    private final Pose startClose = new Pose(52, 78, Math.toRadians(5));//(42, 88.1, Math.toRadians(5));
-    private final Pose endClose = new Pose(23, 78, Math.toRadians(0));//(15.4, 76.6, Math.toRadians(0));
-    private final Pose middleShoot = new Pose(58.7, 84.6, Math.toRadians(139));
-    private final Pose startMid = new Pose(43.9, 52, Math.toRadians(0));//(41.9, 57.5, Math.toRadians(0));
-    private final Pose endMid = new Pose(17, 52, Math.toRadians(0));//(10.4, 57.5, Math.toRadians(0));
-    private final Pose startFar = new Pose(38, 30, Math.toRadians(0));//(41.6, 33.8, Math.toRadians(0));
-    private final Pose endFar = new Pose(15, 30, Math.toRadians(0));//(11.1, 33.8, Math.toRadians(0));
-    private final Pose endPose = new Pose(59.1, 105, Math.toRadians(145));
+    private final Pose startPose = new Pose(124.8, 119.2, Math.toRadians(36));
+    private final Pose detectAprilTag = new Pose(109, 107.6, Math.toRadians(105));
+    private final Pose closeShoot = new Pose(107.4, 106.6, Math.toRadians(45));
+    private final Pose startClose = new Pose(83, 80, Math.toRadians(175));
+    private final Pose endClose = new Pose(120.8, 80, Math.toRadians(180));
+    private final Pose middleShoot = new Pose(85.5, 84.6, Math.toRadians(45));
+    private final Pose startMid = new Pose(85, 53, Math.toRadians(180));
+    private final Pose endMid = new Pose(127.7, 53, Math.toRadians(180));
+    private final Pose startFar = new Pose(101.4, 37, Math.toRadians(180));
+    private final Pose endFar = new Pose(131, 37, Math.toRadians(180));
+    private final Pose endPose = new Pose(85.6, 105, Math.toRadians(140));
 
 
     private PathChain startToDetectTag, detectTagToCloseShoot, closeShootToStartClose, startCloseToEndClose, endCloseToMiddleShoot, middleShootToStartMid, startMidToEndMid, endMidToMiddleShoot, middleShootToStartFar, startFarToEndFar, endFarToEnd;
@@ -155,7 +151,7 @@ public class SortTest extends OpMode {
             case START_TO_PRELOAD_SHOOT:
                 if (!follower.isBusy()){
                     telemetry.addLine("Path State: Start to preload shoot");
-                    robotHardware.setRedAngle();
+                    robotHardware.setBlueAngle();
                     follower.followPath(startToDetectTag, 0.5, true);
 
                     setPathState(PathState.LAUNCH_PRELOAD);

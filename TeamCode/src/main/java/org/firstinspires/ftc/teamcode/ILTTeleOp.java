@@ -8,6 +8,7 @@ import com.qualcomm.robotcore.eventloop.opmode.OpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.DcMotorEx;
+import com.qualcomm.robotcore.util.ElapsedTime;
 
 import org.firstinspires.ftc.robotcore.external.JavaUtil;
 import org.firstinspires.ftc.robotcore.external.navigation.Pose3D;
@@ -37,6 +38,10 @@ public class ILTTeleOp extends OpMode{
 
     RobotHardwareV2 robotHardware;
 
+    private ElapsedTime launchTimer = new ElapsedTime();
+    final double launchTime = 0.5;
+
+
     @Override
     public void init() {
 
@@ -65,11 +70,17 @@ public class ILTTeleOp extends OpMode{
     public void loop(){
         LLResult llResult = limelight.getLatestResult();
 
-        if (Math.abs(llResult.getBotpose().getOrientation().getYaw()-(-131.5)) <= 7){
+        if (Math.abs(llResult.getBotpose().getOrientation().getYaw()-(-131.5)) <= 7 || Math.abs(llResult.getBotpose().getOrientation().getYaw()-(134)) <= 7){
             robotHardware.setColorBlueLocation();
         } else {
             robotHardware.setColorOrangeLocation();
         }
+
+//        if (Math.abs(llResult.getBotpose().getOrientation().getYaw()-(134)) <= 7){
+//            robotHardware.setColorBlueLocation();
+//        } else {
+//            robotHardware.setColorOrangeLocation();
+//        }
 
 
         if (llResult != null && llResult.isValid()) {
@@ -82,26 +93,20 @@ public class ILTTeleOp extends OpMode{
         }
 
         if (gamepad2.dpad_down){
+            launchTimer.reset();
             robotHardware.setFeedLaunch();
         }
 
-        if (gamepad2.aWasPressed()){
+        if (launchTimer.seconds() > launchTime){
             robotHardware.setFeedDown();
         }
 
-        if (gamepad2.dpad_up){
-            robotHardware.dropGate2();
-        }
-
-        if (gamepad2.dpad_right){
-            robotHardware.dropGate3();
+        if (gamepad2.aWasPressed()){
+            robotHardware.intakeRampDown();
         }
 
         if (gamepad2.right_bumper){
             robotHardware.setFlywheelSpeedMiddlePosition();
-        } else if (gamepad2.dpad_left){
-            robotHardware.stopFlywheel();
-            robotHardware.motorLightOff();
         } else if (gamepad2.left_bumper) {
             robotHardware.setFlywheelSpeedBackPosition();
         } else {
@@ -109,19 +114,27 @@ public class ILTTeleOp extends OpMode{
         }
 
         if (gamepad2.xWasPressed()){
-            robotHardware.setBlueAngle();
+            robotHardware.dropGate2();
         }
 
         if (gamepad2.bWasPressed()){
-            robotHardware.setRedAngle();
+            robotHardware.dropGate3();
         }
 
         if (gamepad2.yWasPressed()){
+            robotHardware.resetMechanismsMiddle();
+        }
+
+        if (gamepad2.dpad_up){
             robotHardware.setAngleStraight();
         }
 
         if (gamepad2.dpad_left){
-            robotHardware.intakeRampUp();
+            robotHardware.setBlueAngle();
+        }
+
+        if(gamepad2.dpad_right){
+            robotHardware.setRedAngle();
         }
 
         if (gamepad2.right_stick_y > 0.5){
@@ -129,6 +142,7 @@ public class ILTTeleOp extends OpMode{
             robotHardware.startSpin();
         } else if(gamepad2.right_stick_y < -0.5){
             robotHardware.reverseIntake();
+            robotHardware.reverseSpin();
         } else {
             robotHardware.stopIntake();
             robotHardware.stopSpin();
