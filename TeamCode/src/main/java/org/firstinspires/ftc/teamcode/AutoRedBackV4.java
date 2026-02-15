@@ -212,13 +212,12 @@ public class AutoRedBackV4 extends OpMode {
                 }
                 break;
             case ADJUST_LAUNCHER_PRESET_FAR:
-                if (!follower.isBusy()){
-                    robotHardware.adjustLauncherUsingAprilTagRedBack();
+                if (!follower.isBusy()) {
                     adjustCount++;
-                }
-                if (robotHardware.adjustLauncherUsingAprilTagRedBack() || adjustCount ==3){
-                    adjustCount = 0;
-                    setPathState(PathState.LAUNCH_FAR);
+                    if (robotHardware.adjustLauncherUsingAprilTagRedBack() || adjustCount == 3) {
+                        adjustCount = 0;
+                        setPathState(PathState.LAUNCH_FAR);
+                    }
                 }
                 break;
             case LAUNCH_FAR:
@@ -243,6 +242,7 @@ public class AutoRedBackV4 extends OpMode {
                 if(!follower.isBusy()){
                     telemetry.addLine("To preset corner");
                     follower.followPath(startToCornerPresetStart);
+                    robotHardware.setRedAngle();
                     robotHardware.startIntake();
                     robotHardware.spin.setPower(-0.5);
                     setPathState(PathState.PICKUP_PRESET_CORNER);
@@ -266,13 +266,12 @@ public class AutoRedBackV4 extends OpMode {
                 }
                 break;
             case ADJUST_LAUNCHER_PRESET_CORNER:
-                if (!follower.isBusy()){
-                    robotHardware.adjustLauncherUsingAprilTagRedBack();
+                if (!follower.isBusy()) {
                     adjustCount++;
-                }
-                if (robotHardware.adjustLauncherUsingAprilTagRedBack() || adjustCount ==3){
-                    adjustCount = 0;
-                    setPathState(PathState.LAUNCH_CORNER);
+                    if (robotHardware.adjustLauncherUsingAprilTagRedBack() || adjustCount == 3) {
+                        adjustCount = 0;
+                        setPathState(PathState.LAUNCH_CORNER);
+                    }
                 }
                 break;
             case LAUNCH_CORNER:
@@ -296,6 +295,7 @@ public class AutoRedBackV4 extends OpMode {
             case DRIVE_TO_PRESET_MID:
                 if(!follower.isBusy()){
                     telemetry.addLine("To middle preset");
+                    robotHardware.setRedAngle();
                     follower.followPath(shootToMiddlePresetStart);
                     robotHardware.startIntake();
                     setPathState(PathState.PICKUP_PRESET_MID);

@@ -21,6 +21,8 @@ public class AutoRedSort extends OpMode {
     private Timer pathTimer, opModeTimer;
 
     int shotsToFire = 4;
+    int adjustCount = 0;
+
 
     int patternNum;
 
@@ -53,15 +55,18 @@ public class AutoRedSort extends OpMode {
         START,
         START_TO_PRELOAD_SHOOT,
         LAUNCH_PRELOAD,
+        ADJUST_LAUNCHER_PRELOAD,
         WAIT_FOR_LAUNCH_PRELOAD,
         SHOOT_PRELOAD_TO_START_CLOSE,
         START_CLOSE_TO_END_CLOSE,
         END_CLOSE_TO_SHOOT_CLOSE,
+        ADJUST_LAUNCHER_CLOSE,
         LAUNCH_CLOSE,
         WAIT_FOR_LAUNCH_CLOSE,
         SHOOT_CLOSE_TO_START_MID,
         START_MID_TO_END_MID,
         END_MID_TO_SHOOT_MID,
+        ADJUST_LAUNCHER_MID,
         LAUNCH_MID,
         WAIT_FOR_LAUNCH_MID,
         SHOOT_MID_TO_START_FAR,
@@ -77,13 +82,13 @@ public class AutoRedSort extends OpMode {
     private final Pose startPose = new Pose(124.8, 119.2, Math.toRadians(36));
     private final Pose detectAprilTag = new Pose(109, 107.6, Math.toRadians(105));
     private final Pose closeShoot = new Pose(107.4, 106.6, Math.toRadians(45));
-    private final Pose startClose = new Pose(83, 80, Math.toRadians(175));
-    private final Pose endClose = new Pose(120.8, 80, Math.toRadians(180));
+    private final Pose startClose = new Pose(83, 83, Math.toRadians(175));
+    private final Pose endClose = new Pose(120.8, 83, Math.toRadians(180));
     private final Pose middleShoot = new Pose(85.5, 84.6, Math.toRadians(45));
-    private final Pose startMid = new Pose(85, 53, Math.toRadians(180));
-    private final Pose endMid = new Pose(127.7, 53, Math.toRadians(180));
+    private final Pose startMid = new Pose(85, 54, Math.toRadians(180));
+    private final Pose endMid = new Pose(122, 54, Math.toRadians(180));
     private final Pose startFar = new Pose(101.4, 37, Math.toRadians(180));
-    private final Pose endFar = new Pose(131, 37, Math.toRadians(180));
+    private final Pose endFar = new Pose(122, 37, Math.toRadians(180));
     private final Pose endPose = new Pose(85.6, 105, Math.toRadians(140));
 
 
@@ -156,6 +161,7 @@ public class AutoRedSort extends OpMode {
 
                     setPathState(PathState.LAUNCH_PRELOAD);
                 }
+
                 break;
             case LAUNCH_PRELOAD:
                 if (patternNum == 0){
@@ -178,13 +184,22 @@ public class AutoRedSort extends OpMode {
                         robotHardware.resetLaunchAndSortState();
                         telemetry.addLine("Path State: Launch preload. order: " + launchOrder);
                         follower.followPath(detectTagToCloseShoot, 0.4, true);
+                        robotHardware.setAngleStraight();
+                        setPathState(PathState.ADJUST_LAUNCHER_PRELOAD);
+                    }
+                }
+                break;
+            case ADJUST_LAUNCHER_PRELOAD:
+                if (!follower.isBusy()){
+                    adjustCount++;
+                    if (robotHardware.adjustLauncherUsingAprilTagRedFront(telemetry) || adjustCount == 3){
+                        adjustCount = 0;
                         setPathState(PathState.WAIT_FOR_LAUNCH_PRELOAD);
                     }
                 }
                 break;
             case WAIT_FOR_LAUNCH_PRELOAD:
                 telemetry.addLine("Path State: Wait for launch preload");
-                robotHardware.setAngleStraight();
 
                 if (!follower.isBusy()) {
                     if (robotHardware.sortAndLaunch(true, launchOrder, telemetry)) {
@@ -199,6 +214,7 @@ public class AutoRedSort extends OpMode {
                     follower.followPath(closeShootToStartClose, .8, true);
 
                     robotHardware.resetMechanismsMiddle();
+                    robotHardware.setAngleStraight();
                     robotHardware.setFlywheelSpeedMiddlePosition();
                     robotHardware.startIntake();
                     robotHardware.startSpin();
@@ -209,7 +225,7 @@ public class AutoRedSort extends OpMode {
             case START_CLOSE_TO_END_CLOSE:
                 if (!follower.isBusy()){
                     telemetry.addLine("Path State: Start close to end close");
-                    follower.followPath(startCloseToEndClose, .6, true);
+                    follower.followPath(startCloseToEndClose, .5, true);
                     setPathState(PathState.END_CLOSE_TO_SHOOT_CLOSE);
                 }
                 break;
@@ -217,12 +233,21 @@ public class AutoRedSort extends OpMode {
                 if (!follower.isBusy()){
                     telemetry.addLine("Path State: End close to shoot close");
                     follower.followPath(endCloseToMiddleShoot, .8, true);
-                    robotHardware.resetMechanismsUp();
+                    //robotHardware.resetMechanismsUp();
 
 //                    robotHardware.stopIntake();
                     robotHardware.stopSpin();
 
-                    setPathState(PathState.LAUNCH_CLOSE);
+                    setPathState(PathState.ADJUST_LAUNCHER_CLOSE);
+                }
+                break;
+            case ADJUST_LAUNCHER_CLOSE:
+                if (!follower.isBusy()){
+                    adjustCount++;
+                    if (robotHardware.adjustLauncherUsingAprilTagRedFront(telemetry) || adjustCount == 3){
+                        adjustCount = 0;
+                        setPathState(PathState.LAUNCH_CLOSE);
+                    }
                 }
                 break;
             case LAUNCH_CLOSE:
@@ -243,7 +268,6 @@ public class AutoRedSort extends OpMode {
                 break;
             case WAIT_FOR_LAUNCH_CLOSE:
                 telemetry.addLine("Path State: Wait for launch close");
-                robotHardware.setAngleStraight();
 
                 if (!follower.isBusy()) {
                     if (robotHardware.sortAndLaunch(true, launchOrder, telemetry)) {
@@ -258,6 +282,7 @@ public class AutoRedSort extends OpMode {
                     follower.followPath(middleShootToStartMid, 0.8, true);
 
                     robotHardware.resetMechanismsMiddle();
+                    robotHardware.setAngleStraight();
                     robotHardware.startIntake();
                     robotHardware.startSpin();
 
@@ -267,7 +292,7 @@ public class AutoRedSort extends OpMode {
             case START_MID_TO_END_MID:
                 if (!follower.isBusy()){
                     telemetry.addLine("Path State: Start mid to end mid");
-                    follower.followPath(startMidToEndMid, 0.6, true);
+                    follower.followPath(startMidToEndMid, 0.5, true);
                     setPathState(PathState.END_MID_TO_SHOOT_MID);
                 }
                 break;
@@ -275,12 +300,22 @@ public class AutoRedSort extends OpMode {
                 if (!follower.isBusy()){
                     telemetry.addLine("Path State: End mid to shoot mid");
                     follower.followPath(endMidToMiddleShoot, 0.8, true);
-                    robotHardware.resetMechanismsUp();
+                    //robotHardware.resetMechanismsUp();
 
 //                    robotHardware.stopIntake();
                     robotHardware.stopSpin();
 
-                    setPathState(PathState.LAUNCH_MID);
+                    setPathState(PathState.ADJUST_LAUNCHER_MID);
+                }
+                break;
+            case ADJUST_LAUNCHER_MID:
+                if (!follower.isBusy()) {
+                    telemetry.addLine("Path State: ADJUST_LAUNCHER_MID");
+                    adjustCount++;
+                    if (robotHardware.adjustLauncherUsingAprilTagRedFront(telemetry) || adjustCount == 3) {
+                        adjustCount = 0;
+                        setPathState(PathState.LAUNCH_MID);
+                    }
                 }
             case LAUNCH_MID:
                 if (!follower.isBusy()){
@@ -300,7 +335,6 @@ public class AutoRedSort extends OpMode {
                 break;
             case WAIT_FOR_LAUNCH_MID:
                 telemetry.addLine("Path State: Wait for launch mid");
-                robotHardware.setAngleStraight();
 
                 if (!follower.isBusy()) {
                     if (robotHardware.sortAndLaunch(true, launchOrder, telemetry)) {
@@ -314,6 +348,7 @@ public class AutoRedSort extends OpMode {
                 telemetry.addLine("No State Commanded");
                 break;
         }
+        telemetry.update();
     }
 
     public void setPathState(PathState newState){
@@ -350,7 +385,7 @@ public class AutoRedSort extends OpMode {
 //        telemetry.addData("y", follower.getPose().getY());
 //        telemetry.addData("heading", follower.getPose().getHeading());
 //        telemetry.addData("path time", pathTimer.getElapsedTimeSeconds());
-        telemetry.addData("April Tag Num: ", patternNum);
+//        telemetry.addData("April Tag Num: ", patternNum);
 
     }
 

@@ -169,7 +169,7 @@ public class AutoBlueFrontNoGate extends OpMode {
                 if (!follower.isBusy()){
                     telemetry.addLine("Path State: Shoot preload to start close");
 
-                    robotHardware.resetMechanismsUp();
+                    robotHardware.resetMechanisms();
 
                     follower.followPath(closeShootToStartClose, .8, true);
 
@@ -227,7 +227,7 @@ public class AutoBlueFrontNoGate extends OpMode {
                 if (!follower.isBusy()){
                     telemetry.addLine("Path State: Shoot close to start mid");
 
-                    robotHardware.resetMechanismsUp();
+                    robotHardware.resetMechanisms();
 
                     follower.followPath(middleShootToStartMid, 0.8, true);
 
@@ -283,7 +283,7 @@ public class AutoBlueFrontNoGate extends OpMode {
                 if (!follower.isBusy()){
                     telemetry.addLine("Path State: Shoot mid to start far");
 
-                    robotHardware.resetMechanismsUp();
+                    robotHardware.resetMechanisms();
 
                     follower.followPath(middleShootToStartFar, .8, true);
 

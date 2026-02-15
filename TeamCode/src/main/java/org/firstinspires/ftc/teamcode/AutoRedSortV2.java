@@ -12,7 +12,7 @@ import com.qualcomm.robotcore.util.ElapsedTime;
 import org.firstinspires.ftc.teamcode.pedroPathing.Constants;
 
 @Autonomous
-public class AutoBlueSort extends OpMode {
+public class AutoRedSortV2 extends OpMode {
     private ElapsedTime runtime = new ElapsedTime();
 
 
@@ -21,6 +21,8 @@ public class AutoBlueSort extends OpMode {
     private Timer pathTimer, opModeTimer;
 
     int shotsToFire = 4;
+    int adjustCount = 0;
+
 
     int patternNum;
 
@@ -52,8 +54,8 @@ public class AutoBlueSort extends OpMode {
 
         START,
         START_TO_PRELOAD_SHOOT,
-        ADJUST_LAUNCHER_PRELOAD,
         LAUNCH_PRELOAD,
+        ADJUST_LAUNCHER_PRELOAD,
         WAIT_FOR_LAUNCH_PRELOAD,
         SHOOT_PRELOAD_TO_START_CLOSE,
         START_CLOSE_TO_END_CLOSE,
@@ -77,17 +79,17 @@ public class AutoBlueSort extends OpMode {
 
     PathState pathState;
 
-    private final Pose startPose = new Pose(19.2, 119.1, Math.toRadians(144));
-    private final Pose detectAprilTag = new Pose(36.6, 106.6, Math.toRadians(85));
-    private final Pose closeShoot = new Pose(37, 105, Math.toRadians(145));
-    private final Pose startClose = new Pose(52, 78, Math.toRadians(5));//(42, 88.1, Math.toRadians(5));
-    private final Pose endClose = new Pose(26, 78, Math.toRadians(0));//(15.4, 76.6, Math.toRadians(0));
-    private final Pose middleShoot = new Pose(58.7, 84.6, Math.toRadians(139));
-    private final Pose startMid = new Pose(43.9, 52, Math.toRadians(0));//(41.9, 57.5, Math.toRadians(0));
-    private final Pose endMid = new Pose(17, 52, Math.toRadians(0));//(10.4, 57.5, Math.toRadians(0));
-    private final Pose startFar = new Pose(38, 30, Math.toRadians(0));//(41.6, 33.8, Math.toRadians(0));
-    private final Pose endFar = new Pose(15, 30, Math.toRadians(0));//(11.1, 33.8, Math.toRadians(0));
-    private final Pose endPose = new Pose(59.1, 105, Math.toRadians(145));
+    private final Pose startPose = new Pose(124.8, 119.2, Math.toRadians(36));
+    private final Pose detectAprilTag = new Pose(109, 107.6, Math.toRadians(105));
+    private final Pose closeShoot = new Pose(107.4, 106.6, Math.toRadians(45));
+    private final Pose startClose = new Pose(83, 83, Math.toRadians(175));
+    private final Pose endClose = new Pose(120.8, 83, Math.toRadians(180));
+    private final Pose middleShoot = new Pose(85.5, 84.6, Math.toRadians(45));
+    private final Pose startMid = new Pose(85, 54, Math.toRadians(180));
+    private final Pose endMid = new Pose(122, 54, Math.toRadians(180));
+    private final Pose startFar = new Pose(101.4, 37, Math.toRadians(180));
+    private final Pose endFar = new Pose(122, 37, Math.toRadians(180));
+    private final Pose endPose = new Pose(85.6, 105, Math.toRadians(40));
 
 
     private PathChain startToDetectTag, detectTagToCloseShoot, closeShootToStartClose, startCloseToEndClose, endCloseToMiddleShoot, middleShootToStartMid, startMidToEndMid, endMidToMiddleShoot, middleShootToStartFar, startFarToEndFar, endFarToEnd;
@@ -123,8 +125,8 @@ public class AutoBlueSort extends OpMode {
                 .setLinearHeadingInterpolation(startMid.getHeading(), endMid.getHeading())
                 .build();
         endMidToMiddleShoot = follower.pathBuilder()
-                .addPath(new BezierLine(endMid, middleShoot))
-                .setLinearHeadingInterpolation(endMid.getHeading(), middleShoot.getHeading())
+                .addPath(new BezierLine(endMid, endPose))
+                .setLinearHeadingInterpolation(endMid.getHeading(), endPose.getHeading())
                 .build();
         middleShootToStartFar = follower.pathBuilder()
                 .addPath(new BezierLine(middleShoot, startFar))
@@ -154,11 +156,12 @@ public class AutoBlueSort extends OpMode {
             case START_TO_PRELOAD_SHOOT:
                 if (!follower.isBusy()){
                     telemetry.addLine("Path State: Start to preload shoot");
-                    robotHardware.setRedAngle();
+                    robotHardware.setBlueAngle();
                     follower.followPath(startToDetectTag, 0.5, true);
 
                     setPathState(PathState.LAUNCH_PRELOAD);
                 }
+
                 break;
             case LAUNCH_PRELOAD:
                 if (patternNum == 0){
@@ -181,13 +184,22 @@ public class AutoBlueSort extends OpMode {
                         robotHardware.resetLaunchAndSortState();
                         telemetry.addLine("Path State: Launch preload. order: " + launchOrder);
                         follower.followPath(detectTagToCloseShoot, 0.4, true);
+                        robotHardware.setAngleStraight();
+                        setPathState(PathState.ADJUST_LAUNCHER_PRELOAD);
+                    }
+                }
+                break;
+            case ADJUST_LAUNCHER_PRELOAD:
+                if (!follower.isBusy()){
+                    adjustCount++;
+                    if (robotHardware.adjustLauncherUsingAprilTagRedFront(telemetry) || adjustCount == 3){
+                        adjustCount = 0;
                         setPathState(PathState.WAIT_FOR_LAUNCH_PRELOAD);
                     }
                 }
                 break;
             case WAIT_FOR_LAUNCH_PRELOAD:
                 telemetry.addLine("Path State: Wait for launch preload");
-                robotHardware.setAngleStraight();
 
                 if (!follower.isBusy()) {
                     if (robotHardware.sortAndLaunch(true, launchOrder, telemetry)) {
@@ -202,6 +214,7 @@ public class AutoBlueSort extends OpMode {
                     follower.followPath(closeShootToStartClose, .8, true);
 
                     robotHardware.resetMechanismsMiddle();
+                    robotHardware.setAngleStraight();
                     robotHardware.setFlywheelSpeedMiddlePosition();
                     robotHardware.startIntake();
                     robotHardware.startSpin();
@@ -212,7 +225,7 @@ public class AutoBlueSort extends OpMode {
             case START_CLOSE_TO_END_CLOSE:
                 if (!follower.isBusy()){
                     telemetry.addLine("Path State: Start close to end close");
-                    follower.followPath(startCloseToEndClose, .6, true);
+                    follower.followPath(startCloseToEndClose, .5, true);
                     setPathState(PathState.END_CLOSE_TO_SHOOT_CLOSE);
                 }
                 break;
@@ -225,7 +238,16 @@ public class AutoBlueSort extends OpMode {
 //                    robotHardware.stopIntake();
                     robotHardware.stopSpin();
 
-                    setPathState(PathState.LAUNCH_CLOSE);
+                    setPathState(PathState.ADJUST_LAUNCHER_CLOSE);
+                }
+                break;
+            case ADJUST_LAUNCHER_CLOSE:
+                if (!follower.isBusy()){
+                    adjustCount++;
+                    if (robotHardware.adjustLauncherUsingAprilTagRedFront(telemetry) || adjustCount == 3){
+                        adjustCount = 0;
+                        setPathState(PathState.LAUNCH_CLOSE);
+                    }
                 }
                 break;
             case LAUNCH_CLOSE:
@@ -246,7 +268,6 @@ public class AutoBlueSort extends OpMode {
                 break;
             case WAIT_FOR_LAUNCH_CLOSE:
                 telemetry.addLine("Path State: Wait for launch close");
-                robotHardware.setAngleStraight();
 
                 if (!follower.isBusy()) {
                     if (robotHardware.sortAndLaunch(true, launchOrder, telemetry)) {
@@ -261,6 +282,7 @@ public class AutoBlueSort extends OpMode {
                     follower.followPath(middleShootToStartMid, 0.8, true);
 
                     robotHardware.resetMechanismsMiddle();
+                    robotHardware.setAngleStraight();
                     robotHardware.startIntake();
                     robotHardware.startSpin();
 
@@ -270,7 +292,7 @@ public class AutoBlueSort extends OpMode {
             case START_MID_TO_END_MID:
                 if (!follower.isBusy()){
                     telemetry.addLine("Path State: Start mid to end mid");
-                    follower.followPath(startMidToEndMid, 0.6, true);
+                    follower.followPath(startMidToEndMid, 0.5, true);
                     setPathState(PathState.END_MID_TO_SHOOT_MID);
                 }
                 break;
@@ -283,7 +305,17 @@ public class AutoBlueSort extends OpMode {
 //                    robotHardware.stopIntake();
                     robotHardware.stopSpin();
 
-                    setPathState(PathState.LAUNCH_MID);
+                    setPathState(PathState.ADJUST_LAUNCHER_MID);
+                }
+                break;
+            case ADJUST_LAUNCHER_MID:
+                if (!follower.isBusy()) {
+                    telemetry.addLine("Path State: ADJUST_LAUNCHER_MID");
+                    adjustCount++;
+                    if (robotHardware.adjustLauncherUsingAprilTagRedFront(telemetry) || adjustCount == 3) {
+                        adjustCount = 0;
+                        setPathState(PathState.LAUNCH_MID);
+                    }
                 }
             case LAUNCH_MID:
                 if (!follower.isBusy()){
@@ -303,7 +335,6 @@ public class AutoBlueSort extends OpMode {
                 break;
             case WAIT_FOR_LAUNCH_MID:
                 telemetry.addLine("Path State: Wait for launch mid");
-                robotHardware.setAngleStraight();
 
                 if (!follower.isBusy()) {
                     if (robotHardware.sortAndLaunch(true, launchOrder, telemetry)) {
@@ -317,6 +348,7 @@ public class AutoBlueSort extends OpMode {
                 telemetry.addLine("No State Commanded");
                 break;
         }
+        telemetry.update();
     }
 
     public void setPathState(PathState newState){
@@ -353,7 +385,7 @@ public class AutoBlueSort extends OpMode {
 //        telemetry.addData("y", follower.getPose().getY());
 //        telemetry.addData("heading", follower.getPose().getHeading());
 //        telemetry.addData("path time", pathTimer.getElapsedTimeSeconds());
-        telemetry.addData("April Tag Num: ", patternNum);
+//        telemetry.addData("April Tag Num: ", patternNum);
 
     }
 

@@ -31,7 +31,7 @@ public class AutoBlueBackV4 extends OpMode {
     RobotHardwareV2 robotHardware;
 
 
-
+    int adjustCount = 0;
 
     private double fudgeFactor = Math.toRadians(0);
 
@@ -63,8 +63,10 @@ public class AutoBlueBackV4 extends OpMode {
         START,
         LAUNCH_PRELOAD,
         WAIT_FOR_LAUNCH_PRELOAD,
+        ADJUST_LAUNCHER_PRESET_CORNER,
         LAUNCH_CORNER,
         WAIT_FOR_LAUNCH_CORNER,
+        ADJUST_LAUNCHER_PRESET_FAR,
         LAUNCH_FAR,
         WAIT_FOR_LAUNCH_FAR,
         LAUNCH_MID,
@@ -207,6 +209,16 @@ public class AutoBlueBackV4 extends OpMode {
                     //robotHardware.stopIntake();
                     //sleep(500);
                     robotHardware.startIntake();
+                    setPathState(PathState.ADJUST_LAUNCHER_PRESET_FAR);
+                }
+                break;
+            case ADJUST_LAUNCHER_PRESET_FAR:
+                if (!follower.isBusy()){
+                    robotHardware.adjustLauncherUsingAprilTagBlueBack();
+                    adjustCount++;
+                }
+                if (robotHardware.adjustLauncherUsingAprilTagRedBack() || adjustCount ==3){
+                    adjustCount = 0;
                     setPathState(PathState.LAUNCH_FAR);
                 }
                 break;
@@ -232,6 +244,7 @@ public class AutoBlueBackV4 extends OpMode {
                 if(!follower.isBusy()){
                     telemetry.addLine("To preset corner");
                     follower.followPath(startToCornerPresetStart);
+                    robotHardware.setBlueAngle();
                     robotHardware.startIntake();
                     robotHardware.spin.setPower(-0.5);
                     setPathState(PathState.PICKUP_PRESET_CORNER);
@@ -251,6 +264,16 @@ public class AutoBlueBackV4 extends OpMode {
                     robotHardware.stopIntake();
                     sleep(500);
                     robotHardware.startIntake();
+                    setPathState(PathState.LAUNCH_CORNER);
+                }
+                break;
+            case ADJUST_LAUNCHER_PRESET_CORNER:
+                if (!follower.isBusy()){
+                    robotHardware.adjustLauncherUsingAprilTagBlueBack();
+                    adjustCount++;
+                }
+                if (robotHardware.adjustLauncherUsingAprilTagRedBack() || adjustCount ==3){
+                    adjustCount = 0;
                     setPathState(PathState.LAUNCH_CORNER);
                 }
                 break;
@@ -276,6 +299,7 @@ public class AutoBlueBackV4 extends OpMode {
                 if(!follower.isBusy()){
                     telemetry.addLine("To middle preset");
                     follower.followPath(shootToMiddlePresetStart);
+                    robotHardware.setBlueAngle();
                     robotHardware.startIntake();
                     setPathState(PathState.PICKUP_PRESET_MID);
                 }

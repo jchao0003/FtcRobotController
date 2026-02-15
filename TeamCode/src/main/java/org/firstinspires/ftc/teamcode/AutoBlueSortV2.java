@@ -12,7 +12,7 @@ import com.qualcomm.robotcore.util.ElapsedTime;
 import org.firstinspires.ftc.teamcode.pedroPathing.Constants;
 
 @Autonomous
-public class AutoBlueSort extends OpMode {
+public class AutoBlueSortV2 extends OpMode {
     private ElapsedTime runtime = new ElapsedTime();
 
 
@@ -87,7 +87,7 @@ public class AutoBlueSort extends OpMode {
     private final Pose endMid = new Pose(17, 52, Math.toRadians(0));//(10.4, 57.5, Math.toRadians(0));
     private final Pose startFar = new Pose(38, 30, Math.toRadians(0));//(41.6, 33.8, Math.toRadians(0));
     private final Pose endFar = new Pose(15, 30, Math.toRadians(0));//(11.1, 33.8, Math.toRadians(0));
-    private final Pose endPose = new Pose(59.1, 105, Math.toRadians(145));
+    private final Pose endPose = new Pose(59.1, 105, Math.toRadians(150));
 
 
     private PathChain startToDetectTag, detectTagToCloseShoot, closeShootToStartClose, startCloseToEndClose, endCloseToMiddleShoot, middleShootToStartMid, startMidToEndMid, endMidToMiddleShoot, middleShootToStartFar, startFarToEndFar, endFarToEnd;
@@ -123,8 +123,8 @@ public class AutoBlueSort extends OpMode {
                 .setLinearHeadingInterpolation(startMid.getHeading(), endMid.getHeading())
                 .build();
         endMidToMiddleShoot = follower.pathBuilder()
-                .addPath(new BezierLine(endMid, middleShoot))
-                .setLinearHeadingInterpolation(endMid.getHeading(), middleShoot.getHeading())
+                .addPath(new BezierLine(endMid, endPose))
+                .setLinearHeadingInterpolation(endMid.getHeading(), endPose.getHeading())
                 .build();
         middleShootToStartFar = follower.pathBuilder()
                 .addPath(new BezierLine(middleShoot, startFar))

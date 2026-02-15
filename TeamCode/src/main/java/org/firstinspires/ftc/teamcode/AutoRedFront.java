@@ -23,7 +23,7 @@ public class AutoRedFront extends OpMode {
     private Follower follower;
     private Timer pathTimer, opModeTimer;
 
-    int shotsToFire = 3;
+    int shotsToFire = 5;
 
     RobotHardwareV2 robotHardware;
 
@@ -71,14 +71,14 @@ public class AutoRedFront extends OpMode {
 
     private final Pose startPose = new Pose(124.8, 119.2, Math.toRadians(36));
     private final Pose closeShoot = new Pose(107.4, 106.6, Math.toRadians(45));
-    private final Pose startClose = new Pose(102.3, 88.1, Math.toRadians(175));
-    private final Pose endClose = new Pose(129.8, 76.6, Math.toRadians(180));
+    private final Pose startClose = new Pose(83, 83, Math.toRadians(175));
+    private final Pose endClose = new Pose(120.8, 72, Math.toRadians(180));
     private final Pose middleShoot = new Pose(85.5, 84.6, Math.toRadians(45));
-    private final Pose startMid = new Pose(102.4, 60, Math.toRadians(180));
-    private final Pose endMid = new Pose(131.7, 60, Math.toRadians(180));
+    private final Pose startMid = new Pose(85, 54, Math.toRadians(180));
+    private final Pose endMid = new Pose(122, 54, Math.toRadians(180));
     private final Pose startFar = new Pose(101.4, 37, Math.toRadians(180));
-    private final Pose endFar = new Pose(131, 37, Math.toRadians(180));
-    private final Pose endPose = new Pose(85.6, 105, Math.toRadians(140));
+    private final Pose endFar = new Pose(122, 37, Math.toRadians(180));
+    private final Pose endPose = new Pose(85.6, 105, Math.toRadians(40));
 
 
     private PathChain startToCloseShoot, closeShootToStartClose, startCloseToEndClose, endCloseToMiddleShoot, middleShootToStartMid, startMidToEndMid, endMidToMiddleShoot, middleShootToStartFar, startFarToEndFar, endFarToEnd;
@@ -161,7 +161,7 @@ public class AutoRedFront extends OpMode {
                     } else {
                         setPathState(PathState.SHOOT_PRELOAD_TO_START_CLOSE);
                         robotHardware.stopSpin();
-                        shotsToFire = 4;
+                        shotsToFire = 5;
                     }
                 }
                 break;
@@ -180,7 +180,7 @@ public class AutoRedFront extends OpMode {
             case START_CLOSE_TO_END_CLOSE:
                 if (!follower.isBusy()){
                     telemetry.addLine("Path State: Start close to end close");
-                    follower.followPath(startCloseToEndClose, .6, true);
+                    follower.followPath(startCloseToEndClose, .4, true);
                     setPathState(PathState.END_CLOSE_TO_SHOOT_CLOSE);
                 }
                 break;
@@ -211,7 +211,7 @@ public class AutoRedFront extends OpMode {
                     } else {
                         setPathState(PathState.SHOOT_CLOSE_TO_START_MID);
                         robotHardware.stopSpin();
-                        shotsToFire = 4;
+                        shotsToFire = 5;
                     }
                 }
                 break;
@@ -259,7 +259,7 @@ public class AutoRedFront extends OpMode {
                     } else {
                         setPathState(PathState.SHOOT_MID_TO_START_FAR);
                         robotHardware.stopSpin();
-                        shotsToFire = 4;
+                        shotsToFire = 5;
                     }
                 }
                 break;
@@ -308,7 +308,7 @@ public class AutoRedFront extends OpMode {
                     } else {
                         setPathState(PathState.DONE);
                         robotHardware.stopSpin();
-                        shotsToFire = 4;
+                        shotsToFire = 5;
                     }
                 }
                 break;
@@ -318,7 +318,8 @@ public class AutoRedFront extends OpMode {
                 break;
             default:
                 telemetry.addLine("No State Commanded");
-                break;        }
+                break;
+        }
     }
 
     public void setPathState(PathState newState){

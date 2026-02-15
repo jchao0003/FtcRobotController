@@ -95,75 +95,101 @@ public class RobotHardwareV2 {
     }
 
     public boolean adjustLauncherUsingAprilTagRedBack(){
+        return true;
+        /*
         LLResult llResult = limelight.getLatestResult();
         double Tx = 0.0;
 
         if (llResult != null && llResult.isValid()) {
             Tx = llResult.getTx();
 
-            if (0 <= Tx) {
+            if (Tx >= 0) {
                 rotateLauncher.setPosition(rotateLauncher.getPosition() - 0.002);
                 return false;
             } else if (Tx <= -3){
                 rotateLauncher.setPosition(rotateLauncher.getPosition() + 0.002);
                 return false;
+            } else {
+                return true;
             }
         }
-        return true;
+        return false;
+         */
     }
 
     public boolean adjustLauncherUsingAprilTagBlueBack(){
+        return true;
+        /*
         LLResult llResult = limelight.getLatestResult();
         double Tx = 0.0;
 
         if (llResult != null && llResult.isValid()) {
             Tx = llResult.getTx();
 
-            if (-2 >= Tx) {
+             if (Tx >= 5) {
+                 rotateLauncher.setPosition(rotateLauncher.getPosition() - 0.002);
+                 return false;
+             } else if (Tx <= -1) {
                 rotateLauncher.setPosition(rotateLauncher.getPosition() + 0.002);
-                return true;
-            } else if (Tx >= 5){
-                rotateLauncher.setPosition(rotateLauncher.getPosition() - 0.002);
                 return false;
+            } else {
+                return true;
             }
         }
-        return true;
+        return false;
+         */
     }
 
-    public boolean adjustLauncherUsingAprilTagRedFront(){
+    public boolean adjustLauncherUsingAprilTagRedFront(Telemetry telemetry){
+        return true;
+        /*
         LLResult llResult = limelight.getLatestResult();
         double Tx = 0.0;
 
         if (llResult != null && llResult.isValid()) {
             Tx = llResult.getTx();
 
-            if (4 <= Tx) {
-                rotateLauncher.setPosition(rotateLauncher.getPosition() - 0.002);
-                return true;
-            } else if (Tx <= -6){
-                rotateLauncher.setPosition(rotateLauncher.getPosition() + 0.002);
+            telemetry.addData("Tx: ", Tx);
+            telemetry.addData("launchPos: ", rotateLauncher.getPosition());
+            if (Tx >= 4) {
+                double newPosition = rotateLauncher.getPosition() - 0.002;
+                rotateLauncher.setPosition(newPosition);
+                telemetry.addData("newPosition minus", newPosition);
                 return false;
+            } else if (Tx <= -6){
+                double newPosition = rotateLauncher.getPosition() + 0.002;
+                rotateLauncher.setPosition(newPosition);
+                telemetry.addData("newPosition plus", newPosition);
+                return false;
+            } else {
+                return true;
             }
         }
-        return true;
+        return false;
+         */
     }
 
     public boolean adjustLauncherUsingAprilTagBlueFront(){
+        return true;
+        /*
         LLResult llResult = limelight.getLatestResult();
         double Tx = 0.0;
 
         if (llResult != null && llResult.isValid()) {
             Tx = llResult.getTx();
 
-            if (-5 >= Tx) {
-                rotateLauncher.setPosition(rotateLauncher.getPosition() + 0.002);
-                return true;
-            } else if (Tx >= 5){
+            if (Tx >= 5) {
                 rotateLauncher.setPosition(rotateLauncher.getPosition() - 0.002);
                 return false;
+            } else if (Tx <= -5) {
+                rotateLauncher.setPosition(rotateLauncher.getPosition() + 0.002);
+                return false;
+            } else {
+                return true;
             }
         }
-        return true;
+        return false;
+         */
     }
 
     /** Maps launchSequence string (e.g. "1,2,3") to [waitFirst, waitSecond, waitThird] in seconds */
@@ -246,7 +272,7 @@ public class RobotHardwareV2 {
                 }
                 break;
             case START_LAUNCH:
-                if (flywheel.getVelocity() > flywheelTargetVelocity - 60){
+                if (flywheel.getVelocity() > flywheelTargetVelocity - 60 && flywheel.getVelocity() < flywheelTargetVelocity + 40){
                     launchState = LaunchState.WAIT_LAUNCH_COMPLETE;
                     stopSpin();
                     setFeedLaunch();
@@ -363,7 +389,7 @@ public class RobotHardwareV2 {
                 }
                 break;
             case START_LAUNCH_0:
-                if (flywheel.getVelocity() > flywheelTargetVelocity - 60) {
+                if (flywheel.getVelocity() > flywheelTargetVelocity - 60 && flywheel.getVelocity() < flywheelTargetVelocity + 40) {
                     telemetry.addLine("start launch_0");
 
                     stopSpin();
@@ -386,7 +412,7 @@ public class RobotHardwareV2 {
                 }
                 break;
             case START_LAUNCH_1:
-                if (flywheel.getVelocity() > flywheelTargetVelocity - 60) {
+                if (flywheel.getVelocity() > flywheelTargetVelocity - 60 && flywheel.getVelocity() < flywheelTargetVelocity + 40) {
                     telemetry.addLine("start launch_1");
                     stopSpin();
                     setFeedLaunch();
@@ -432,7 +458,7 @@ public class RobotHardwareV2 {
                 }
                 break;
             case START_LAUNCH_2:
-                if (flywheel.getVelocity() > flywheelTargetVelocity - 60) {
+                if (flywheel.getVelocity() > flywheelTargetVelocity - 60 && flywheel.getVelocity() < flywheelTargetVelocity + 40) {
                     telemetry.addLine("start launch_2");
 
                     stopSpin();
@@ -456,7 +482,7 @@ public class RobotHardwareV2 {
                 }
                 break;
                 case START_LAUNCH_EXTRA:
-                    if (flywheel.getVelocity() > flywheelTargetVelocity - 60) {
+                    if (flywheel.getVelocity() > flywheelTargetVelocity - 60 && flywheel.getVelocity() < flywheelTargetVelocity + 40) {
                         gate2middle();
                         gate3middle();
                         stopSpin();
@@ -492,7 +518,7 @@ public class RobotHardwareV2 {
                 }
                 break;
             case START_LAUNCH:
-                if (flywheel.getVelocity() > flywheelTargetVelocity - 60){
+                if (flywheel.getVelocity() > flywheelTargetVelocity - 60 && flywheel.getVelocity() < flywheelTargetVelocity + 40){
                     launchState = LaunchState.WAIT_LAUNCH_COMPLETE;
                     stopSpin();
                     setFeedLaunch();
@@ -542,7 +568,7 @@ public class RobotHardwareV2 {
     }
 
     public void startIntake(){
-        intake.setPower(.75);
+        intake.setPower(.8);
     }
 
     public void stopIntake(){
@@ -604,7 +630,7 @@ public class RobotHardwareV2 {
     }
 
     public void intakeRampUp(){
-        intakeRamp.setPosition(0.5185);
+        intakeRamp.setPosition(0.5187);
     }
 
     public void intakeRampMiddle(){
