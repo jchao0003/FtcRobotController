@@ -16,8 +16,8 @@ import com.qualcomm.robotcore.util.ElapsedTime;
 
 import org.firstinspires.ftc.teamcode.pedroPathing.Constants;
 
-//@Autonomous
-public class AutoBlueBackV4 extends OpMode {
+@Autonomous
+public class AutoBlueBackV5 extends OpMode {
     private ElapsedTime runtime = new ElapsedTime();
 
     private Follower follower;
@@ -25,7 +25,7 @@ public class AutoBlueBackV4 extends OpMode {
 
     private DcMotorEx flywheel;
     private DcMotor intake;
-    int shotsToFire = 4;
+    int shotsToFire = 5;
 
 
     RobotHardwareV2 robotHardware;
@@ -101,8 +101,8 @@ public class AutoBlueBackV4 extends OpMode {
 
     private final Pose startPose = new Pose(57.3, 10, Math.toRadians(90));
     private final Pose farShootPose = new Pose(57.3, 12, Math.toRadians(90));
-    private final Pose cornerPresetStart = new Pose(12, 32.5, Math.toRadians(90));
-    private final Pose cornerPresetEnd = new Pose(12, 12, Math.toRadians(90));
+    private final Pose cornerPresetStart = new Pose(11, 32.5, Math.toRadians(90));
+    private final Pose cornerPresetEnd = new Pose(11, 12, Math.toRadians(90));
     private final Pose farPresetStart = new Pose(45, 33.2, Math.toRadians(0));
     private final Pose farPresetEnd = new Pose(15, 33.2, Math.toRadians(0));
     private final Pose middlePresetStart = new Pose(45, 57.2, Math.toRadians(0));
@@ -181,7 +181,7 @@ public class AutoBlueBackV4 extends OpMode {
                         setPathState(PathState.LAUNCH_PRELOAD);
                     } else {
                         setPathState(PathState.DRIVE_TO_PRESET_FAR);
-                        shotsToFire = 4;
+                        shotsToFire = 5;
                     }
                 }
                 break;
@@ -206,7 +206,7 @@ public class AutoBlueBackV4 extends OpMode {
                 if(!follower.isBusy()){
                     telemetry.addLine("To launch zone");
                     follower.followPath(farPresetEndToShoot);
-                    //robotHardware.stopIntake();
+                    robotHardware.stopSpin();
                     //sleep(500);
                     robotHardware.startIntake();
                     setPathState(PathState.ADJUST_LAUNCHER_PRESET_FAR);
@@ -236,7 +236,7 @@ public class AutoBlueBackV4 extends OpMode {
                         setPathState(PathState.LAUNCH_FAR);
                     } else {
                         setPathState(PathState.DRIVE_TO_PRESET_CORNER);
-                        shotsToFire = 4;
+                        shotsToFire = 5;
                     }
                 }
                 break;
@@ -253,7 +253,7 @@ public class AutoBlueBackV4 extends OpMode {
             case PICKUP_PRESET_CORNER:
                 if(!follower.isBusy()){
                     telemetry.addLine("Picking up preset corner");
-                    follower.followPath(cornerPresetStartToCornerPresetEnd, 0.2, true);
+                    follower.followPath(cornerPresetStartToCornerPresetEnd, 0.4, true);
                     setPathState(PathState.PRESET_CORNER_TO_SHOOT);
                 }
                 break;
@@ -264,6 +264,7 @@ public class AutoBlueBackV4 extends OpMode {
                     robotHardware.stopIntake();
                     sleep(500);
                     robotHardware.startIntake();
+                    robotHardware.stopSpin();
                     setPathState(PathState.LAUNCH_CORNER);
                 }
                 break;
@@ -291,7 +292,7 @@ public class AutoBlueBackV4 extends OpMode {
                         setPathState(PathState.LAUNCH_CORNER);
                     } else {
                         setPathState(PathState.DRIVE_TO_PRESET_MID);
-                        shotsToFire = 4;
+                        shotsToFire = 5;
                     }
                 }
                 break;
@@ -335,7 +336,7 @@ public class AutoBlueBackV4 extends OpMode {
                         setPathState(PathState.LAUNCH_MID);
                     } else {
                         setPathState(PathState.MOVE_OUT_OF_LAUNCH);
-                        shotsToFire = 4;
+                        shotsToFire = 5;
                     }
                 }
                 break;

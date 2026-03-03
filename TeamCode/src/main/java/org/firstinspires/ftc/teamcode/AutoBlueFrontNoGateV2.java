@@ -1,7 +1,5 @@
 package org.firstinspires.ftc.teamcode;
 
-import static android.os.SystemClock.sleep;
-
 import com.pedropathing.follower.Follower;
 import com.pedropathing.geometry.BezierLine;
 import com.pedropathing.geometry.Pose;
@@ -9,15 +7,12 @@ import com.pedropathing.paths.PathChain;
 import com.pedropathing.util.Timer;
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 import com.qualcomm.robotcore.eventloop.opmode.OpMode;
-import com.qualcomm.robotcore.hardware.DcMotor;
-import com.qualcomm.robotcore.hardware.DcMotorEx;
-import com.qualcomm.robotcore.hardware.Servo;
 import com.qualcomm.robotcore.util.ElapsedTime;
 
 import org.firstinspires.ftc.teamcode.pedroPathing.Constants;
 
 @Autonomous
-public class AutoBlueFrontNoGate extends OpMode {
+public class AutoBlueFrontNoGateV2 extends OpMode {
     private ElapsedTime runtime = new ElapsedTime();
 
     private Follower follower;
@@ -190,7 +185,7 @@ public class AutoBlueFrontNoGate extends OpMode {
             case END_CLOSE_TO_SHOOT_CLOSE:
                 if (!follower.isBusy()){
                     telemetry.addLine("Path State: End close to shoot close");
-                    follower.followPath(endCloseToMiddleShoot, .8, true);
+                    follower.followPath(endCloseToMiddleShoot, .6, true);
 
 //                    robotHardware.stopIntake();
                     robotHardware.stopSpin();

@@ -14,17 +14,17 @@ import com.qualcomm.robotcore.hardware.HardwareMap;
 
 import org.firstinspires.ftc.robotcore.external.navigation.DistanceUnit;
 
-public class Constants {
+public class ConstantsV2 {
     public static FollowerConstants followerConstants = new FollowerConstants()
             .mass(9.9)
             //drive constants p 0.015
             .forwardZeroPowerAcceleration(-40.268976346469735)
             .lateralZeroPowerAcceleration(-70.41689210717456)
-            .translationalPIDFCoefficients(new PIDFCoefficients(0.15, 0, 0.015, 0.025)) // example p == 0.03
-            .headingPIDFCoefficients(new PIDFCoefficients(0.8, 0, 0.03, 0.02)) // example p == 0.4
-            .drivePIDFCoefficients(new FilteredPIDFCoefficients(0.2, 0.0, 0.001, 0.6,0.035)) // example p == 0.8
-            .secondaryTranslationalPIDFCoefficients(new PIDFCoefficients(0.1, 0, 0.01, 0.015))
-            .secondaryHeadingPIDFCoefficients(new PIDFCoefficients(0.1, 0, 0.03, 0.01))
+            .translationalPIDFCoefficients(new PIDFCoefficients(0.2, 0, 0.005, 0.025)) // example p == 0.03
+            .headingPIDFCoefficients(new PIDFCoefficients(0.85, 0, 0.0005, 0.03)) // example p == 0.4
+            .drivePIDFCoefficients(new FilteredPIDFCoefficients(0.35, 0.0, 0.00001, 0.6,0.035)) // example p == 0.8
+//            .secondaryTranslationalPIDFCoefficients(new PIDFCoefficients(0.4, 0, 0.005, 0.0006))
+//            .secondaryHeadingPIDFCoefficients(new PIDFCoefficients(2.5, 0, 0.1, 0.0005))
 //            .secondaryDrivePIDFCoefficients(new FilteredPIDFCoefficients(0.02, 0, 0.000005, 0.6, 0.01 ))
 //            .translationalPIDFSwitch(4)
 //            .drivePIDFSwitch(15)

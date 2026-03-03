@@ -26,6 +26,8 @@ public class RobotInitializerV2 {
         robotHardware.feeder = hardwareMap.get(Servo.class, "feeder");
         robotHardware.intakeRamp = hardwareMap.get(Servo.class, "intakeRamp");
         robotHardware.rotateLauncher = hardwareMap.get(Servo.class, "launcher");
+        robotHardware.trajectoryServo = hardwareMap.get(Servo.class, "trajectoryServo");
+
         robotHardware.gate2 = hardwareMap.get(Servo.class, "gate2");
         robotHardware.gate3 = hardwareMap.get(Servo.class, "gate3");
         robotHardware.spin = hardwareMap.get(CRServo.class, "spin");

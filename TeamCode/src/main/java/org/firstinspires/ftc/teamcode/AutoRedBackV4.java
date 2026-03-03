@@ -25,7 +25,7 @@ public class AutoRedBackV4 extends OpMode {
 
     private DcMotorEx flywheel;
     private DcMotor intake;
-    int shotsToFire = 4;
+    int shotsToFire = 5;
     int adjustCount = 0;
 
 
@@ -34,7 +34,7 @@ public class AutoRedBackV4 extends OpMode {
 
 
 
-    private double fudgeFactor = Math.toRadians(0);
+    private double fudgeFactor = Math.toRadians(5);
 
     private Servo feeder;
 
@@ -105,7 +105,7 @@ public class AutoRedBackV4 extends OpMode {
     private final Pose cornerPresetStart = new Pose(90, 11, Math.toRadians(180));
     private final Pose cornerPresetEnd = new Pose(137, 11, Math.toRadians(180));
     private final Pose farPresetStart = new Pose(90, 32.5, Math.toRadians(180));
-    private final Pose farPresetEnd = new Pose(133, 32.5, Math.toRadians(180));
+    private final Pose farPresetEnd = new Pose(135, 32.5, Math.toRadians(180));
     private final Pose middlePresetStart = new Pose(90, 56, Math.toRadians(180));
     private final Pose middlePresetEnd = new Pose(135, 56, Math.toRadians(180));
 
@@ -180,7 +180,7 @@ public class AutoRedBackV4 extends OpMode {
                         setPathState(PathState.LAUNCH_PRELOAD);
                     } else {
                         setPathState(PathState.DRIVE_TO_PRESET_FAR);
-                        shotsToFire = 4;
+                        shotsToFire = 5;
                     }
                 }
                 break;
@@ -234,7 +234,7 @@ public class AutoRedBackV4 extends OpMode {
                         setPathState(PathState.LAUNCH_FAR);
                     } else {
                         setPathState(PathState.DRIVE_TO_PRESET_CORNER);
-                        shotsToFire = 4;
+                        shotsToFire = 5;
                     }
                 }
                 break;
@@ -288,7 +288,7 @@ public class AutoRedBackV4 extends OpMode {
                         setPathState(PathState.LAUNCH_CORNER);
                     } else {
                         setPathState(PathState.DRIVE_TO_PRESET_MID);
-                        shotsToFire = 4;
+                        shotsToFire = 5;
                     }
                 }
                 break;
@@ -332,7 +332,7 @@ public class AutoRedBackV4 extends OpMode {
                         setPathState(PathState.LAUNCH_MID);
                     } else {
                         setPathState(PathState.MOVE_OUT_OF_LAUNCH);
-                        shotsToFire = 4;
+                        shotsToFire = 5;
                     }
                 }
                 break;

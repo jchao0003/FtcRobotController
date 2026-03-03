@@ -27,7 +27,7 @@ public class AutoRedFrontNoGate extends OpMode {
 
     RobotHardwareV2 robotHardware;
 
-    private double fudgeFactor = Math.toRadians(15);
+    private double fudgeFactor = Math.toRadians(0);
 
 
 
@@ -99,11 +99,11 @@ public class AutoRedFrontNoGate extends OpMode {
                 .build();
         endCloseToMiddleShoot = follower.pathBuilder()
                 .addPath(new BezierLine(endClose, middleShoot))
-                .setLinearHeadingInterpolation(endClose.getHeading(), middleShoot.getHeading())
+                .setLinearHeadingInterpolation(endClose.getHeading(), middleShoot.getHeading() + fudgeFactor)
                 .build();
         middleShootToStartMid = follower.pathBuilder()
                 .addPath(new BezierLine(middleShoot, startMid))
-                .setLinearHeadingInterpolation(middleShoot.getHeading(), startMid.getHeading())
+                .setLinearHeadingInterpolation(middleShoot.getHeading() + fudgeFactor, startMid.getHeading())
                 .build();
         startMidToEndMid = follower.pathBuilder()
                 .addPath(new BezierLine(startMid, endMid))
@@ -111,11 +111,11 @@ public class AutoRedFrontNoGate extends OpMode {
                 .build();
         endMidToMiddleShoot = follower.pathBuilder()
                 .addPath(new BezierLine(endMid, middleShoot))
-                .setLinearHeadingInterpolation(endMid.getHeading(), middleShoot.getHeading())
+                .setLinearHeadingInterpolation(endMid.getHeading(), middleShoot.getHeading() + fudgeFactor)
                 .build();
         middleShootToStartFar = follower.pathBuilder()
                 .addPath(new BezierLine(middleShoot, startFar))
-                .setLinearHeadingInterpolation(middleShoot.getHeading(), startFar.getHeading())
+                .setLinearHeadingInterpolation(middleShoot.getHeading() + fudgeFactor, startFar.getHeading())
                 .build();
         startFarToEndFar = follower.pathBuilder()
                 .addPath(new BezierLine(startFar, endFar))

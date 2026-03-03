@@ -1,5 +1,7 @@
 package org.firstinspires.ftc.teamcode;
 
+import static android.os.SystemClock.sleep;
+
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -27,6 +29,7 @@ public class RobotHardwareV2 {
     public Servo feeder;
     public Servo intakeRamp;
     public Servo rotateLauncher;
+    public Servo trajectoryServo;
     public Servo indicatorLightMotor;
     public Servo indicatorLightLocation;
     public Servo gate2;
@@ -35,7 +38,7 @@ public class RobotHardwareV2 {
 
     public Limelight3A limelight;
 
-    public double backVelocity = 1550; // 1600;
+    public double backVelocity = 1575; // 1600; //1550
     public double frontVelocity = 1000; //1100;
     public double middleVelocity = 1200;
 
@@ -92,6 +95,86 @@ public class RobotHardwareV2 {
         }
         telemetry.update();
         return 0;
+    }
+
+    public void adjustLauncherBlue(Telemetry telemetry){
+        LLResult llResult = limelight.getLatestResult();
+        double Tx = 0;
+        int id = 0;
+
+        if (llResult == null || !llResult.isValid()){
+            return;
+        }
+
+
+        List<LLResultTypes.FiducialResult> fiducials = llResult.getFiducialResults();
+        for (LLResultTypes.FiducialResult fiducial : fiducials) {
+            if (fiducial.getFiducialId() == 20){
+                id = fiducial.getFiducialId(); // The ID number of the fiducial
+                Tx = fiducial.getTargetXDegrees();
+
+                telemetry.addData("ID:", id);
+                telemetry.addData("Tx:", Tx);
+                telemetry.update();
+                break;
+            }
+        }
+
+
+        if (id == 20) {
+
+            if (Tx >= 0) {
+                if ((rotateLauncher.getPosition() - (0.002*Math.abs(Tx)) >= 0.164)){
+                    rotateLauncher.setPosition(rotateLauncher.getPosition() - (0.002*Math.abs(Tx)));
+                } else {
+                    setBlueAngle();
+                }
+            } else if (Tx <= -3){
+                if ((rotateLauncher.getPosition() - (0.002*Math.abs(Tx)) <= 0.222)){
+                    rotateLauncher.setPosition(rotateLauncher.getPosition() + (0.002*Math.abs(Tx+3)));
+                } else {
+                    setRedAngle();
+                }
+            }
+        }
+    }
+
+    public void adjustLauncherRed(){
+        LLResult llResult = limelight.getLatestResult();
+        double Tx = 0;
+        int id = 0;
+
+        if (llResult == null || !llResult.isValid()){
+            return;
+        }
+
+
+        List<LLResultTypes.FiducialResult> fiducials = llResult.getFiducialResults();
+        for (LLResultTypes.FiducialResult fiducial : fiducials) {
+            if (fiducial.getFiducialId() == 20){
+                id = fiducial.getFiducialId(); // The ID number of the fiducial
+                Tx = fiducial.getTargetXDegrees();
+                break;
+            }
+        }
+
+
+        if (id == 20) {
+
+            if (Tx >= 5) {
+                if ((rotateLauncher.getPosition() - (0.002 * Math.abs(Tx)) >= 0.164)) {
+                    rotateLauncher.setPosition(rotateLauncher.getPosition() - (0.002 * Math.abs(Tx)));
+                } else {
+                    setBlueAngle();
+                }
+            } else if (Tx <= -1) {
+                if ((rotateLauncher.getPosition() - (0.002 * Math.abs(Tx)) <= 0.222)) {
+                    rotateLauncher.setPosition(rotateLauncher.getPosition() + (0.002 * Math.abs(Tx + 3)));
+                } else {
+                    setRedAngle();
+                }
+            }
+        }
     }
 
     public boolean adjustLauncherUsingAprilTagRedBack(){
@@ -225,7 +308,7 @@ public class RobotHardwareV2 {
         gate3.setPosition(0.47); // ???
     }
     public void gate2middle() {
-        gate2.setPosition(0.45);
+        gate2.setPosition(0.48);
     }
     public void gate3middle() {
         gate3.setPosition(0.5);
@@ -235,7 +318,7 @@ public class RobotHardwareV2 {
         switch (position) {
             case 1: dropGate2(); break;
             case 2: dropGate3(); break;
-            case 3: intakeRampDown(); break;
+            case 3: intakeRampDown();break;
         }
     }
 
@@ -269,12 +352,13 @@ public class RobotHardwareV2 {
                 if (shotRequested) {
                     launchState = LaunchState.START_LAUNCH;
                     shotTimer.reset();
+                    stopSpin();
                 }
                 break;
             case START_LAUNCH:
                 if (flywheel.getVelocity() > flywheelTargetVelocity - 60 && flywheel.getVelocity() < flywheelTargetVelocity + 40){
                     launchState = LaunchState.WAIT_LAUNCH_COMPLETE;
-                    stopSpin();
+                    //stopSpin();
                     setFeedLaunch();
                     //feeder.setPosition(0.40);
 
@@ -568,7 +652,7 @@ public class RobotHardwareV2 {
     }
 
     public void startIntake(){
-        intake.setPower(.8);
+        intake.setPower(.70);
     }
 
     public void stopIntake(){
@@ -630,7 +714,7 @@ public class RobotHardwareV2 {
     }
 
     public void intakeRampUp(){
-        intakeRamp.setPosition(0.5187);
+        intakeRamp.setPosition(0.5183);
     }
 
     public void intakeRampMiddle(){
@@ -678,8 +762,16 @@ public class RobotHardwareV2 {
         indicatorLightLocation.setPosition(0.388);
     }
 
+    public void setNormalTrajectory(){
+        trajectoryServo.setPosition(1.0);
+    }
+
+    public void setFarTrajectory(){
+        trajectoryServo.setPosition(0.45);
+    }
+
     public void setBlueAngle(){
-        rotateLauncher.setPosition(0.222); //-19.7+2.9
+        rotateLauncher.setPosition(0.222); //-19.7+2.9 //0.222
     }
 
     public void setRedAngle(){
