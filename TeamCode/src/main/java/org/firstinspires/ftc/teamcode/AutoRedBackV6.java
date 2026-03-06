@@ -33,7 +33,7 @@ public class AutoRedBackV6 extends OpMode {
 
     int adjustCount = 0;
 
-    private double fudgeFactor = Math.toRadians(0);
+    private double fudgeFactor = Math.toRadians(-2);
 
     private Servo feeder;
 
@@ -222,6 +222,7 @@ public class AutoRedBackV6 extends OpMode {
                 break;
             case LAUNCH_FAR:
                 if (!follower.isBusy()){
+                    robotHardware.adjustLauncherRed();
                     robotHardware.launchBack(true);
                     setPathState(PathState.WAIT_FOR_LAUNCH_FAR);
                 }
@@ -251,7 +252,7 @@ public class AutoRedBackV6 extends OpMode {
             case PICKUP_PRESET_CORNER:
                 if(!follower.isBusy()){
                     telemetry.addLine("Picking up preset corner");
-                    follower.followPath(cornerPresetStartToCornerPresetEnd, 0.4, true);
+                    follower.followPath(cornerPresetStartToCornerPresetEnd, 0.6, true);
                     setPathState(PathState.PRESET_CORNER_TO_SHOOT);
                 }
                 break;
@@ -274,6 +275,7 @@ public class AutoRedBackV6 extends OpMode {
                 break;
             case LAUNCH_CORNER:
                 if (!follower.isBusy()){
+                    robotHardware.adjustLauncherRed();
                     robotHardware.launchBack(true);
                     setPathState(PathState.WAIT_FOR_LAUNCH_CORNER);
                 }

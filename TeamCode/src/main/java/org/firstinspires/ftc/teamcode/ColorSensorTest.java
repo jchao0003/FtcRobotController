@@ -4,7 +4,7 @@ import com.qualcomm.robotcore.eventloop.opmode.OpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 
 
-@TeleOp
+//@TeleOp
 public class ColorSensorTest extends OpMode {
     TestColorSensorsInit sensorInit = new TestColorSensorsInit();
 

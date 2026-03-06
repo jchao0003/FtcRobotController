@@ -40,7 +40,7 @@ public class RobotHardwareV2 {
 
     public double backVelocity = 1575; // 1600; //1550
     public double frontVelocity = 1000; //1100;
-    public double middleVelocity = 1200;
+    public double middleVelocity = 1175; //1200
 
     private double flywheelTargetVelocity = 0;
     final double TIME_BETWEEN_SHOTS = .9;
@@ -124,13 +124,13 @@ public class RobotHardwareV2 {
         if (id == 20) {
 
             if (Tx >= 0) {
-                if ((rotateLauncher.getPosition() - (0.002*Math.abs(Tx)) >= 0.164)){
+                if ((rotateLauncher.getPosition() - (0.002*Math.abs(Tx))) >= 0.164){
                     rotateLauncher.setPosition(rotateLauncher.getPosition() - (0.002*Math.abs(Tx)));
                 } else {
                     setBlueAngle();
                 }
-            } else if (Tx <= -3){
-                if ((rotateLauncher.getPosition() - (0.002*Math.abs(Tx)) <= 0.222)){
+            } else if (Tx <= -2){ //Tx <= -3
+                if ((rotateLauncher.getPosition() - (0.002*Math.abs(Tx))) <= 0.222){
                     rotateLauncher.setPosition(rotateLauncher.getPosition() + (0.002*Math.abs(Tx+3)));
                 } else {
                     setRedAngle();
@@ -151,7 +151,7 @@ public class RobotHardwareV2 {
 
         List<LLResultTypes.FiducialResult> fiducials = llResult.getFiducialResults();
         for (LLResultTypes.FiducialResult fiducial : fiducials) {
-            if (fiducial.getFiducialId() == 20){
+            if (fiducial.getFiducialId() == 24){
                 id = fiducial.getFiducialId(); // The ID number of the fiducial
                 Tx = fiducial.getTargetXDegrees();
                 break;
@@ -159,16 +159,16 @@ public class RobotHardwareV2 {
         }
 
 
-        if (id == 20) {
+        if (id == 24) {
 
             if (Tx >= 5) {
-                if ((rotateLauncher.getPosition() - (0.002 * Math.abs(Tx)) >= 0.164)) {
+                if ((rotateLauncher.getPosition() - (0.002 * Math.abs(Tx))) >= 0.164) {
                     rotateLauncher.setPosition(rotateLauncher.getPosition() - (0.002 * Math.abs(Tx)));
                 } else {
                     setBlueAngle();
                 }
             } else if (Tx <= -1) {
-                if ((rotateLauncher.getPosition() - (0.002 * Math.abs(Tx)) <= 0.222)) {
+                if ((rotateLauncher.getPosition() - (0.002 * Math.abs(Tx))) <= 0.222) {
                     rotateLauncher.setPosition(rotateLauncher.getPosition() + (0.002 * Math.abs(Tx + 3)));
                 } else {
                     setRedAngle();
@@ -427,7 +427,10 @@ public class RobotHardwareV2 {
                 // set gates to stow positions
                 gate2up();
                 gate3up();
-                //intakeRampMiddle();
+                intakeRampMiddle();
+                reverseIntake();
+                sleep(500);
+                stopIntake();
                 break;
             case DROP_0:
                 telemetry.addLine("start drop_0");
@@ -763,11 +766,11 @@ public class RobotHardwareV2 {
     }
 
     public void setNormalTrajectory(){
-        trajectoryServo.setPosition(1.0);
+        trajectoryServo.setPosition(0.0);
     }
 
     public void setFarTrajectory(){
-        trajectoryServo.setPosition(0.45);
+        trajectoryServo.setPosition(0.3);
     }
 
     public void setBlueAngle(){

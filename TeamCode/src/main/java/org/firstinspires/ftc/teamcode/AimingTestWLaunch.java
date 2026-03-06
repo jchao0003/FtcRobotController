@@ -17,19 +17,24 @@ import org.firstinspires.ftc.robotcore.external.Telemetry;
 
 import java.util.List;
 
-//@TeleOp
+@TeleOp
 
-public class AimingTest extends OpMode{
+public class AimingTestWLaunch extends OpMode{
 
     public DcMotorEx flywheel;
 
     public Servo feeder;
     public Servo rotateLauncher;
 
+    RobotHardwareV2 robotHardware;
+
     public Limelight3A limelight;
 
     @Override
     public void init(){
+
+        robotHardware = new RobotHardwareV2();
+        RobotInitializerV2.initializeRobot(hardwareMap, robotHardware);
 
         flywheel = hardwareMap.get(DcMotorEx.class, "flywheel");
 
@@ -86,6 +91,28 @@ public class AimingTest extends OpMode{
                 rotateLauncher.setPosition(rotateLauncher.getPosition() + (0.002*Math.abs(Tx+1)));
                 sleep(500);
             }
+        }
+
+
+
+        if (gamepad2.right_bumper){
+            robotHardware.setFlywheelSpeedMiddlePosition();
+        } else if (gamepad2.left_bumper) {
+            robotHardware.setFlywheelSpeedBackPosition();
+            robotHardware.setFarTrajectory();
+        } else if (gamepad2.y){
+            robotHardware.setFlywheelSpeedFrontPosition();
+        } else {
+            robotHardware.stopFlywheel();
+            robotHardware.setNormalTrajectory();
+        }
+
+        if (gamepad2.dpad_down){
+            robotHardware.setFeedLaunch();
+        }
+
+        if (gamepad2.a){
+            robotHardware.setFeedDown();
         }
 
 

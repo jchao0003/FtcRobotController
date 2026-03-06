@@ -16,7 +16,7 @@ import com.qualcomm.robotcore.util.ElapsedTime;
 
 import org.firstinspires.ftc.teamcode.pedroPathing.Constants;
 
-@Autonomous
+//@Autonomous
 public class AutoBlueBackV7 extends OpMode {
     private ElapsedTime runtime = new ElapsedTime();
 

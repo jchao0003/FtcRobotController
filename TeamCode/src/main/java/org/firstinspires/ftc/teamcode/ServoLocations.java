@@ -4,7 +4,7 @@ import com.qualcomm.robotcore.eventloop.opmode.OpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import com.qualcomm.robotcore.hardware.Servo;
 
-@TeleOp
+//@TeleOp
 public class ServoLocations extends OpMode {
 
     public Servo servo;
@@ -12,7 +12,7 @@ public class ServoLocations extends OpMode {
     @Override
     public void init() {
         servo = hardwareMap.get(Servo.class, "trajectoryServo");
-        servo.setPosition(0.5);
+        servo.setPosition(0.3);
     }
 
     @Override

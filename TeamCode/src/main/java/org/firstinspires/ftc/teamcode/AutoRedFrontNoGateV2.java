@@ -16,8 +16,8 @@ import com.qualcomm.robotcore.util.ElapsedTime;
 
 import org.firstinspires.ftc.teamcode.pedroPathing.Constants;
 
-//@Autonomous
-public class AutoRedFrontNoGate extends OpMode {
+@Autonomous
+public class AutoRedFrontNoGateV2 extends OpMode {
     private ElapsedTime runtime = new ElapsedTime();
 
     private Follower follower;
@@ -27,7 +27,7 @@ public class AutoRedFrontNoGate extends OpMode {
 
     RobotHardwareV2 robotHardware;
 
-    private double fudgeFactor = Math.toRadians(0);
+    private double fudgeFactor = Math.toRadians(15);
 
 
 
@@ -52,16 +52,19 @@ public class AutoRedFrontNoGate extends OpMode {
         SHOOT_PRELOAD_TO_START_CLOSE,
         START_CLOSE_TO_END_CLOSE,
         END_CLOSE_TO_SHOOT_CLOSE,
+        ADJUST_LAUNCH_CLOSE,
         LAUNCH_CLOSE,
         WAIT_FOR_LAUNCH_CLOSE,
         SHOOT_CLOSE_TO_START_MID,
         START_MID_TO_END_MID,
         END_MID_TO_SHOOT_MID,
+        ADJUST_LAUNCH_MID,
         LAUNCH_MID,
         WAIT_FOR_LAUNCH_MID,
         SHOOT_MID_TO_START_FAR,
         START_FAR_TO_END_FAR,
         END_FAR_TO_END,
+        ADJUST_LAUNCH_FAR,
         LAUNCH_FAR,
         WAIT_FOR_LAUNCH_FAR,
         DONE
@@ -99,11 +102,11 @@ public class AutoRedFrontNoGate extends OpMode {
                 .build();
         endCloseToMiddleShoot = follower.pathBuilder()
                 .addPath(new BezierLine(endClose, middleShoot))
-                .setLinearHeadingInterpolation(endClose.getHeading(), middleShoot.getHeading() + fudgeFactor)
+                .setLinearHeadingInterpolation(endClose.getHeading(), middleShoot.getHeading())
                 .build();
         middleShootToStartMid = follower.pathBuilder()
                 .addPath(new BezierLine(middleShoot, startMid))
-                .setLinearHeadingInterpolation(middleShoot.getHeading() + fudgeFactor, startMid.getHeading())
+                .setLinearHeadingInterpolation(middleShoot.getHeading(), startMid.getHeading())
                 .build();
         startMidToEndMid = follower.pathBuilder()
                 .addPath(new BezierLine(startMid, endMid))
@@ -111,11 +114,11 @@ public class AutoRedFrontNoGate extends OpMode {
                 .build();
         endMidToMiddleShoot = follower.pathBuilder()
                 .addPath(new BezierLine(endMid, middleShoot))
-                .setLinearHeadingInterpolation(endMid.getHeading(), middleShoot.getHeading() + fudgeFactor)
+                .setLinearHeadingInterpolation(endMid.getHeading(), middleShoot.getHeading())
                 .build();
         middleShootToStartFar = follower.pathBuilder()
                 .addPath(new BezierLine(middleShoot, startFar))
-                .setLinearHeadingInterpolation(middleShoot.getHeading() + fudgeFactor, startFar.getHeading())
+                .setLinearHeadingInterpolation(middleShoot.getHeading(), startFar.getHeading())
                 .build();
         startFarToEndFar = follower.pathBuilder()
                 .addPath(new BezierLine(startFar, endFar))
@@ -134,6 +137,7 @@ public class AutoRedFrontNoGate extends OpMode {
                 //and check that 5 seconds has elapsed
                 robotHardware.resetMechanisms();
                 robotHardware.setFlywheelSpeedFrontPosition();
+                robotHardware.setNormalTrajectory();
 
                 telemetry.addLine("Path State: Start");
                 setPathState(PathState.START_TO_PRELOAD_SHOOT);
@@ -158,9 +162,11 @@ public class AutoRedFrontNoGate extends OpMode {
                     shotsToFire -= 1;
                     if(shotsToFire > 0) {
                         setPathState(PathState.LAUNCH_PRELOAD);
+                        robotHardware.startIntake();
                     } else {
                         setPathState(PathState.SHOOT_PRELOAD_TO_START_CLOSE);
                         robotHardware.stopSpin();
+                        robotHardware.stopIntake();
                         shotsToFire = 5;
                     }
                 }
@@ -180,7 +186,7 @@ public class AutoRedFrontNoGate extends OpMode {
             case START_CLOSE_TO_END_CLOSE:
                 if (!follower.isBusy()){
                     telemetry.addLine("Path State: Start close to end close");
-                    follower.followPath(startCloseToEndClose, .4, true);
+                    follower.followPath(startCloseToEndClose, .6, true);
                     setPathState(PathState.END_CLOSE_TO_SHOOT_CLOSE);
                 }
                 break;
@@ -192,11 +198,17 @@ public class AutoRedFrontNoGate extends OpMode {
 //                    robotHardware.stopIntake();
                     robotHardware.stopSpin();
 
-                    setPathState(PathState.LAUNCH_CLOSE);
+                    setPathState(PathState.ADJUST_LAUNCH_CLOSE);
                 }
                 break;
+            case ADJUST_LAUNCH_CLOSE:
+                if (!follower.isBusy()){
+                    robotHardware.adjustLauncherRed();
+                    setPathState(PathState.LAUNCH_CLOSE);
+                }
             case LAUNCH_CLOSE:
                 if (!follower.isBusy()){
+                    robotHardware.adjustLauncherRed();
                     telemetry.addLine("Path State: Launch close");
                     robotHardware.launch(true);
                     setPathState(PathState.WAIT_FOR_LAUNCH_CLOSE);
@@ -241,10 +253,16 @@ public class AutoRedFrontNoGate extends OpMode {
 //                    robotHardware.stopIntake();
                     robotHardware.stopSpin();
 
-                    setPathState(PathState.LAUNCH_MID);
+                    setPathState(PathState.ADJUST_LAUNCH_MID);
+                }
+            case ADJUST_LAUNCH_MID:
+                if (!follower.isBusy()){
+                    robotHardware.adjustLauncherRed();
+                    setPathState((PathState.LAUNCH_MID));
                 }
             case LAUNCH_MID:
                 if (!follower.isBusy()) {
+                    robotHardware.adjustLauncherRed();
                     telemetry.addLine("Path State: Launch mid");
                     robotHardware.launch(true);
                     setPathState(PathState.WAIT_FOR_LAUNCH_MID);
@@ -289,11 +307,17 @@ public class AutoRedFrontNoGate extends OpMode {
 //                    robotHardware.stopIntake();
                     robotHardware.stopSpin();
 
-                    setPathState(PathState.LAUNCH_FAR);
+                    setPathState(PathState.ADJUST_LAUNCH_FAR);
                 }
                 break;
+            case ADJUST_LAUNCH_FAR:
+                if (!follower.isBusy()){
+                    robotHardware.adjustLauncherRed();
+                    setPathState(PathState.LAUNCH_FAR);
+                }
             case LAUNCH_FAR:
                 if (!follower.isBusy()){
+                    robotHardware.adjustLauncherRed();
                     telemetry.addLine("Path State: Launch far");
                     robotHardware.launch(true);
                     setPathState(PathState.WAIT_FOR_LAUNCH_FAR);

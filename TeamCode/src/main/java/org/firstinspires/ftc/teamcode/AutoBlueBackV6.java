@@ -33,7 +33,7 @@ public class AutoBlueBackV6 extends OpMode {
 
     int adjustCount = 0;
 
-    private double fudgeFactor = Math.toRadians(0);
+    private double fudgeFactor = Math.toRadians(2);
 
     private Servo feeder;
 
@@ -222,6 +222,7 @@ public class AutoBlueBackV6 extends OpMode {
                 break;
             case LAUNCH_FAR:
                 if (!follower.isBusy()){
+                    robotHardware.adjustLauncherBlue(telemetry);
                     robotHardware.launchBack(true);
                     setPathState(PathState.WAIT_FOR_LAUNCH_FAR);
                 }
@@ -274,6 +275,7 @@ public class AutoBlueBackV6 extends OpMode {
                 break;
             case LAUNCH_CORNER:
                 if (!follower.isBusy()){
+                    robotHardware.adjustLauncherBlue(telemetry);
                     robotHardware.launchBack(true);
                     setPathState(PathState.WAIT_FOR_LAUNCH_CORNER);
                 }

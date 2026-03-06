@@ -8,13 +8,16 @@ import com.qualcomm.robotcore.eventloop.opmode.OpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.DcMotorEx;
+import com.qualcomm.robotcore.util.ElapsedTime;
 
 import org.firstinspires.ftc.robotcore.external.JavaUtil;
 import org.firstinspires.ftc.robotcore.external.navigation.Pose3D;
 import org.firstinspires.ftc.teamcode.RobotInitializer;
 
-//@TeleOp
-public class Meet3TeleOp extends OpMode{
+import java.util.Timer;
+
+@TeleOp
+public class RegionalsTeleOpBackup extends OpMode{
     public DcMotor backLeft;
     public DcMotor backRight;
     public DcMotor frontLeft;
@@ -35,6 +38,10 @@ public class Meet3TeleOp extends OpMode{
 
     RobotHardwareV2 robotHardware;
 
+    private ElapsedTime launchTimer = new ElapsedTime();
+    final double launchTime = 0.3;
+
+
     @Override
     public void init() {
 
@@ -52,7 +59,8 @@ public class Meet3TeleOp extends OpMode{
         limelight = hardwareMap.get(Limelight3A.class, "Limelight3A");
         limelight.pipelineSwitch(0);
 
-        robotHardware.resetMechanisms();
+        robotHardware.resetMechanismsMiddle();
+        robotHardware.intakeRampDown();
     }
 
     public void start(){
@@ -62,11 +70,17 @@ public class Meet3TeleOp extends OpMode{
     public void loop(){
         LLResult llResult = limelight.getLatestResult();
 
-        if (Math.abs(llResult.getBotpose().getOrientation().getYaw()-(-131.5)) <= 7){
+        if (Math.abs(llResult.getTx()-(-5)) <= 5 || Math.abs(llResult.getTx()-(5)) <= 5){
             robotHardware.setColorBlueLocation();
         } else {
             robotHardware.setColorOrangeLocation();
         }
+
+//        if (Math.abs(llResult.getBotpose().getOrientation().getYaw()-(134)) <= 7){
+//            robotHardware.setColorBlueLocation();
+//        } else {
+//            robotHardware.setColorOrangeLocation();
+//        }
 
 
         if (llResult != null && llResult.isValid()) {
@@ -79,54 +93,61 @@ public class Meet3TeleOp extends OpMode{
         }
 
         if (gamepad2.dpad_down){
+            launchTimer.reset();
             robotHardware.setFeedLaunch();
         }
 
-        if (gamepad2.aWasPressed()){
+        if (launchTimer.seconds() > launchTime){
             robotHardware.setFeedDown();
         }
 
-        if (gamepad2.dpad_up){
-            robotHardware.dropGate2();
-        }
-
-        if (gamepad2.dpad_right){
-            robotHardware.dropGate3();
+        if (gamepad2.aWasPressed()){
+            robotHardware.intakeRampDown();
         }
 
         if (gamepad2.right_bumper){
             robotHardware.setFlywheelSpeedMiddlePosition();
-        } else if (gamepad2.dpad_left){
-            robotHardware.stopFlywheel();
-            robotHardware.motorLightOff();
         } else if (gamepad2.left_bumper) {
             robotHardware.setFlywheelSpeedBackPosition();
+            robotHardware.setFarTrajectory();
         } else {
             robotHardware.setFlywheelSpeedFrontPosition();
+            robotHardware.setNormalTrajectory();
         }
 
         if (gamepad2.xWasPressed()){
-            robotHardware.setBlueAngle();
+            robotHardware.dropGate2();
         }
 
         if (gamepad2.bWasPressed()){
-            robotHardware.setRedAngle();
+            robotHardware.dropGate3();
         }
 
         if (gamepad2.yWasPressed()){
+            robotHardware.resetMechanismsMiddle();
+        }
+
+        if (gamepad2.dpad_up){
             robotHardware.setAngleStraight();
         }
 
         if (gamepad2.dpad_left){
-            robotHardware.intakeRampUp();
+            robotHardware.setBlueAngle();
+        }
+
+        if(gamepad2.dpad_right){
+            robotHardware.setRedAngle();
         }
 
         if (gamepad2.right_stick_y > 0.5){
             robotHardware.startIntake();
+            robotHardware.startSpin();
         } else if(gamepad2.right_stick_y < -0.5){
             robotHardware.reverseIntake();
+            robotHardware.reverseSpin();
         } else {
             robotHardware.stopIntake();
+            robotHardware.stopSpin();
         }
 
         if (Math.abs(robotHardware.getFlywheelVelocityError()) <=50){
