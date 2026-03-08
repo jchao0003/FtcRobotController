@@ -70,7 +70,7 @@ public class RegionalsTeleOp extends OpMode{
     public void loop(){
         LLResult llResult = limelight.getLatestResult();
 
-        if (Math.abs(llResult.getTx()-(-5)) <= 5 || Math.abs(llResult.getTx()-(5)) <= 5){
+        if (llResult != null && llResult.isValid() && (Math.abs(llResult.getTx()-(-5)) <= 5 || Math.abs(llResult.getTx()-(5)) <= 5)){
             robotHardware.setColorBlueLocation();
         } else {
             robotHardware.setColorOrangeLocation();
@@ -90,6 +90,14 @@ public class RegionalsTeleOp extends OpMode{
             telemetry.addData("Ta", llResult.getTa());
             telemetry.addData("Bot Pose", botPose.toString());
             telemetry.addData("Yaw", llResult.getBotpose().getOrientation().getYaw());
+        }
+
+        if (gamepad2.left_trigger != 0){
+            robotHardware.setBlueAngle();
+        }
+
+        if (gamepad2.right_trigger != 0){
+            robotHardware.setRedAngle();
         }
 
         if (gamepad2.dpad_down){

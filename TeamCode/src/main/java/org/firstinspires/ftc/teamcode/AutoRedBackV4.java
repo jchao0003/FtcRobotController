@@ -16,7 +16,7 @@ import com.qualcomm.robotcore.util.ElapsedTime;
 
 import org.firstinspires.ftc.teamcode.pedroPathing.Constants;
 
-//@Autonomous
+@Autonomous
 public class AutoRedBackV4 extends OpMode {
     private ElapsedTime runtime = new ElapsedTime();
 
@@ -190,7 +190,7 @@ public class AutoRedBackV4 extends OpMode {
                     telemetry.addLine("To preload");
                     follower.followPath(farLaunchToFarPresetStart);
                     robotHardware.startIntake();
-                    robotHardware.spin.setPower(-0.5);
+                    //robotHardware.spin.setPower(-0.5);
                     setPathState(PathState.PICKUP_PRESET_FAR);
                 }
                 break;
@@ -222,6 +222,7 @@ public class AutoRedBackV4 extends OpMode {
                 break;
             case LAUNCH_FAR:
                 if (!follower.isBusy()){
+                    robotHardware.spin.setPower(-0.5);
                     robotHardware.launchBack(true);
                     setPathState(PathState.WAIT_FOR_LAUNCH_FAR);
                 }

@@ -160,7 +160,7 @@ public class AutoRedBackV6 extends OpMode {
 
                 robotHardware.setFlywheelSpeedBackPosition();
                 robotHardware.setRedAngle();
-                robotHardware.adjustLauncherRed();
+                //robotHardware.adjustLauncherRed();
                 robotHardware.setFarTrajectory();
 
 
@@ -193,7 +193,7 @@ public class AutoRedBackV6 extends OpMode {
                     telemetry.addLine("To preload");
                     follower.followPath(farLaunchToFarPresetStart);
                     robotHardware.startIntake();
-                    robotHardware.spin.setPower(-0.5);
+                    //robotHardware.spin.setPower(-0.5);
                     setPathState(PathState.PICKUP_PRESET_FAR);
                 }
                 break;

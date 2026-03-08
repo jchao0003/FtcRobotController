@@ -38,7 +38,7 @@ public class RobotHardwareV2 {
 
     public Limelight3A limelight;
 
-    public double backVelocity = 1575; // 1600; //1550
+    public double backVelocity = 1600; // 1600; //1550 //1575
     public double frontVelocity = 1000; //1100;
     public double middleVelocity = 1175; //1200
 
@@ -429,7 +429,7 @@ public class RobotHardwareV2 {
                 gate3up();
                 intakeRampMiddle();
                 reverseIntake();
-                sleep(500);
+                sleep(100);
                 stopIntake();
                 break;
             case DROP_0:
@@ -729,7 +729,9 @@ public class RobotHardwareV2 {
     }
 
     public void setFlywheelSpeedFrontPosition(){
-        flywheel.setVelocity(frontVelocity);
+        if (flywheelTargetVelocity != frontVelocity){
+            flywheel.setVelocity(frontVelocity);
+        }
         flywheelTargetVelocity = frontVelocity;
     }
 

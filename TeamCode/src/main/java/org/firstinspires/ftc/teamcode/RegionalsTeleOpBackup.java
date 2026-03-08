@@ -70,10 +70,12 @@ public class RegionalsTeleOpBackup extends OpMode{
     public void loop(){
         LLResult llResult = limelight.getLatestResult();
 
-        if (Math.abs(llResult.getTx()-(-5)) <= 5 || Math.abs(llResult.getTx()-(5)) <= 5){
+        if (llResult != null && llResult.isValid() && (Math.abs(llResult.getTx()-(-5)) <= 5 || Math.abs(llResult.getTx()-(5)) <= 5)){
             robotHardware.setColorBlueLocation();
         } else {
             robotHardware.setColorOrangeLocation();
+            telemetry.addLine("Angle Wrong");
+            telemetry.update();
         }
 
 //        if (Math.abs(llResult.getBotpose().getOrientation().getYaw()-(134)) <= 7){
@@ -154,6 +156,7 @@ public class RegionalsTeleOpBackup extends OpMode{
             robotHardware.setColorGreenMotor();
         } else {
             robotHardware.setColorRedMotor();
+            telemetry.addLine("Wrong Speed");
         }
 
 

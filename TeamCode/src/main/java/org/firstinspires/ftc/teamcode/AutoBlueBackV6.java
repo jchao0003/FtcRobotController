@@ -160,7 +160,7 @@ public class AutoBlueBackV6 extends OpMode {
 
                 robotHardware.setFlywheelSpeedBackPosition();
                 robotHardware.setBlueAngle();
-                robotHardware.adjustLauncherBlue(telemetry);
+                //robotHardware.adjustLauncherBlue(telemetry);
                 robotHardware.setFarTrajectory();
 
 
@@ -193,7 +193,7 @@ public class AutoBlueBackV6 extends OpMode {
                     telemetry.addLine("To preload");
                     follower.followPath(farLaunchToFarPresetStart);
                     robotHardware.startIntake();
-                    robotHardware.spin.setPower(-0.5);
+                    //robotHardware.spin.setPower(-0.5);
                     setPathState(PathState.PICKUP_PRESET_FAR);
                 }
                 break;
@@ -222,6 +222,7 @@ public class AutoBlueBackV6 extends OpMode {
                 break;
             case LAUNCH_FAR:
                 if (!follower.isBusy()){
+                    robotHardware.spin.setPower(-0.5);
                     robotHardware.adjustLauncherBlue(telemetry);
                     robotHardware.launchBack(true);
                     setPathState(PathState.WAIT_FOR_LAUNCH_FAR);
