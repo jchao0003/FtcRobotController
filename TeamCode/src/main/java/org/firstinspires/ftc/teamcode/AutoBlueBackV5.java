@@ -160,6 +160,7 @@ public class AutoBlueBackV5 extends OpMode {
 
                 robotHardware.setFlywheelSpeedBackPosition();
                 robotHardware.setBlueAngle();
+                robotHardware.setFarTrajectory();
 
 
                 if (!follower.isBusy()){

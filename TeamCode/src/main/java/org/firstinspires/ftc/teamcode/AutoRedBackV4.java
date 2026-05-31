@@ -159,6 +159,7 @@ public class AutoRedBackV4 extends OpMode {
                 robotHardware.resetMechanisms();
                 robotHardware.setFlywheelSpeedBackPosition();
                 robotHardware.setRedAngle();
+                robotHardware.setFarTrajectory();
 
                 if (!follower.isBusy()){
                     telemetry.addLine("Done Path 1");
