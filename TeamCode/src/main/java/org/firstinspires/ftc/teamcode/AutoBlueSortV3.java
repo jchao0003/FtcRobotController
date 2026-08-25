@@ -83,7 +83,7 @@ public class AutoBlueSortV3 extends OpMode {
     private final Pose closeShoot = new Pose(37, 105, Math.toRadians(145));
     private final Pose startClose = new Pose(52, 78, Math.toRadians(5));//(42, 88.1, Math.toRadians(5));
     private final Pose endClose = new Pose(24, 78, Math.toRadians(0));//(15.4, 76.6, Math.toRadians(0));
-    private final Pose middleShoot = new Pose(58.7, 84.6, Math.toRadians(139));
+    private final Pose middleShoot = new Pose(58.7, 84.6, Math.toRadians(145));
     private final Pose startMid = new Pose(43.9, 52, Math.toRadians(0));//(41.9, 57.5, Math.toRadians(0));
     private final Pose endMid = new Pose(17, 52, Math.toRadians(0));//(10.4, 57.5, Math.toRadians(0));
     private final Pose midMid = new Pose(25, 52, Math.toRadians(0));
@@ -186,7 +186,7 @@ public class AutoBlueSortV3 extends OpMode {
                         }
                         robotHardware.resetLaunchAndSortState();
                         telemetry.addLine("Path State: Launch preload. order: " + launchOrder);
-                        follower.followPath(detectTagToCloseShoot, 0.4, true);
+                        follower.followPath(detectTagToCloseShoot, 0.2, true);
                         setPathState(PathState.WAIT_FOR_LAUNCH_PRELOAD);
                     }
                 }
@@ -205,7 +205,7 @@ public class AutoBlueSortV3 extends OpMode {
             case SHOOT_PRELOAD_TO_START_CLOSE:
                 if (!follower.isBusy()){
                     telemetry.addLine("Path State: Shoot preload to start close");
-                    follower.followPath(closeShootToStartClose, .8, true);
+                    follower.followPath(closeShootToStartClose, .6, true);
 
                     robotHardware.resetMechanismsMiddle();
                     robotHardware.setFlywheelSpeedMiddlePosition();
@@ -218,14 +218,14 @@ public class AutoBlueSortV3 extends OpMode {
             case START_CLOSE_TO_END_CLOSE:
                 if (!follower.isBusy()){
                     telemetry.addLine("Path State: Start close to end close");
-                    follower.followPath(startCloseToEndClose, .6, true);
+                    follower.followPath(startCloseToEndClose, .4, true);
                     setPathState(PathState.END_CLOSE_TO_SHOOT_CLOSE);
                 }
                 break;
             case END_CLOSE_TO_SHOOT_CLOSE:
                 if (!follower.isBusy()){
                     telemetry.addLine("Path State: End close to shoot close");
-                    follower.followPath(endCloseToMiddleShoot, .8, true);
+                    follower.followPath(endCloseToMiddleShoot, .6, true);
                     //robotHardware.resetMechanismsUp();
 
 //                    robotHardware.stopIntake();
@@ -264,7 +264,7 @@ public class AutoBlueSortV3 extends OpMode {
             case SHOOT_CLOSE_TO_START_MID:
                 if (!follower.isBusy()){
                     telemetry.addLine("Path State: Shoot close to start mid");
-                    follower.followPath(middleShootToStartMid, 0.8, true);
+                    follower.followPath(middleShootToStartMid, 0.6, true);
 
                     robotHardware.resetMechanismsMiddle();
                     robotHardware.startIntake();
@@ -276,14 +276,14 @@ public class AutoBlueSortV3 extends OpMode {
             case START_MID_TO_END_MID:
                 if (!follower.isBusy()){
                     telemetry.addLine("Path State: Start mid to end mid");
-                    follower.followPath(startMidToEndMid, 0.6, true);
+                    follower.followPath(startMidToEndMid, 0.4, true);
                     setPathState(PathState.END_MID_TO_MID_MID);
                 }
                 break;
             case END_MID_TO_MID_MID:
                 if (!follower.isBusy()){
                     telemetry.addLine("Path State: End mid to mid mid");
-                    follower.followPath(endMidToMidMid, 0.8, true);
+                    follower.followPath(endMidToMidMid, 0.6, true);
                     //robotHardware.resetMechanismsUp();
 
 //                    robotHardware.stopIntake();
@@ -295,7 +295,7 @@ public class AutoBlueSortV3 extends OpMode {
             case MID_MID_TO_LAUNCH_MID:
                 if (!follower.isBusy()){
                     telemetry.addLine("Path State: Mid mid to shoot mid");
-                    follower.followPath(midMidToMiddleShoot, 0.8, true);
+                    follower.followPath(midMidToMiddleShoot, 0.6, true);
                     //robotHardware.resetMechanismsUp();
 
 //                    robotHardware.stopIntake();
