@@ -9,7 +9,7 @@ import com.qualcomm.robotcore.hardware.PIDFCoefficients;
 import com.qualcomm.robotcore.hardware.Servo;
 
 public class RobotInitializerV2 {
-    public static void initializeRobot(HardwareMap hardwareMap, org.firstinspires.ftc.teamcode.RobotHardwareV2 robotHardware){
+    public static void initializeRobot(HardwareMap hardwareMap, RobotHardwareV2 robotHardware){
         double flywheelF = 21.2;
         double flywheelP = 530.0;
 
