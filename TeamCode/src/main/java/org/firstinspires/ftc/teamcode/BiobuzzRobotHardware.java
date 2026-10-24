@@ -38,9 +38,9 @@ public class BiobuzzRobotHardware {
 
     public Limelight3A limelight;
 
-    public double velocity = 1100;
+    public double velocity = 1090;
 
-    private double flywheelTargetVelocity = 0;
+    private double flywheelTargetVelocity = velocity;
 
     public void setFeedDown(){
         feeder.setPosition(0.66);
@@ -108,6 +108,6 @@ public class BiobuzzRobotHardware {
     }
 
     public void setAngleStraight(){
-        rotateLauncher.setPosition(0.2); //0.195); //0.031/18
+        rotateLauncher.setPosition(0.205); //0.195); //0.031/18
     }
 }
