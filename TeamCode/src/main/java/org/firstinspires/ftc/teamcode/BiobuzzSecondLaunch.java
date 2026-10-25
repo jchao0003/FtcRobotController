@@ -109,23 +109,23 @@ public class BiobuzzSecondLaunch extends OpMode {
                     robotHardware.setFeedLaunch();
                     sleep(1000);
                     robotHardware.setFeedDown();
-                    sleep(1000);
+                    sleep(1500);
                     robotHardware.setFeedLaunch();
                     sleep(1000);
                     robotHardware.setFeedDown();
-                    sleep(1000);
+                    sleep(1500);
                     robotHardware.setFeedLaunch();
                     sleep(1000);
                     robotHardware.setFeedDown();
-                    sleep(1000);
+                    sleep(1500);
                     robotHardware.setFeedLaunch();
                     sleep(1000);
                     robotHardware.setFeedDown();
-                    sleep(1000);
-                    robotHardware.setFeedLaunch();
-                    sleep(1000);
-                    robotHardware.setFeedDown();
-                    sleep(1000);
+                    sleep(1500);
+//                    robotHardware.setFeedLaunch();
+//                    sleep(1000);
+//                    robotHardware.setFeedDown();
+//                    sleep(1000);
 //                    launchTimer.reset();
 //                    if (shotsToFire > 0){
 //                        if (launchTimer.seconds() > launchTime) {

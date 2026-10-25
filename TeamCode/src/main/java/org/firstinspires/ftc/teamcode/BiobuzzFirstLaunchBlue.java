@@ -93,10 +93,12 @@ public class BiobuzzFirstLaunchBlue extends OpMode {
                 robotHardware.resetMechanisms();
 
                 robotHardware.setFlywheelVelocity();
+                sleep(5000);
 
                 if (!follower.isBusy()){
                     telemetry.addLine("Done with start");
                     if (launchTimer.seconds() > 5){
+
                         setPathState(PathState.LAUNCH_PRELOAD);
                     }
                 }
@@ -105,25 +107,25 @@ public class BiobuzzFirstLaunchBlue extends OpMode {
                 if (!follower.isBusy()){
                     telemetry.addLine("Launching preload");
                     robotHardware.setFeedLaunch();
-                    sleep(1000);
+                    sleep(100);
                     robotHardware.setFeedDown();
-                    sleep(1000);
+                    sleep(1500);
                     robotHardware.setFeedLaunch();
                     sleep(1000);
                     robotHardware.setFeedDown();
-                    sleep(1000);
+                    sleep(1500);
                     robotHardware.setFeedLaunch();
                     sleep(1000);
                     robotHardware.setFeedDown();
-                    sleep(1000);
+                    sleep(1500);
                     robotHardware.setFeedLaunch();
                     sleep(1000);
                     robotHardware.setFeedDown();
-                    sleep(1000);
+                    sleep(1500);
                     robotHardware.setFeedLaunch();
                     sleep(1000);
                     robotHardware.setFeedDown();
-                    sleep(1000);
+                    sleep(1500);
 //                    launchTimer.reset();
 //                    if (shotsToFire > 0){
 //                        if (launchTimer.seconds() > launchTime) {
